@@ -14,7 +14,6 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -71,7 +70,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     false
                 ),
                 1 / this.UpdateFrequency
-            ), 
+            ),
+            () -> false, // Just to make code compile.
             this
         );
     }

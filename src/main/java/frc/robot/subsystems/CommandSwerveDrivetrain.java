@@ -71,7 +71,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     false
                 ),
                 1 / this.UpdateFrequency
-            ), 
+            ),
+            () -> false, // change
             this
         );
     }

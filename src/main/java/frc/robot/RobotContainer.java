@@ -31,7 +31,8 @@ public class RobotContainer {
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDriveRequestType(DriveRequestType.Velocity)
       .withSteerRequestType(SteerRequestType.MotionMagicExpo)
-      .withDeadband(0.05);
+      .withDeadband(0.1 * MaxSpeed)
+      .withRotationalDeadband(0.1 * MaxAngularRate);
 
   private void configureBindings() {
     m_intake.setDefaultCommand(new SetIntakeOpenLoop(() -> {

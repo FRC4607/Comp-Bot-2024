@@ -47,7 +47,7 @@ public class RobotContainer {
     //     ));
     SmartDashboard.putNumber("Shooter Speed", 0);
     joystick.rightBumper().whileTrue(new SetShooterSpeed(0, m_shooter));
-    joystick.a().whileTrue(new RunKickerWheel(0.30, m_kicker));
+    joystick.a().whileTrue(new RunKickerWheel(1.0, m_kicker));
   }
 
   public RobotContainer() {

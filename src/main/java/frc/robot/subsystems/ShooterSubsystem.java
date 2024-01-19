@@ -13,6 +13,9 @@ import com.revrobotics.SparkRelativeEncoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.rev.CANSparkUtil;
@@ -26,6 +29,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   private final RelativeEncoder m_uEnc;
   private final RelativeEncoder m_lEnc;
+
+  private final DoubleLogEntry m_uVelLog = new DoubleLogEntry(DataLogManager.getLog(), "shooter/upper_vel");
+  private final DoubleLogEntry m_lVelLog = new DoubleLogEntry(DataLogManager.getLog(), "shooter/lower_vel");
 
   /** Creates a new ShooterSubsystem. */
   public ShooterSubsystem() {
@@ -56,5 +62,7 @@ public class ShooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Avg Shooter Speed", (m_uEnc.getVelocity() + m_lEnc.getVelocity()) / 2);
+    m_uVelLog.append(m_uEnc.getVelocity());
+    m_lVelLog.append(m_lEnc.getVelocity());
   }
 }

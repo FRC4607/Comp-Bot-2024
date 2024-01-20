@@ -29,4 +29,10 @@ public final class Calibrations {
         public static final double kSteerInertia = 0.00001;
         public static final double kDriveInertia = 0.001;
     }
+    public static final class ShooterCalibrations {
+        public static final double kP = 0.0002;
+        public static final double kI = 0.0;
+        public static final double kD = 0.00005;
+        public static final double kFF = 0.00015;
+    }
 }

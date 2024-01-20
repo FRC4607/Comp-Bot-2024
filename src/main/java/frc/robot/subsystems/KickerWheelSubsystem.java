@@ -11,6 +11,7 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.KickerWheelConstants;
 
 public class KickerWheelSubsystem extends SubsystemBase {
     private final CANSparkMax m_kicker;
@@ -19,7 +20,7 @@ public class KickerWheelSubsystem extends SubsystemBase {
 
     /** Creates a new KickerWheelSubsystem. */
     public KickerWheelSubsystem() {
-        m_kicker = new CANSparkMax(54, MotorType.kBrushless);
+        m_kicker = new CANSparkMax(KickerWheelConstants.kCANId, MotorType.kBrushless);
         m_encoder = m_kicker.getEncoder();
         m_kicker.restoreFactoryDefaults();
     }

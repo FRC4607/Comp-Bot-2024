@@ -58,4 +58,16 @@ public final class Constants {
         public static final double kBackRightXPosInches = -9.75;
         public static final double kBackRightYPosInches = -9.75;
     }
+
+    public static final class ShooterConstants {
+        public static final int kUpperCANId = 56;
+        public static final int kLowerCANId = 55;
+
+        public static final boolean kInvertUpper = false;
+        public static final boolean kInvertLower = true;
+    }
+
+    public static final class KickerWheelConstants {
+        public static final int kCANId = 54;
+    }
 }

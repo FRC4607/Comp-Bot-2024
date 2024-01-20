@@ -14,6 +14,8 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Calibrations.ShooterCalibrations;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.util.rev.CANSparkUtil;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -31,16 +33,17 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** Creates a new ShooterSubsystem. */
     public ShooterSubsystem() {
-        m_upper = new CANSparkFlex(56, MotorType.kBrushless);
-        m_lower = new CANSparkFlex(55, MotorType.kBrushless);
+        m_upper = new CANSparkFlex(ShooterConstants.kUpperCANId, MotorType.kBrushless);
+        m_lower = new CANSparkFlex(ShooterConstants.kLowerCANId, MotorType.kBrushless);
 
         m_lower.restoreFactoryDefaults();
         m_upper.restoreFactoryDefaults();
 
         m_upper.setInverted(true);
+        m_lower.setInverted(false);
 
-        CANSparkUtil.ConfigPIDCANSpark(0.0002, 0.0, 0.00005, 0.00015, m_lower);
-        CANSparkUtil.ConfigPIDCANSpark(0.0002, 0.0, 0.00005, 0.00015, m_upper);
+        CANSparkUtil.ConfigPIDCANSpark(ShooterCalibrations.kP, ShooterCalibrations.kI, ShooterCalibrations.kD, ShooterCalibrations.kFF, m_lower);
+        CANSparkUtil.ConfigPIDCANSpark(ShooterCalibrations.kP, ShooterCalibrations.kI, ShooterCalibrations.kD, ShooterCalibrations.kFF, m_upper);
 
         m_uPID = m_upper.getPIDController();
         m_lPID = m_lower.getPIDController();

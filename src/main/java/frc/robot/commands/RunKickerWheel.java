@@ -8,31 +8,32 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.KickerWheelSubsystem;
 
 public class RunKickerWheel extends Command {
-  private final double m_speed;
-  private final KickerWheelSubsystem m_subsystem;
-  /** Creates a new RunKickerWheel. */
-  public RunKickerWheel(double speed, KickerWheelSubsystem subsystem) {
-    m_subsystem = subsystem;
-    m_speed = speed;
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(m_subsystem);
-  }
+    private final double m_speed;
+    private final KickerWheelSubsystem m_subsystem;
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    m_subsystem.setKicker(m_speed);
-  }
+    /** Creates a new RunKickerWheel. */
+    public RunKickerWheel(double speed, KickerWheelSubsystem subsystem) {
+        m_subsystem = subsystem;
+        m_speed = speed;
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(m_subsystem);
+    }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    m_subsystem.setKicker(0);
-  }
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        m_subsystem.setKicker(m_speed);
+    }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+        m_subsystem.setKicker(0);
+    }
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }

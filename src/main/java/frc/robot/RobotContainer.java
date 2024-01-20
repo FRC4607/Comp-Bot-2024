@@ -20,10 +20,9 @@ public class RobotContainer {
     private static final double MaxSpeed = Units.feetToMeters(17.3) - 0.5;
     private static final double MaxAngularRate = Math.PI;
 
-    /* Setting up bindings for necessary control of the swerve drive platform */
-    private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
+    private final CommandXboxController joystick = new CommandXboxController(0);
 
-    private final CommandSwerveDrivetrain drivetrain = CommandSwerveDrivetrain.getInstance(); // My drivetrain
+    private final CommandSwerveDrivetrain drivetrain = CommandSwerveDrivetrain.getInstance();
 
     private final IntakeSubsystem m_intake = new IntakeSubsystem();
 
@@ -37,14 +36,10 @@ public class RobotContainer {
         m_intake.setDefaultCommand(new SetIntakeOpenLoop(() -> {
             return joystick.getRightTriggerAxis() - joystick.getLeftTriggerAxis();
         }, m_intake));
-        drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
-                                                                                                   // negative Y
-                                                                                                   // (forward)
-                        .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with
-                                                                                    // negative X (left)
-                ));
+        drivetrain.setDefaultCommand(
+                drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
+                        .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                        .withRotationalRate(-joystick.getRightX() * MaxAngularRate)));
     }
 
     public RobotContainer() {

@@ -11,15 +11,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
-  private final CANSparkFlex m_motor;
-  /** Creates a new IntakeSubsystem. */
-  public IntakeSubsystem() {
-    m_motor = new CANSparkFlex(IntakeConstants.CAN_ID, MotorType.kBrushless);
-    m_motor.restoreFactoryDefaults();
-    //m_motor.setSmartCurrentLimit(60, 20, 3000);
-  }
+    private final CANSparkFlex m_motor;
 
-  public void setPower(double power) {
-    m_motor.set(power);
-  }
+    /** Creates a new IntakeSubsystem. */
+    public IntakeSubsystem() {
+        m_motor = new CANSparkFlex(IntakeConstants.kCANId, MotorType.kBrushless);
+        m_motor.restoreFactoryDefaults();
+        // m_motor.setSmartCurrentLimit(60, 20, 3000);
+    }
+
+    public void setPower(double power) {
+        m_motor.set(power);
+    }
 }

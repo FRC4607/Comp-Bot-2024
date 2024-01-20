@@ -23,7 +23,10 @@ public class TurnMotorCharacterizationSubsystem extends SubsystemBase {
 
     public TurnMotorCharacterizationSubsystem(int id, String canbus) {
         m_motor = new TalonFX(id, canbus);
-        m_motor.getConfigurator().apply(new TalonFXConfiguration().withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake))); // Factory default except for brake mode
+        m_motor.getConfigurator().apply(new TalonFXConfiguration()
+                .withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake))); // Factory default
+                                                                                                     // except for brake
+                                                                                                     // mode
         m_motor.getVelocity().setUpdateFrequency(1000);
         m_motor.getClosedLoopError().setUpdateFrequency(1000);
         m_motor.optimizeBusUtilization();
@@ -42,6 +45,7 @@ public class TurnMotorCharacterizationSubsystem extends SubsystemBase {
     public void setNeutral() {
         m_motor.setControl(m_neutral);
     }
+
     public double getPosition() {
         return m_encoderPosition.waitForUpdate(0.02).getValueAsDouble();
     }

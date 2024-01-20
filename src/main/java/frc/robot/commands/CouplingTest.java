@@ -35,12 +35,11 @@ public class CouplingTest extends Command {
         m_subsystem.updateSignals();
         double turn = m_subsystem.getTurnPosition() - m_turnOffset;
         double drive = m_subsystem.getDrivePosition() - m_driveOffset;
-        if (turn >= 1 && drive >= 1 ) {
+        if (turn >= 1 && drive >= 1) {
             if (m_backlashRemoved) {
-                m_log.append(drive/turn);
-                SmartDashboard.putNumber("Coupling Test Result", drive/turn);
-            }
-            else {
+                m_log.append(drive / turn);
+                SmartDashboard.putNumber("Coupling Test Result", drive / turn);
+            } else {
                 m_turnOffset = m_subsystem.getTurnPosition();
                 m_driveOffset = m_subsystem.getDrivePosition();
                 m_backlashRemoved = true;

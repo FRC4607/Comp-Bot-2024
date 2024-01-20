@@ -10,12 +10,14 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 public class CouplingCharacterizationSubsystem extends TurnMotorCharacterizationSubsystem {
     private final TalonFX m_drive;
     private final StatusSignal<Double> m_drivePos;
+
     public CouplingCharacterizationSubsystem(int turnid, int driveid, String canbus) {
         super(turnid, canbus);
         m_currentReq.MaxAbsDutyCycle = 0.05;
 
         m_drive = new TalonFX(driveid, canbus);
-        m_drive.getConfigurator().apply(new TalonFXConfiguration().withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)));
+        m_drive.getConfigurator().apply(new TalonFXConfiguration()
+                .withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast)));
         m_drivePos = m_drive.getPosition();
         m_drivePos.setUpdateFrequency(1000);
         m_drive.optimizeBusUtilization();

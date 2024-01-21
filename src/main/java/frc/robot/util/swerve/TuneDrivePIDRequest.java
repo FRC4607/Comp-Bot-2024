@@ -3,9 +3,9 @@ package frc.robot.util.swerve;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,7 +14,7 @@ public class TuneDrivePIDRequest implements SwerveRequest {
     private boolean configChanged = false;
     private final Slot0Configs m_config = new Slot0Configs().withKS(2.447242424);
     private final SwerveModuleState m_state = new SwerveModuleState();
-    
+
     @Override
     public StatusCode apply(SwerveControlRequestParameters parameters, SwerveModule... modules) {
         if (m_config.kP != SmartDashboard.getNumber("Drive_kP", 0.0)) {

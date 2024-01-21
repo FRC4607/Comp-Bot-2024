@@ -33,7 +33,8 @@ public class TurnMotorKSTest extends Command {
 
     private final TurnMotorCharacterizationSubsystem m_motor;
 
-    private final DoubleLogEntry m_log = new DoubleLogEntry(DataLogManager.getLog(), "Estimated Turn kS Value", "{\"unit\":\"A\"}");
+    private final DoubleLogEntry m_log = new DoubleLogEntry(DataLogManager.getLog(), "Estimated Turn kS Value",
+            "{\"unit\":\"A\"}");
 
     public TurnMotorKSTest(TurnMotorCharacterizationSubsystem subsystem) {
         m_motor = subsystem;
@@ -54,7 +55,7 @@ public class TurnMotorKSTest extends Command {
             }
             case REMOVE_BACKLASH: { // Wait until we see movement, then stop
                 double newPos = m_motor.getPosition();
-                if (Math.abs(newPos - m_pos) > 0.2/360.0) { // If the positions aren't equal, set up for next state
+                if (Math.abs(newPos - m_pos) > 0.2 / 360.0) { // If the positions aren't equal, set up for next state
                     m_pos = newPos;
                     m_motor.setNeutral();
                     m_loopCounter = 0;
@@ -64,12 +65,11 @@ public class TurnMotorKSTest extends Command {
             }
             case WAIT_FOR_STOP: { // Wait for the module to come to a complete stop
                 double newPos = m_motor.getPosition();
-                if (Math.abs(newPos - m_pos) > 0.2/360.0) { // If there is a difference, reset the counter
+                if (Math.abs(newPos - m_pos) > 0.2 / 360.0) { // If there is a difference, reset the counter
                     m_pos = newPos;
                     m_loopCounter = 0;
                     break;
-                }
-                else {
+                } else {
                     m_loopCounter++;
                 }
                 if (m_loopCounter == 13) { // If 13 loops have had no movement
@@ -81,12 +81,13 @@ public class TurnMotorKSTest extends Command {
             }
             case WAIT_FOR_START: { // Wait for the module to start
                 double newPos = m_motor.getPosition();
-                if (Math.abs(newPos - m_pos) <= 0.2/360.0) { // If the positions are (almost) equal, increase the current
+                if (Math.abs(newPos - m_pos) <= 0.2 / 360.0) { // If the positions are (almost) equal, increase the
+                                                               // current
                     m_current += 0.5 / 50.0; // 0.5 A/sec, or 0.01 A/loop
                     m_motor.setCurrent(m_current);
                     break;
-                }
-                else { // If there is a difference, update the position, stop applying current, log current, reset current, and wait to stop
+                } else { // If there is a difference, update the position, stop applying current, log
+                         // current, reset current, and wait to stop
                     m_pos = newPos;
                     if (m_current >= 2.0) { // Outlier rejection
                         m_motor.setNeutral();

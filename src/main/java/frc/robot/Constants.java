@@ -70,4 +70,8 @@ public final class Constants {
     public static final class KickerWheelConstants {
         public static final int kCANId = 54;
     }
+    
+    public static final class IntakeConstants {
+        public static final int kCANId = 12;
+    }
 }

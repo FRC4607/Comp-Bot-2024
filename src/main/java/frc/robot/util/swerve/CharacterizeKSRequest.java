@@ -5,8 +5,8 @@ import java.lang.reflect.Field;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -41,7 +41,8 @@ public class CharacterizeKSRequest implements SwerveRequest {
 
     private int m_loopCounter = 0;
 
-    private final DoubleLogEntry m_log = new DoubleLogEntry(DataLogManager.getLog(), "Estimated Drive kS Value", "{\"unit\":\"A\"}");
+    private final DoubleLogEntry m_log = new DoubleLogEntry(DataLogManager.getLog(), "Estimated Drive kS Value",
+            "{\"unit\":\"A\"}");
 
     public double getFF(SwerveModule module) {
         SmartDashboard.putString("Test State", m_state.toString());
@@ -70,8 +71,7 @@ public class CharacterizeKSRequest implements SwerveRequest {
                     m_pos = newPos;
                     m_loopCounter = 0;
                     return 0.0;
-                }
-                else {
+                } else {
                     m_loopCounter++;
                 }
                 if (m_loopCounter == 60) { // If 60 calls have had no movement
@@ -86,8 +86,8 @@ public class CharacterizeKSRequest implements SwerveRequest {
                 if (Math.abs(newPos - m_pos) <= 0.002) { // If the positions are (almost) equal, increase the current
                     m_current += 0.5 / 250.0; // 0.5 A/sec
                     return m_current;
-                }
-                else { // If there is a difference, update the position, stop applying current, log current, reset current, and wait to stop
+                } else { // If there is a difference, update the position, stop applying current, log
+                         // current, reset current, and wait to stop
                     m_pos = newPos;
                     if (m_current >= 1.0) {
                         m_state = State.WAIT_FOR_STOP;
@@ -114,13 +114,11 @@ public class CharacterizeKSRequest implements SwerveRequest {
                 Field requestField = module.getClass().getDeclaredField("m_velocityTorqueSetter");
                 requestField.setAccessible(true);
                 request = (VelocityTorqueCurrentFOC) requestField.get(module);
-            }
-            catch (NoSuchFieldException e) {
+            } catch (NoSuchFieldException e) {
                 // uh oh
                 System.err.println(e.toString());
                 return StatusCode.GeneralError;
-            }
-            catch (IllegalAccessException e) {
+            } catch (IllegalAccessException e) {
                 // uh oh
                 System.err.println(e.toString());
                 return StatusCode.GeneralError;

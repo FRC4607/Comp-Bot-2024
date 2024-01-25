@@ -13,7 +13,7 @@ public class Shoot extends Command {
 
     }
 
-    public void StopShooting() {
+    private void retract() {
 
     }
 }

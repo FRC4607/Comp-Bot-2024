@@ -6,9 +6,9 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class StopIntake extends Command {
-  /** Creates a new StopIntake. */
-  public StopIntake() {
+public class ExtendToTrap extends Command {
+  /** Creates a new ExtendToTrap. */
+  public ExtendToTrap() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 

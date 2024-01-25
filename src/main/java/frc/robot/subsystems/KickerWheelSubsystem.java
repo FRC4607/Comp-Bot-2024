@@ -21,8 +21,8 @@ public class KickerWheelSubsystem extends SubsystemBase {
     /** Creates a new KickerWheelSubsystem. */
     public KickerWheelSubsystem() {
         m_kicker = new CANSparkMax(KickerWheelConstants.kCANId, MotorType.kBrushless);
-        m_encoder = m_kicker.getEncoder();
         m_kicker.restoreFactoryDefaults();
+        m_encoder = m_kicker.getEncoder();
     }
 
     public void setKicker(double speed) {

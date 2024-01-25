@@ -24,7 +24,6 @@ public class SetIntakeOpenLoop extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void execute() {
-        System.out.println(m_power.getAsDouble());
         m_intake.setPower(m_power.getAsDouble());
     }
 

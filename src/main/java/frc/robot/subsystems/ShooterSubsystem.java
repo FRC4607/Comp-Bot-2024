@@ -4,64 +4,69 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.units.Angle;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Calibrations.ShooterCalibrations;
+import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
-import frc.robot.util.rev.CANSparkUtil;
 
 public class ShooterSubsystem extends SubsystemBase {
-    private final CANSparkFlex m_upper;
-    private final CANSparkFlex m_lower;
+    private final TalonFX m_upper;
+    private final TalonFX m_lower;
 
-    private final SparkPIDController m_uPID;
-    private final SparkPIDController m_lPID;
+    private final StatusSignal<Double> m_upperVel;
+    private final StatusSignal<Double> m_lowerVel;
 
-    private final RelativeEncoder m_uEnc;
-    private final RelativeEncoder m_lEnc;
+    private final VelocityTorqueCurrentFOC m_req;
 
     private final DoubleLogEntry m_uVelLog = new DoubleLogEntry(DataLogManager.getLog(), "shooter/upper_vel");
     private final DoubleLogEntry m_lVelLog = new DoubleLogEntry(DataLogManager.getLog(), "shooter/lower_vel");
 
     /** Creates a new ShooterSubsystem. */
     public ShooterSubsystem() {
-        m_upper = new CANSparkFlex(ShooterConstants.kUpperCANId, MotorType.kBrushless);
-        m_lower = new CANSparkFlex(ShooterConstants.kLowerCANId, MotorType.kBrushless);
+        m_upper = new TalonFX(ShooterConstants.kUpperCANId);
+        m_lower = new TalonFX(ShooterConstants.kLowerCANId);
 
-        m_lower.restoreFactoryDefaults();
-        m_upper.restoreFactoryDefaults();
+        TalonFXConfiguration config = new TalonFXConfiguration();
 
-        m_upper.setInverted(true);
-        m_lower.setInverted(false);
+        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
-        CANSparkUtil.ConfigPIDCANSpark(ShooterCalibrations.kP, ShooterCalibrations.kI, ShooterCalibrations.kD, ShooterCalibrations.kFF, m_lower);
-        CANSparkUtil.ConfigPIDCANSpark(ShooterCalibrations.kP, ShooterCalibrations.kI, ShooterCalibrations.kD, ShooterCalibrations.kFF, m_upper);
+        config.MotorOutput.Inverted = Constants.ShooterConstants.kInvertUpper ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        m_upper.getConfigurator().apply(config);
+        config.MotorOutput.Inverted = Constants.ShooterConstants.kInvertLower ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        m_lower.getConfigurator().apply(config);
 
-        m_uPID = m_upper.getPIDController();
-        m_lPID = m_lower.getPIDController();
+        m_upperVel = m_upper.getVelocity();
+        m_lowerVel = m_lower.getVelocity();
 
-        m_uEnc = m_upper.getEncoder();
-        m_lEnc = m_lower.getEncoder();
+        m_req = new VelocityTorqueCurrentFOC(0);
     }
 
-    public void setSpeed(double speed) {
+    public void setSpeed(Measure<Velocity<Angle>> speed) {
         // System.out.println(speed);
-        m_uPID.setReference(speed, ControlType.kVelocity);
-        m_lPID.setReference(speed, ControlType.kVelocity);
+        m_upper.setControl(m_req.withVelocity(speed.in(Units.RotationsPerSecond)));
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Avg Shooter Speed", (m_uEnc.getVelocity() + m_lEnc.getVelocity()) / 2);
-        m_uVelLog.append(m_uEnc.getVelocity());
-        m_lVelLog.append(m_lEnc.getVelocity());
+        BaseStatusSignal.refreshAll(m_upperVel, m_lowerVel);
+        SmartDashboard.putNumber("Avg Shooter Speed", (m_upperVel.getValueAsDouble() + m_lowerVel.getValueAsDouble()) / 2);
+        m_uVelLog.append(m_upperVel.getValueAsDouble());
+        m_lVelLog.append(m_lowerVel.getValueAsDouble());
     }
 }

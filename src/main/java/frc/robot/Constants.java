@@ -60,18 +60,24 @@ public final class Constants {
     }
 
     public static final class ShooterConstants {
-        public static final int kUpperCANId = 56;
-        public static final int kLowerCANId = 55;
+        public static final int kUpperCANId = 5;
+        public static final int kLowerCANId = 4;
 
         public static final boolean kInvertUpper = false;
         public static final boolean kInvertLower = true;
     }
 
     public static final class KickerWheelConstants {
-        public static final int kCANId = 54;
+        public static final int kCANId = 14;
     }
-    
+
     public static final class IntakeConstants {
         public static final int kCANId = 12;
+    }
+
+    public static final class WristConstants {
+        public static final int kCANId = 15;
+        public static final double kRotorToSensor = 1.0;
+        public static final double kSensorToMechanism = (9 / 60) * (16 / 60) * (12 / 48);
     }
 }

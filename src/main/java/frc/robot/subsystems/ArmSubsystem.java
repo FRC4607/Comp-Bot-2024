@@ -9,11 +9,11 @@ public class ArmSubsystem extends SubsystemBase {
 
     }
     
-    public static void setArmSetpoint() {
+    public void setArmSetpoint() {
 
     }
 
-    public static void setArmPower() {
+    public void setArmPower() {
         
     }
 

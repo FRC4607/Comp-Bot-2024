@@ -8,11 +8,11 @@ public class WristSubsystem extends SubsystemBase {
 
     }
 
-    public static void setWristSetpoint() {
+    public void setWristSetpoint() {
 
     }
 
-    public static void setWristPower() {
+    public void setWristPower() {
 
     }
 

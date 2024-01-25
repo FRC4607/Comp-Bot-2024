@@ -8,15 +8,15 @@ public class ClimberSubsystem extends SubsystemBase {
 
     }
 
-    public static void setLeftClimberSetpoint() {
+    public void setLeftClimberSetpoint() {
 
     }
 
-    public static void setRightClimberSetpoint() {
+    public void setRightClimberSetpoint() {
 
     }
 
-    public static void setClimberPower() {
+    public void setClimberPower() {
 
     }
 

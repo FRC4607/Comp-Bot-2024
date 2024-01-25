@@ -8,7 +8,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     }
 
-    public static void setIntakePower() {
+    public void setIntakePower() {
         
     }
 }

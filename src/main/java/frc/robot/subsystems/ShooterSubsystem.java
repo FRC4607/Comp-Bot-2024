@@ -8,11 +8,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
     }
 
-    public static void setShooterRPMSetpoint() {
+    public void setShooterRPMSetpoint() {
 
     }
     
-    public static void setShooterPower() {
+    public void setShooterPower() {
 
     }
 

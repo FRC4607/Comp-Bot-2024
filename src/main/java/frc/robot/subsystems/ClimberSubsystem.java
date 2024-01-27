@@ -23,18 +23,18 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the setpoint of the right climber to be used by PID control.
+     * Sets the setpoint (Inches) of the right climber to be used by PID control.
      * 
-     * @param newRightClimberSetpoint The new setpoint which will upate the old one.
+     * @param newRightClimberSetpoint The new setpoint (inches) which will upate the old one.
      */
     public void setRightClimberSetpoint(double newRightClimberSetpoint) {
 
     }
 
     /**
-     * Sets the power available to be used by the climbers.
+     * Sets the max power available to be used by the climbers.
      * 
-     * @param newClimberPowerCoefficient The new coefficient which will update the old one.
+     * @param newClimberPowerCoefficient The new value which will be multiplied by the amp limits of each motor.
      */
     public void setClimberPower(double newClimberPowerCoefficient) {
 
@@ -42,7 +42,7 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     /**
-     * gets the position of the left climber
+     * gets the position of the left climber in inches
      * 
      * @return left climber length in inches
      */
@@ -53,7 +53,7 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     /**
-     * gets the position of the right climber
+     * gets the position of the right climber in inches
      * 
      * @return right climber length in inches
      */

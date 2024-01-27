@@ -15,7 +15,7 @@ public class WristSubsystem extends SubsystemBase {
     /**
      * Sets the setpoint of the wrist in degrees.
      * 
-     * @param newWristSetpoint The new value which updates the old one.
+     * @param newWristSetpoint The new setpoint for the wrist (degrees)
      */
     public void setWristSetpoint(double newWristSetpoint) {
 
@@ -25,7 +25,7 @@ public class WristSubsystem extends SubsystemBase {
     /**
      * sets the max power that can be used by the wrist.
      * 
-     * @param newWristPowerCoefficient The new value which updates the old one.
+     * @param newWristPowerCoefficient The new value which will be multiplied by the amp limits of each motor.
      */
     public void setWristPower(double newWristPowerCoefficient) {
 

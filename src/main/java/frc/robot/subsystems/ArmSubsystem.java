@@ -13,19 +13,18 @@ public class ArmSubsystem extends SubsystemBase {
     }
     
     /**
-     * Sets the setpoint for the arm to use with PID control.
+     * Sets the setpoint (degrees) for the arm to use with PID control.
      * 
-     * @param armSetpoint the current setpoint which will be updated.
-     * @param newArmSetpoint The new setpoint which updates the old one.
+     * @param newArmSetpoint The new setpoint (degrees) which updates the old one.
      */
     public static void setArmSetpoint(double newArmSetpoint) {
         double armSetpoint = newArmSetpoint;
     }
 
     /**
-     * Sets the maximum amount of power that can be used by the motor(s) on the arm.
+     * Sets the maximum amount of power that can be used by the arm.
      * 
-     * @param newArmPowerCoefficient The amount of power (scaled 0 - 1) that will be multiplied by the amp limits on the motors.
+     * @param newArmPowerCoefficient The new value which will be multiplied by the amp limits of each motor.
      */
     public void setArmPower(double newArmPowerCoefficient) {
         double armPowerCoefficient = newArmPowerCoefficient;

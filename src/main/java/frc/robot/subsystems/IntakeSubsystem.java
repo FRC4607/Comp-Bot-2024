@@ -13,12 +13,34 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the maximum power to be used by the intake
+     * Sets the setpoint (RPM) for the arm to use with PID control.
      * 
-     * @param newIntakePowerCoefficient the new value which upates the old one
+     * @param newIntakeRMPSetpoint The new setpoint (RPM) which updates the old one.
+     */
+    public void setIntakeRPMSetpoint(double newIntakeRMPSetpoint) {
+
+        double intakeRPMSetpoint = newIntakeRMPSetpoint;
+
+    }
+
+    /**
+     * Sets the max power to be used by the intake motors.
+     * 
+     * @param newIntakePowerCoefficient The new value which will be multiplied by the amp limits of each motor.
      */
     public void setIntakePower(double newIntakePowerCoefficient) {
         
         double intakePowerCoefficient = newIntakePowerCoefficient;
+    }
+
+    /**
+     * Returns the intake velocity in RPMs.
+     * 
+     * @return the intake velocity in RPMs.
+     */
+    public double intakeRPM() {
+
+        //Will need more variables once encoders are programmed
+        return 0.0;
     }
 }

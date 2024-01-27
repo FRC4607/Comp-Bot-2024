@@ -16,7 +16,6 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -55,6 +54,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
     }
 
+    /**
+     * Configures PathPlanner's auto builder.
+     */
     private void configPathPlanner() {
         AutoBuilder.configureHolonomic(
                 () -> {
@@ -95,23 +97,19 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
 
+    /**
+     * Creates a command that applies a given request every loop.
+     * @param requestSupplier A function that returns the request to apply.
+     * @return A command that applies the request returned by the function every loop.
+     */
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
-    // Code to fix pathplanner replanning courtesy Andy Gasser of 7028
-    // See https://github.com/CrossTheRoadElec/Phoenix6-Examples/issues/27
-    @Override
-    public void seedFieldRelative(Pose2d location) {
-        m_stateLock.writeLock().lock();
-        try {
-            m_cachedState.Pose = location; // Workaround: update cached state
-            super.seedFieldRelative(location);
-        } finally {
-            m_stateLock.writeLock().unlock();
-        }
-    }
-
+    /**
+     * Creates an instance of this class with proper configuration values.
+     * @return An instance of this class that has been properly configured.
+     */
     public static CommandSwerveDrivetrain getInstance() {
         SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
                 .withPigeon2Id(Constants.DrivetrainConstants.kPigeonId)

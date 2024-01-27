@@ -9,6 +9,9 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeSubsystem;
 
+/**
+ * Sets the intake using open loop control.
+ */
 public class SetIntakeOpenLoop extends Command {
     private final IntakeSubsystem m_intake;
     private final DoubleSupplier m_power;

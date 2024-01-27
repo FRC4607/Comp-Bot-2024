@@ -6,25 +6,23 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.units.Angle;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.WristSubsystem;
 
+/**
+ * Command that allows setting the position of the wrist manually.
+ */
 public class ManualWristControl extends Command {
-  private final DoubleSupplier m_upTrigger;
-  private final DoubleSupplier m_downTrigger;
+  private final DoubleSupplier m_value;
 
   private final WristSubsystem m_subsystem;
 
-  private Measure<Angle> targetAngle;
+  private double targetAngle;
 
-  private static final double SCALE = 1.0 / 2.0;
+  private static final double SCALE = 1.0 / 2.0 * 360.0;
   /** Creates a new ManualWristControl. */
-  public ManualWristControl(DoubleSupplier up, DoubleSupplier down, WristSubsystem subsystem) {
-    m_upTrigger = up;
-    m_downTrigger = down;
+  public ManualWristControl(DoubleSupplier value, WristSubsystem subsystem) {
+    m_value = value;
     m_subsystem = subsystem;
     addRequirements(subsystem);
   }
@@ -38,8 +36,8 @@ public class ManualWristControl extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double addRotations = SCALE * (m_upTrigger.getAsDouble() - m_downTrigger.getAsDouble()) * 0.02;
-    targetAngle = targetAngle.plus(Units.Rotations.of(addRotations));
+    double addRotations = SCALE * m_value.getAsDouble() * 0.02;
+    targetAngle += addRotations;
     m_subsystem.setAngle(targetAngle);
   }
 

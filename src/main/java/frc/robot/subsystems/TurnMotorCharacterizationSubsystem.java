@@ -12,6 +12,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/**
+ * Subsystem used in tests involving the the turn motor of a swerve module.
+ */
 public class TurnMotorCharacterizationSubsystem extends SubsystemBase {
     private final TalonFX m_motor;
     private final CANcoder m_encoder;
@@ -36,16 +39,27 @@ public class TurnMotorCharacterizationSubsystem extends SubsystemBase {
         m_encoderPosition.setUpdateFrequency(1000);
         m_encoder.optimizeBusUtilization();
     }
-
+    
+    /**
+     * Sets the current going to the turn motor.
+     * @param amps The current to apply to the turn motor in Amps.
+     */
     public void setCurrent(double amps) {
         m_currentReq.Output = amps;
         m_motor.setControl(m_currentReq);
     }
 
+    /**
+     * Sets the turn motor to its neutral state (different than 0 amps).
+     */
     public void setNeutral() {
         m_motor.setControl(m_neutral);
     }
 
+    /**
+     * Gets the position of the turn motor.
+     * @return The position of the turn motor in rotations.
+     */
     public double getPosition() {
         return m_encoderPosition.waitForUpdate(0.02).getValueAsDouble();
     }

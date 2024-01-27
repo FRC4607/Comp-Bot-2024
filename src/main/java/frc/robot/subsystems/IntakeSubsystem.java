@@ -10,6 +10,9 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
+/**
+ * Subsystem for the intake.
+ */
 public class IntakeSubsystem extends SubsystemBase {
     private final CANSparkFlex m_motor;
 
@@ -20,6 +23,10 @@ public class IntakeSubsystem extends SubsystemBase {
         // m_motor.setSmartCurrentLimit(60, 20, 3000);
     }
 
+    /**
+     * Sets the open loop power of the intake motor.
+     * @param power The open loop output of the motor [-1, 1]
+     */
     public void setPower(double power) {
         m_motor.set(power);
     }

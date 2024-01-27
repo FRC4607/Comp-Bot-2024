@@ -4,20 +4,22 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.units.Angle;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSubsystem;
 
+/**
+ * Sets the shooter to a given speed.
+ */
 public class SetShooterSpeed extends Command {
-    private final Measure<Velocity<Angle>> m_speed;
+    private final double m_speed;
     private final ShooterSubsystem m_subsystem;
 
-    /** Creates a new SetShooterSpeed. */
-    public SetShooterSpeed(Measure<Velocity<Angle>> speed, ShooterSubsystem subsystem) {
-        m_speed = speed;
+    /** Creates a new SetShooterSpeed. 
+     * @param speedRPM The speed to set the shooter to in rotations per minute.
+     * @param subsystem A reference to the shooter subsystem.
+    */
+    public SetShooterSpeed(double speedRPM, ShooterSubsystem subsystem) {
+        m_speed = speedRPM;
         m_subsystem = subsystem;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(m_subsystem);
@@ -32,7 +34,7 @@ public class SetShooterSpeed extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_subsystem.setSpeed(Units.RPM.zero());
+        m_subsystem.setSpeed(0);
     }
 
     // Returns true when the command should end.

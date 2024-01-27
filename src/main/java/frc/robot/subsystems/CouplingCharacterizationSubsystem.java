@@ -5,8 +5,12 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+/**
+ * Subsystem used in coupling characterization tests that includes two motors.
+ */
 public class CouplingCharacterizationSubsystem extends TurnMotorCharacterizationSubsystem {
     private final TalonFX m_drive;
     private final StatusSignal<Double> m_drivePos;
@@ -23,14 +27,25 @@ public class CouplingCharacterizationSubsystem extends TurnMotorCharacterization
         m_drive.optimizeBusUtilization();
     }
 
+    /**
+     * Updates the signals in this object.
+     */
     public void updateSignals() {
         BaseStatusSignal.waitForAll(0.002, m_drivePos, m_encoderPosition);
     }
 
+    /**
+     * Gets the turn encoder's position
+     * @return The turn encoder's position in rotations, CCW positive from the top of the module down.
+     */
     public double getTurnPosition() {
         return m_encoderPosition.getValueAsDouble();
     }
 
+    /**
+     * Gets the drive encoder's position.
+     * @return The drive encoder's position in rotations at the motor, CCW positive when looking at the side of the motor with the rotor.
+     */
     public double getDrivePosition() {
         return m_drivePos.getValueAsDouble();
     }

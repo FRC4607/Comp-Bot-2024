@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.TurnMotorCharacterizationSubsystem;
 
+/**
+ * Command that determines the kS value for a turn motor.
+ */
 public class TurnMotorKSTest extends Command {
     private enum State {
         INIT("#000000"),

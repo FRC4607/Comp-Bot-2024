@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CouplingCharacterizationSubsystem;
 
+/**
+ * Command that tests the coupling ratio between the drive and turn motors.
+ */
 public class CouplingTest extends Command {
     private final CouplingCharacterizationSubsystem m_subsystem;
 

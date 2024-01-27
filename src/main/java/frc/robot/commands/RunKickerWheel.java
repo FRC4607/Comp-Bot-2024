@@ -5,14 +5,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.KickerWheelSubsystem;
+import frc.robot.subsystems.KickerSubsystem;
 
+/**
+ * Command that sets the kicker wheel to a given speed.
+ */
 public class RunKickerWheel extends Command {
     private final double m_speed;
-    private final KickerWheelSubsystem m_subsystem;
+    private final KickerSubsystem m_subsystem;
 
     /** Creates a new RunKickerWheel. */
-    public RunKickerWheel(double speed, KickerWheelSubsystem subsystem) {
+    public RunKickerWheel(double speed, KickerSubsystem subsystem) {
         m_subsystem = subsystem;
         m_speed = speed;
         // Use addRequirements() here to declare subsystem dependencies.

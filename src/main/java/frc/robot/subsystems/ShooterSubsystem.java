@@ -7,16 +7,13 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.units.Angle;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.Velocity;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,6 +21,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 
+/**
+ * Subsystem for the shooter on the robot.
+ */
 public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX m_upper;
     private final TalonFX m_lower;
@@ -32,6 +32,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final StatusSignal<Double> m_lowerVel;
 
     private final VelocityTorqueCurrentFOC m_req;
+    private final NeutralOut m_neutral;
 
     private final DoubleLogEntry m_uVelLog = new DoubleLogEntry(DataLogManager.getLog(), "shooter/upper_vel");
     private final DoubleLogEntry m_lVelLog = new DoubleLogEntry(DataLogManager.getLog(), "shooter/lower_vel");
@@ -46,6 +47,9 @@ public class ShooterSubsystem extends SubsystemBase {
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
+        config.Slot0.kS = 4.875;
+        config.Slot0.kP = 12.0;
+
         config.MotorOutput.Inverted = Constants.ShooterConstants.kInvertUpper ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
         m_upper.getConfigurator().apply(config);
         config.MotorOutput.Inverted = Constants.ShooterConstants.kInvertLower ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
@@ -55,11 +59,24 @@ public class ShooterSubsystem extends SubsystemBase {
         m_lowerVel = m_lower.getVelocity();
 
         m_req = new VelocityTorqueCurrentFOC(0);
+
+        m_neutral = new NeutralOut();
     }
 
-    public void setSpeed(Measure<Velocity<Angle>> speed) {
+    /**
+     * Sets the speed of the shooter.
+     * @param speed The speed to target in RPM.
+     */
+    public void setSpeed(double speed) {
         // System.out.println(speed);
-        m_upper.setControl(m_req.withVelocity(speed.in(Units.RotationsPerSecond)));
+        if (Double.compare(speed, 0.0) == 0) {
+            m_upper.setControl(m_neutral);
+            m_lower.setControl(m_neutral);
+        }
+        else {
+            m_upper.setControl(m_req.withVelocity(speed / 60.0));
+            m_lower.setControl(m_req.withVelocity(speed / 60.0));
+        }
     }
 
     @Override

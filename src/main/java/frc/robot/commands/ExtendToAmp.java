@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.ArmSubsystem;
 
 public class ExtendToAmp extends Command {
   /** Creates a new extendToAmp. */
@@ -14,7 +15,9 @@ public class ExtendToAmp extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    ArmSubsystem.setArmSetpoint(10.0);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override

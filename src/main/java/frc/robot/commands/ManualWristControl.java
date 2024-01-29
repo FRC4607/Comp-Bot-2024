@@ -36,14 +36,14 @@ public class ManualWristControl extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        targetAngle = m_subsystem.getAngle();
+        targetAngle = m_subsystem.getPIDSetpoint();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
         targetAngle += WristConstants.kWristManualDegreesPerSecond * m_value.getAsDouble() * 0.02;
-        m_subsystem.setAngle(targetAngle);
+        m_subsystem.setWristSetpoint(targetAngle);
     }
 
     // Called once the command ends or is interrupted.

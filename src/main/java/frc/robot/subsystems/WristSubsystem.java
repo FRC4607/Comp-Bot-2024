@@ -24,6 +24,8 @@ public class WristSubsystem extends SubsystemBase {
     private final RelativeEncoder m_encoder;
     private final SparkPIDController m_pid;
 
+    private double m_wristPowerCoefficient;
+
     /**
      * Creates a new WristSubsystem.
      */
@@ -33,36 +35,52 @@ public class WristSubsystem extends SubsystemBase {
         m_motor.restoreFactoryDefaults();
 
         m_encoder = m_motor.getEncoder();
-        m_encoder.setPositionConversionFactor((1 / (WristConstants.kRotorToSensor * WristConstants.kSensorToMechanism)) * 360.0);
+        m_encoder.setPositionConversionFactor(
+                (1 / (WristConstants.kRotorToSensor * WristConstants.kSensorToMechanism)) * 360.0);
 
         CANSparkUtil.ConfigPIDCANSpark(WristCalibrations.kP, WristCalibrations.kI, WristCalibrations.kD,
                 WristCalibrations.kFF, m_motor);
         m_pid = m_motor.getPIDController();
         m_pid.setOutputRange(-0.5, 0.5);
+
+        m_wristPowerCoefficient = 1.0;
     }
 
     /**
-     * Sets the angle of the wrist.
+     * Gets the current setpoint of the wrist's PID controller.
      * 
-     * @param theta The angle to target in degrees. Zero is pointing along the Z+
-     *              axis and +90deg is pointing along the X+ axis.
+     * @return The current setpoint of the wrist's PID controller in degrees.
      */
-    public void setAngle(double theta) {
-        m_setpoint = theta;
-        m_pid.setReference(theta, ControlType.kPosition, 0, 0, ArbFFUnits.kPercentOut);
-    }
-
-    /**
-     * Gets the angle of the wrist.
-     * 
-     * @return The angle of the wrist in degrees. Zero is pointing along the Z+ axis
-     *         and +90deg is pointing along the X+ axis.
-     */
-    public double getAngle() {
-        return m_encoder.getPosition();
-    }
-
     public double getPIDSetpoint() {
         return m_setpoint;
+    }
+
+    /**
+     * Sets the setpoint of the wrist in degrees.
+     * 
+     * @param newWristSetpoint The new setpoint for the wrist (degrees)
+     */
+    public void setWristSetpoint(double newWristSetpoint) {
+        m_setpoint = newWristSetpoint;
+        m_pid.setReference(newWristSetpoint, ControlType.kPosition, 0, 0, ArbFFUnits.kPercentOut);
+    }
+
+    /**
+     * sets the max power that can be used by the wrist.
+     * 
+     * @param newWristPowerCoefficient The new value which will be multiplied by the
+     *                                 amp limits of each motor.
+     */
+    public void setWristPower(double newWristPowerCoefficient) {
+        m_wristPowerCoefficient = newWristPowerCoefficient;
+    }
+
+    /**
+     * Gets the wrist position in degrees.
+     * 
+     * @return The wrist's position in degrees.
+     */
+    public double writstPosition() {
+        return m_encoder.getPosition();
     }
 }

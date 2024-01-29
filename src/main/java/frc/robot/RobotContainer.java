@@ -12,13 +12,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.BumpWrist;
-import frc.robot.commands.ManualWristControl;
 import frc.robot.commands.RunKickerWheel;
 import frc.robot.commands.SetShooterSpeed;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WristSubsystem;
-import frc.robot.commands.SetIntakeOpenLoop;
+import frc.robot.commands.RunIntake;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -45,7 +44,7 @@ public class RobotContainer {
     private final KickerSubsystem m_kicker = new KickerSubsystem();
 
     private void configureBindings() {
-        m_intake.setDefaultCommand(new SetIntakeOpenLoop(() -> {
+        m_intake.setDefaultCommand(new RunIntake(() -> {
             return joystick.getRightTriggerAxis() - joystick.getLeftTriggerAxis();
         }, m_intake));
         drivetrain.setDefaultCommand(

@@ -16,7 +16,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 // import edu.wpi.first.util.datalog.DoubleLogEntry;
 // import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Calibrations.ShooterCalibrations;
@@ -35,8 +34,12 @@ public class ShooterSubsystem extends SubsystemBase {
     private final VelocityTorqueCurrentFOC m_req;
     private final NeutralOut m_neutral;
 
-    // private final DoubleLogEntry m_uVelLog = new DoubleLogEntry(DataLogManager.getLog(), "shooter/upper_vel");
-    // private final DoubleLogEntry m_lVelLog = new DoubleLogEntry(DataLogManager.getLog(), "shooter/lower_vel");
+    private double m_shooterPowerCoefficient;
+
+    // private final DoubleLogEntry m_uVelLog = new
+    // DoubleLogEntry(DataLogManager.getLog(), "shooter/upper_vel");
+    // private final DoubleLogEntry m_lVelLog = new
+    // DoubleLogEntry(DataLogManager.getLog(), "shooter/lower_vel");
 
     /** Creates a new ShooterSubsystem. */
     public ShooterSubsystem() {
@@ -64,32 +67,60 @@ public class ShooterSubsystem extends SubsystemBase {
         m_req = new VelocityTorqueCurrentFOC(0);
 
         m_neutral = new NeutralOut();
-    }
 
-    /**
-     * Sets the speed of the shooter.
-     * 
-     * @param speed The speed to target in RPM.
-     */
-    public void setSpeed(double speed) {
-        // System.out.println(speed);
-        if (Double.compare(speed, 0.0) == 0) {
-            m_upper.setControl(m_neutral);
-            m_lower.setControl(m_neutral);
-        } else {
-            m_upper.setControl(m_req.withVelocity(speed / 60.0));
-            m_lower.setControl(m_req.withVelocity(speed / 60.0));
-        }
+        m_shooterPowerCoefficient = 1.0;
     }
 
     @Override
     public void periodic() {
         BaseStatusSignal.refreshAll(m_upperVel, m_lowerVel);
-        SmartDashboard.putNumber("Avg Shooter Speed",
-                (m_upperVel.getValueAsDouble() + m_lowerVel.getValueAsDouble()) / 2);
         // m_uVelLog.append(m_upperVel.getValueAsDouble()); // This function was causing
         // a ton of loop overruns at one point, so these lines are commented out, at
         // least for now.
         // m_lVelLog.append(m_lowerVel.getValueAsDouble());
+    }
+
+    /**
+     * Sets the RPM setpoint of the shooter to be used with PID control.
+     * 
+     * @param newShooterRPMsetpoint The new setpoint (RPM) which updates the old
+     *                              one.
+     */
+    public void setShooterRPMSetpoint(double newShooterRPMSetpoint) {
+        if (Double.compare(newShooterRPMSetpoint, 0.0) == 0) {
+            m_upper.setControl(m_neutral);
+            m_lower.setControl(m_neutral);
+        } else {
+            m_upper.setControl(m_req.withVelocity(newShooterRPMSetpoint / 60.0));
+            m_lower.setControl(m_req.withVelocity(newShooterRPMSetpoint / 60.0));
+        }
+    }
+
+    /**
+     * Sets the max power that the shooter can use.
+     * 
+     * @param newShooterPowerCoefficient The new value which will be multiplied by
+     *                                   the amp limits of each motor.
+     */
+    public void setShooterPower(double newShooterPowerCoefficient) {
+        m_shooterPowerCoefficient = newShooterPowerCoefficient;
+    }
+
+    /**
+     * Returns the current RPM of the upper shooter.
+     * 
+     * @return The current RPM of the upper shooter.
+     */
+    public double upperShooterRPM() {
+        return m_upperVel.getValueAsDouble();
+    }
+
+    /**
+     * Returns the current RPM of the lower shooter.
+     * 
+     * @return the current RPM of the lower hooter.
+     */
+    public double lowerShooterRPM() {
+        return m_upperVel.getValueAsDouble();
     }
 }

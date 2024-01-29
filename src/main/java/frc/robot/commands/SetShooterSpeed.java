@@ -30,13 +30,13 @@ public class SetShooterSpeed extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void execute() {
-        m_subsystem.setSpeed(m_speed);
+        m_subsystem.setShooterRPMSetpoint(m_speed);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_subsystem.setSpeed(0);
+        m_subsystem.setShooterRPMSetpoint(0);
     }
 
     // Returns true when the command should end.

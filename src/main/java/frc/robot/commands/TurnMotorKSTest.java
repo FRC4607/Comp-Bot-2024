@@ -39,6 +39,13 @@ public class TurnMotorKSTest extends Command {
     private final DoubleLogEntry m_log = new DoubleLogEntry(DataLogManager.getLog(), "Estimated Turn kS Value",
             "{\"unit\":\"A\"}");
 
+    /**
+     * Creates a new TurnMotorCharacterizationSubsystem.
+     * 
+     * @param subsystem The
+     *                  {@link frc.robot.subsystems.TurnMotorCharacterizationSubsystem}
+     *                  to perform the test on.
+     */
     public TurnMotorKSTest(TurnMotorCharacterizationSubsystem subsystem) {
         m_motor = subsystem;
         addRequirements(subsystem);

@@ -10,6 +10,10 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * A {@link com.ctre.phoenix6.mechanisms.swerve.SwerveRequest} for tuning the
+ * PID coefficients of the drive motors on a CTRE swerve drive.
+ */
 public class TuneDrivePIDRequest implements SwerveRequest {
     private boolean configChanged = false;
     private final Slot0Configs m_config = new Slot0Configs().withKS(2.447242424);

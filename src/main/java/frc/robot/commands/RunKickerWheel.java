@@ -14,7 +14,11 @@ public class RunKickerWheel extends Command {
     private final double m_speed;
     private final KickerSubsystem m_subsystem;
 
-    /** Creates a new RunKickerWheel. */
+    /**
+     * Creates a new RunKickerWheel.
+     * 
+     * @param speed The open loop speed to run the kicker at in the range [-1, 1].
+     */
     public RunKickerWheel(double speed, KickerSubsystem subsystem) {
         m_subsystem = subsystem;
         m_speed = speed;

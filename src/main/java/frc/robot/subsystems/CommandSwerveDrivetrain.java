@@ -26,8 +26,7 @@ import frc.robot.Constants;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
- * subsystem
- * so it can be used in command-based projects easily.
+ * Subsystem so it can be used in command-based projects easily.
  */
 public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
     private static final double kSimLoopPeriod = 0.005; // 5 ms
@@ -99,8 +98,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     /**
      * Creates a command that applies a given request every loop.
+     * 
      * @param requestSupplier A function that returns the request to apply.
-     * @return A command that applies the request returned by the function every loop.
+     * @return A command that applies the request returned by the function every
+     *         loop.
      */
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
@@ -108,6 +109,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     /**
      * Creates an instance of this class with proper configuration values.
+     * 
      * @return An instance of this class that has been properly configured.
      */
     public static CommandSwerveDrivetrain getInstance() {

@@ -5,7 +5,6 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 /**
@@ -15,6 +14,16 @@ public class CouplingCharacterizationSubsystem extends TurnMotorCharacterization
     private final TalonFX m_drive;
     private final StatusSignal<Double> m_drivePos;
 
+    /**
+     * Creates a new CouplingCharacterizationSubsystem.
+     * 
+     * @param turnid  The CAN id of the turn motor. Must be on the same CAN bus as
+     *                the drive motor. Must be a TalonFX.
+     * @param driveid The CAN id of the drive motor. Must be on the same CAN bus as
+     *                the turn motor. Must be a TalonFX.
+     * @param canbus  The name of the CAN bus the turn and drive motors are on. If
+     *                attached to the RoboRIO, specify "rio".
+     */
     public CouplingCharacterizationSubsystem(int turnid, int driveid, String canbus) {
         super(turnid, canbus);
         m_currentReq.MaxAbsDutyCycle = 0.05;
@@ -36,7 +45,9 @@ public class CouplingCharacterizationSubsystem extends TurnMotorCharacterization
 
     /**
      * Gets the turn encoder's position
-     * @return The turn encoder's position in rotations, CCW positive from the top of the module down.
+     * 
+     * @return The turn encoder's position in rotations, CCW positive from the top
+     *         of the module down.
      */
     public double getTurnPosition() {
         return m_encoderPosition.getValueAsDouble();
@@ -44,7 +55,9 @@ public class CouplingCharacterizationSubsystem extends TurnMotorCharacterization
 
     /**
      * Gets the drive encoder's position.
-     * @return The drive encoder's position in rotations at the motor, CCW positive when looking at the side of the motor with the rotor.
+     * 
+     * @return The drive encoder's position in rotations at the motor, CCW positive
+     *         when looking at the side of the motor with the rotor.
      */
     public double getDrivePosition() {
         return m_drivePos.getValueAsDouble();

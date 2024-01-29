@@ -20,11 +20,13 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem() {
         m_motor = new CANSparkFlex(IntakeConstants.kCANId, MotorType.kBrushless);
         m_motor.restoreFactoryDefaults();
-        // m_motor.setSmartCurrentLimit(60, 20, 3000);
+        m_motor.setInverted(IntakeConstants.kInverted);
+        m_motor.setSmartCurrentLimit(60, 20, 3000);
     }
 
     /**
      * Sets the open loop power of the intake motor.
+     * 
      * @param power The open loop output of the motor [-1, 1]
      */
     public void setPower(double power) {

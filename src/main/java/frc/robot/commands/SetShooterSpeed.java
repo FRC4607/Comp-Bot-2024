@@ -14,10 +14,12 @@ public class SetShooterSpeed extends Command {
     private final double m_speed;
     private final ShooterSubsystem m_subsystem;
 
-    /** Creates a new SetShooterSpeed. 
-     * @param speedRPM The speed to set the shooter to in rotations per minute.
+    /**
+     * Creates a new SetShooterSpeed.
+     * 
+     * @param speedRPM  The speed to set the shooter to in rotations per minute.
      * @param subsystem A reference to the shooter subsystem.
-    */
+     */
     public SetShooterSpeed(double speedRPM, ShooterSubsystem subsystem) {
         m_speed = speedRPM;
         m_subsystem = subsystem;

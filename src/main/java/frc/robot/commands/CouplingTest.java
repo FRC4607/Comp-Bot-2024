@@ -19,6 +19,13 @@ public class CouplingTest extends Command {
 
     private final DoubleLogEntry m_log = new DoubleLogEntry(DataLogManager.getLog(), "Coupling Test Result");
 
+    /**
+     * Creates a new CouplingTest.
+     * 
+     * @param subsystem A reference to the
+     *                  {@link frc.robot.subsystems.CouplingCharacterizationSubsystem}
+     *                  to run the test on.
+     */
     public CouplingTest(CouplingCharacterizationSubsystem subsystem) {
         m_subsystem = subsystem;
         addRequirements(m_subsystem);

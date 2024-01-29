@@ -16,7 +16,11 @@ public class SetIntakeOpenLoop extends Command {
     private final IntakeSubsystem m_intake;
     private final DoubleSupplier m_power;
 
-    /** Creates a new SetIntakeOpenLoop. */
+    /**
+     * Creates a new SetIntakeOpenLoop.
+     * 
+     * @param speed The open loop speed to run the kicker at in the range [-1, 1].
+     */
     public SetIntakeOpenLoop(DoubleSupplier power, IntakeSubsystem intake) {
         m_power = power;
         m_intake = intake;

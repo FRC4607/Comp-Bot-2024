@@ -24,6 +24,13 @@ public class TurnMotorCharacterizationSubsystem extends SubsystemBase {
 
     final StatusSignal<Double> m_encoderPosition;
 
+    /**
+     * Creates a new TurnMotorCharacterizationSubsystem.
+     * 
+     * @param id     The CAN id of the turn motor. Must be a TalonFX.
+     * @param canbus The name of the CAN bus the turn and drive motors are on. If
+     *               attached to the RoboRIO, specify "rio".
+     */
     public TurnMotorCharacterizationSubsystem(int id, String canbus) {
         m_motor = new TalonFX(id, canbus);
         m_motor.getConfigurator().apply(new TalonFXConfiguration()
@@ -39,9 +46,10 @@ public class TurnMotorCharacterizationSubsystem extends SubsystemBase {
         m_encoderPosition.setUpdateFrequency(1000);
         m_encoder.optimizeBusUtilization();
     }
-    
+
     /**
      * Sets the current going to the turn motor.
+     * 
      * @param amps The current to apply to the turn motor in Amps.
      */
     public void setCurrent(double amps) {
@@ -58,6 +66,7 @@ public class TurnMotorCharacterizationSubsystem extends SubsystemBase {
 
     /**
      * Gets the position of the turn motor.
+     * 
      * @return The position of the turn motor in rotations.
      */
     public double getPosition() {

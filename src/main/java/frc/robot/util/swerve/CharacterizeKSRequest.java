@@ -13,6 +13,10 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * A {@link com.ctre.phoenix6.mechanisms.swerve.SwerveRequest} for
+ * characterizing the kS value of a drive motor on a swerve drive.
+ */
 public class CharacterizeKSRequest implements SwerveRequest {
     private static final SwerveModuleState ZERO_STATE = new SwerveModuleState();
 

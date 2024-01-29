@@ -30,6 +30,7 @@ public class KickerSubsystem extends SubsystemBase {
 
     /**
      * Sets the open loop speed of the kicker motor.
+     * 
      * @param speed The open loop speed to set the kicker to, [-1, 1].
      */
     public void setKicker(double speed) {

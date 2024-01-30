@@ -31,12 +31,14 @@ public class SetShooterSpeed extends Command {
     @Override
     public void execute() {
         m_subsystem.setShooterRPMSetpoint(m_speed);
+        m_subsystem.isRunning = true;
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         m_subsystem.setShooterRPMSetpoint(0);
+        m_subsystem.isRunning = false;
     }
 
     // Returns true when the command should end.

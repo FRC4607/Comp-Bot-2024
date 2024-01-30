@@ -32,12 +32,14 @@ public class RunIntake extends Command {
     @Override
     public void execute() {
         m_intake.setOpenLoopOutput(m_power.getAsDouble());
+        m_intake.isRunning = true;
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         m_intake.setOpenLoopOutput(0);
+        m_intake.isRunning = false;
     }
 
     // Returns true when the command should end.

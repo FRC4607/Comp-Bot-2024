@@ -5,16 +5,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.ClimberSubsystem;
 
 public class LowerRobot extends Command {
+  
+  ClimberSubsystem m_subsystem;
   /** Creates a new LowerRobot. */
-  public LowerRobot() {
+  public LowerRobot(ClimberSubsystem subsystem) {
+    m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_subsystem.isRunning = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -5,16 +5,23 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.KickerSubsystem;
 
 public class DropGamePiece extends Command {
+
+  KickerSubsystem m_subsystem;
+
   /** Creates a new dropGamePiece. */
-  public DropGamePiece() {
+  public DropGamePiece(KickerSubsystem subsystem) {
+    m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_subsystem.isRunning = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -25,6 +32,7 @@ public class DropGamePiece extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_subsystem.isRunning = false;
   }
 
   // Returns true when the command should end.

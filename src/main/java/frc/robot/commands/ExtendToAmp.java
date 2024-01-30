@@ -8,15 +8,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmSubsystem;
 
 public class ExtendToAmp extends Command {
+
+  ArmSubsystem m_subsystem;
+
   /** Creates a new extendToAmp. */
-  public ExtendToAmp() {
+  public ExtendToAmp(ArmSubsystem subsystem) {
+    m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     ArmSubsystem.setArmSetpoint(10.0);
+    m_subsystem.m_isRunning = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -27,6 +33,7 @@ public class ExtendToAmp extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_subsystem.m_isRunning = false;
   }
 
   // Returns true when the command should end.

@@ -37,6 +37,7 @@ public class ManualWristControl extends Command {
     @Override
     public void initialize() {
         targetAngle = m_subsystem.getPIDSetpoint();
+        m_subsystem.isRunning = true;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -49,6 +50,7 @@ public class ManualWristControl extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        m_subsystem.isRunning = false;
     }
 
     // Returns true when the command should end.

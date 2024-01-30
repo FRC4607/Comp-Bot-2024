@@ -36,6 +36,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private double m_shooterPowerCoefficient;
 
+    public boolean isRunning = false;
+
     // private final DoubleLogEntry m_uVelLog = new
     // DoubleLogEntry(DataLogManager.getLog(), "shooter/upper_vel");
     // private final DoubleLogEntry m_lVelLog = new

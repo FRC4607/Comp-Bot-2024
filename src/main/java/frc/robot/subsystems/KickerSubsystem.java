@@ -21,6 +21,8 @@ public class KickerSubsystem extends SubsystemBase {
     private final RelativeEncoder m_encoder;
     private final DoubleLogEntry m_velocityLog = new DoubleLogEntry(DataLogManager.getLog(), "kicker/velocity");
 
+    public boolean isRunning = false;
+
     /** Creates a new KickerSubsystem. */
     public KickerSubsystem() {
         m_kicker = new CANSparkMax(KickerWheelConstants.kCANId, MotorType.kBrushless);

@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimberSubsystem extends SubsystemBase {
 
+    public boolean isRunning = false;
     /**
      * The subsystem which contains all motors/sensors/encoers on the robot
      * climbers.

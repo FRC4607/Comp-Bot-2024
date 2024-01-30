@@ -26,6 +26,8 @@ public class WristSubsystem extends SubsystemBase {
 
     private double m_wristPowerCoefficient;
 
+    public boolean isRunning = false;
+
     /**
      * Creates a new WristSubsystem.
      */

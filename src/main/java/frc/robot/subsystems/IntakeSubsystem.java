@@ -23,6 +23,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private double m_intakePowerCoefficient;
 
+    public boolean isRunning = false;
+
     /** Creates a new IntakeSubsystem. */
     public IntakeSubsystem() {
         m_motor = new CANSparkFlex(IntakeConstants.kCANId, MotorType.kBrushless);

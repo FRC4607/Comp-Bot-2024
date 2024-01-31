@@ -21,7 +21,7 @@ public class ExtendToTrap extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.m_isRunning = true;
+    m_subsystem.isRunning = true;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -32,7 +32,7 @@ public class ExtendToTrap extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_subsystem.m_isRunning = false;
+    m_subsystem.isRunning = false;
   }
 
   // Returns true when the command should end.

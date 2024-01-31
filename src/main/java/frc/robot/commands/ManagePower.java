@@ -24,7 +24,7 @@ public class ManagePower extends Command {
   private int m_value;
 
   /** Creates a new ManagePower. */
-  public ManagePower(ClimberSubsystem climberSubsystem) {
+  public ManagePower() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 

@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ArmSubsystem extends SubsystemBase {
 
-    public boolean m_isRunning = false;
+    public boolean isRunning = false;
 
     /**
      * The subsystem which contains all the motors/encoders/sensors on the arm of

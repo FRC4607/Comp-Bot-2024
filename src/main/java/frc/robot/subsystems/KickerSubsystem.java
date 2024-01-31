@@ -23,6 +23,8 @@ public class KickerSubsystem extends SubsystemBase {
 
     public boolean isRunning = false;
 
+    private double m_kickerPowerCoefficient;
+
     /** Creates a new KickerSubsystem. */
     public KickerSubsystem() {
         m_kicker = new CANSparkMax(KickerWheelConstants.kCANId, MotorType.kBrushless);
@@ -42,5 +44,10 @@ public class KickerSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         m_velocityLog.append(m_encoder.getVelocity());
+    }
+
+    public void setKickerPower(double newKickerPowerCoefficient) {
+
+        m_kickerPowerCoefficient = newKickerPowerCoefficient;
     }
 }

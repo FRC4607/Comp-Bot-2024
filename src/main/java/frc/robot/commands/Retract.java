@@ -26,7 +26,7 @@ public class Retract extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_armSubsystem.m_isRunning = true;
+    m_armSubsystem.isRunning = true;
     m_climberSubsystem.isRunning = true;
     m_wristSubsystem.isRunning = true;
   }
@@ -39,7 +39,7 @@ public class Retract extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_armSubsystem.m_isRunning = false;
+    m_armSubsystem.isRunning = false;
     m_climberSubsystem.isRunning = false;
     m_wristSubsystem.isRunning = false;
   }

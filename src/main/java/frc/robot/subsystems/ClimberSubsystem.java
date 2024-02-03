@@ -5,10 +5,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ClimberSubsystem extends SubsystemBase {
 
     /**
-     * The subsystem which contains all motors/sensors/encoers on the robot climbers.
+     * The subsystem which contains all motors/sensors/encoers on the robot
+     * climbers.
      */
     public ClimberSubsystem() {
-
 
     }
 
@@ -25,7 +25,8 @@ public class ClimberSubsystem extends SubsystemBase {
     /**
      * Sets the setpoint (Inches) of the right climber to be used by PID control.
      * 
-     * @param newRightClimberSetpoint The new setpoint (inches) which will upate the old one.
+     * @param newRightClimberSetpoint The new setpoint (inches) which will upate the
+     *                                old one.
      */
     public void setRightClimberSetpoint(double newRightClimberSetpoint) {
 
@@ -34,7 +35,8 @@ public class ClimberSubsystem extends SubsystemBase {
     /**
      * Sets the max power available to be used by the climbers.
      * 
-     * @param newClimberPowerCoefficient The new value which will be multiplied by the amp limits of each motor.
+     * @param newClimberPowerCoefficient The new value which will be multiplied by
+     *                                   the amp limits of each motor.
      */
     public void setClimberPower(double newClimberPowerCoefficient) {
 
@@ -48,7 +50,7 @@ public class ClimberSubsystem extends SubsystemBase {
      */
     public double leftClimberPosition() {
 
-        //will need more variables once encoders are added
+        // will need more variables once encoders are added
         return 0.0;
     }
 
@@ -59,7 +61,7 @@ public class ClimberSubsystem extends SubsystemBase {
      */
     public double rightClimberPosition() {
 
-        //will need more variables once encoders are added
+        // will need more variables once encoders are added
         return 0.0;
     }
 }

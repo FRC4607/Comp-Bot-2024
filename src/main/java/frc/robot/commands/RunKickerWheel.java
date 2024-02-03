@@ -4,40 +4,38 @@
 
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.KickerSubsystem;
 
 /**
- * Sets the intake using open loop control.
+ * Command that sets the kicker wheel to a given speed.
  */
-public class RunIntake extends Command {
-    private final IntakeSubsystem m_intake;
-    private final DoubleSupplier m_power;
+public class RunKickerWheel extends Command {
+    private final double m_speed;
+    private final KickerSubsystem m_subsystem;
 
     /**
-     * Creates a new SetIntakeOpenLoop.
+     * Creates a new RunKickerWheel.
      * 
      * @param speed The open loop speed to run the kicker at in the range [-1, 1].
      */
-    public RunIntake(DoubleSupplier power, IntakeSubsystem intake) {
-        m_power = power;
-        m_intake = intake;
+    public RunKickerWheel(double speed, KickerSubsystem subsystem) {
+        m_subsystem = subsystem;
+        m_speed = speed;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(m_intake);
+        addRequirements(m_subsystem);
     }
 
     // Called when the command is initially scheduled.
     @Override
-    public void execute() {
-        m_intake.setOpenLoopOutput(m_power.getAsDouble());
+    public void initialize() {
+        m_subsystem.setKicker(m_speed);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_intake.setOpenLoopOutput(0);
+        m_subsystem.setKicker(0);
     }
 
     // Returns true when the command should end.

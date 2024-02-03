@@ -5,13 +5,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ArmSubsystem extends SubsystemBase {
 
     /**
-     * The subsystem which contains all the motors/encoders/sensors on the arm of the robot.
+     * The subsystem which contains all the motors/encoders/sensors on the arm of
+     * the robot.
      */
-    public ArmSubsystem () {
-
+    public ArmSubsystem() {
 
     }
-    
+
     /**
      * Sets the setpoint (degrees) for the arm to use with PID control.
      * 
@@ -24,12 +24,13 @@ public class ArmSubsystem extends SubsystemBase {
     /**
      * Sets the maximum amount of power that can be used by the arm.
      * 
-     * @param newArmPowerCoefficient The new value which will be multiplied by the amp limits of each motor.
+     * @param newArmPowerCoefficient The new value which will be multiplied by the
+     *                               amp limits of each motor.
      */
     public void setArmPower(double newArmPowerCoefficient) {
         double armPowerCoefficient = newArmPowerCoefficient;
     }
-    
+
     /**
      * Returns the arm position in degrees.
      * 
@@ -37,8 +38,7 @@ public class ArmSubsystem extends SubsystemBase {
      */
     public double armPosition() {
 
-        //more variables will be needed once encoders are programmed
+        // more variables will be needed once encoders are programmed
         return 0.0;
     }
 }
-

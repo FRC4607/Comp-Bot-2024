@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CouplingCharacterizationSubsystem;
 
+/**
+ * Command that tests the coupling ratio between the drive and turn motors.
+ */
 public class CouplingTest extends Command {
     private final CouplingCharacterizationSubsystem m_subsystem;
 
@@ -16,6 +19,13 @@ public class CouplingTest extends Command {
 
     private final DoubleLogEntry m_log = new DoubleLogEntry(DataLogManager.getLog(), "Coupling Test Result");
 
+    /**
+     * Creates a new CouplingTest.
+     * 
+     * @param subsystem A reference to the
+     *                  {@link frc.robot.subsystems.CouplingCharacterizationSubsystem}
+     *                  to run the test on.
+     */
     public CouplingTest(CouplingCharacterizationSubsystem subsystem) {
         m_subsystem = subsystem;
         addRequirements(m_subsystem);
@@ -35,12 +45,11 @@ public class CouplingTest extends Command {
         m_subsystem.updateSignals();
         double turn = m_subsystem.getTurnPosition() - m_turnOffset;
         double drive = m_subsystem.getDrivePosition() - m_driveOffset;
-        if (turn >= 1 && drive >= 1 ) {
+        if (turn >= 1 && drive >= 1) {
             if (m_backlashRemoved) {
-                m_log.append(drive/turn);
-                SmartDashboard.putNumber("Coupling Test Result", drive/turn);
-            }
-            else {
+                m_log.append(drive / turn);
+                SmartDashboard.putNumber("Coupling Test Result", drive / turn);
+            } else {
                 m_turnOffset = m_subsystem.getTurnPosition();
                 m_driveOffset = m_subsystem.getDrivePosition();
                 m_backlashRemoved = true;

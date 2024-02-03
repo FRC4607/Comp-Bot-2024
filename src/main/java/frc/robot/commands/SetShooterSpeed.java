@@ -4,40 +4,39 @@
 
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
 /**
- * Sets the intake using open loop control.
+ * Sets the shooter to a given speed.
  */
-public class RunIntake extends Command {
-    private final IntakeSubsystem m_intake;
-    private final DoubleSupplier m_power;
+public class SetShooterSpeed extends Command {
+    private final double m_speed;
+    private final ShooterSubsystem m_subsystem;
 
     /**
-     * Creates a new SetIntakeOpenLoop.
+     * Creates a new SetShooterSpeed.
      * 
-     * @param speed The open loop speed to run the kicker at in the range [-1, 1].
+     * @param speedRPM  The speed to set the shooter to in rotations per minute.
+     * @param subsystem A reference to the shooter subsystem.
      */
-    public RunIntake(DoubleSupplier power, IntakeSubsystem intake) {
-        m_power = power;
-        m_intake = intake;
+    public SetShooterSpeed(double speedRPM, ShooterSubsystem subsystem) {
+        m_speed = speedRPM;
+        m_subsystem = subsystem;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(m_intake);
+        addRequirements(m_subsystem);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void execute() {
-        m_intake.setOpenLoopOutput(m_power.getAsDouble());
+        m_subsystem.setShooterRPMSetpoint(m_speed);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_intake.setOpenLoopOutput(0);
+        m_subsystem.setShooterRPMSetpoint(0);
     }
 
     // Returns true when the command should end.

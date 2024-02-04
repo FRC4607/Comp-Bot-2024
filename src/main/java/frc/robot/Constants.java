@@ -126,4 +126,20 @@ public final class Constants {
         /** In manual control, the top speed of the wrist in degrees per second. */
         public static final double kWristManualDegreesPerSecond = 10.0;
     }
+
+    /** Constants for the arm. */
+    public static final class ArmConstants {
+        /** The CAN Id of the front (closest to intake) motor in the arm gearbox. */
+        public static final int kFrontCANId = 8;
+        /** The CAN Id of the rear (closest to battery) motor in the arm gearbox. */
+        public static final int kRearCANId = 7;
+        /** Whether or not to invert both motors. */
+        public static final boolean kInvertMotors = true;
+        /** The minimum angle (in rotations) the arm is allowed to go in reverse. SW limit only. */
+        public static final double kReverseSoftLimit = 0.0;
+        /** The ratio of motor rotations to encoder rotations. */
+        public static final double kRotorToSensor = 1.0;
+        /** The ratio of encoder rotations to wrist rotations. */
+        public static final double kSensorToMechanism = 60.19;
+    }
 }

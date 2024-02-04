@@ -25,13 +25,13 @@ public final class Calibrations {
          */
         public static final Slot0Configs kDriveGains = new Slot0Configs()
                 .withKP(7).withKI(0).withKD(0)
-                .withKS(2.447242424).withKV(0).withKA(0);
+                .withKS(7.75).withKV(0).withKA(0);
 
         /**
          * The maximum current that can be applied to the drive motor of a robot locked
          * in place before the wheels start to slip.
          */
-        public static final double kSlipCurrentA = 300;
+        public static final double kSlipCurrentA = 50;
 
         /**
          * The speed the robot would attain in meters per second if each of its drive
@@ -76,7 +76,7 @@ public final class Calibrations {
          * The kP constant of the wrist motor. In units of (fractional duty
          * cycle)/degree.
          */
-        public static final double kP = 0.008333;
+        public static final double kP = 0.01;
         /**
          * The kI constant of the wrist motor. In units of (fractional duty
          * cycle)/degree^2.
@@ -92,5 +92,20 @@ public final class Calibrations {
          * cycle.
          */
         public static final double kFF = 0.0;
+    }
+    /** Calibrations for the arm. */
+    public static final class ArmCalibrations {
+        /** The gravity constant for arm feedforward in Amps. */
+        public static final double kG = 25.0;
+        /** The static constant for arm feedforward in Amps. */
+        public static final double kS = 0.4375;
+        /** The proportional constant for arm feedback in A/rot. */
+        public static final double kP = 1400.0;
+        /** The derivative constant for arm ck in A/rot*sec. */
+        public static final double kD = 200.0;
+        /** The maximum speed the arm should acheieve in rot/sec.  */
+        public static final double kMaxSpeedMotionMagic = 0.5;
+        /** The maximum acceleration the arm should achieve in rot/sec^2. */
+        public static final double kMaxAccelerationMotionMagic = 0.5;
     }
 }

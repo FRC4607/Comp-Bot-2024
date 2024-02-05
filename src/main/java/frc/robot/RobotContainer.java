@@ -7,7 +7,10 @@ package frc.robot;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -43,6 +46,9 @@ public class RobotContainer {
 
     private final KickerSubsystem m_kicker = new KickerSubsystem();
 
+    private final SendableChooser<Command> m_autoChooser =AutoBuilder.buildAutoChooser();
+
+
     private void configureBindings() {
         m_intake.setDefaultCommand(new RunIntake(() -> {
             return joystick.getRightTriggerAxis() - joystick.getLeftTriggerAxis();
@@ -51,7 +57,7 @@ public class RobotContainer {
                 drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed)
                         .withRotationalRate(-joystick.getRightX() * MaxAngularRate)));
-        joystick.a().whileTrue(new SetShooterSpeed(5200, m_shooter));
+        joystick.a().onTrue(new SetShooterSpeed(5200, m_shooter)).onFalse(new SetShooterSpeed(0, m_shooter));
         joystick.b().whileTrue(new RunKickerWheel(-1.0, m_kicker));
         joystick.y().onTrue(new InstantCommand(drivetrain::seedFieldRelative, drivetrain));
         joystick.povUp().onTrue(new BumpWrist(1.0, m_wrist));
@@ -62,10 +68,11 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
+        SmartDashboard.putData(m_autoChooser);
     }
 
     public Command getAutonomousCommand() {
-        return new InstantCommand();
-        // return AutoBuilder.buildAuto("circle_auto");
+        // return new InstantCommand();
+        return m_autoChooser.getSelected();
     }
 }

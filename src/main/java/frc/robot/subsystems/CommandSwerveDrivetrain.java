@@ -12,6 +12,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackTy
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -20,9 +21,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Calibrations;
 import frc.robot.Constants;
+import frc.robot.commands.SetShooterSpeed;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -57,6 +60,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      * Configures PathPlanner's auto builder.
      */
     private void configPathPlanner() {
+        NamedCommands.registerCommand("SetShooterSpeed 5000", new InstantCommand());
+        NamedCommands.registerCommand("SetWristPosition 45", new InstantCommand());
+        NamedCommands.registerCommand("Shoot", new InstantCommand());
+        NamedCommands.registerCommand("RunIntake 20", new InstantCommand());
+        NamedCommands.registerCommand("Retract", new InstantCommand());
+        NamedCommands.registerCommand("RunIntake 0", new InstantCommand());
         AutoBuilder.configureHolonomic(
                 () -> {
                     return this.getState().Pose;
@@ -69,7 +78,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     this.setControl(m_autoSetter.withSpeeds(speeds));
                 },
                 new HolonomicPathFollowerConfig(
-                        new PIDConstants(10.0, 0.0, 0.0),
+                        new PIDConstants(20.0, 0.0, 0.0),
                         new PIDConstants(10.0, 0.0, 0.0),
                         Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps,
                         m_moduleLocations[0].getNorm(),
@@ -78,8 +87,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                 false),
                         1 / this.UpdateFrequency),
                 () -> false, // change
-                this);
-    }
+                this);        
+    }  
 
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();

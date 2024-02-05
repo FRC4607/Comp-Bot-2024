@@ -25,7 +25,7 @@ public final class Calibrations {
          */
         public static final Slot0Configs kDriveGains = new Slot0Configs()
                 .withKP(7).withKI(0).withKD(0)
-                .withKS(2.447242424).withKV(0).withKA(0);
+                .withKS(7.75).withKV(0).withKA(0);
 
         /**
          * The maximum current that can be applied to the drive motor of a robot locked

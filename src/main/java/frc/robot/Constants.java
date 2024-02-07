@@ -109,10 +109,14 @@ public final class Constants {
 
     /** Constants for the intake. */
     public static final class IntakeConstants {
-        /** The CAN Id of the intake motor controller. */
-        public static final int kCANId = 12;
-        /** Whether or not to invert the intake motor. */
-        public static final boolean kInverted = true;
+        /** The CAN Id of the roller motor controller. */
+        public static final int kRollerCANId = 12;
+        /** The CAN Id of the agitator motor controller. */
+        public static final int kAgitatorCANId = 9;
+        /** Whether or not to invert the roller motor. */
+        public static final boolean kRollerInverted = true;
+        /** Whether or not to invert the agitator motor. */
+        public static final boolean kAgitatorInverted = true;
     }
 
     /** Constants for the wrist. */

@@ -17,20 +17,29 @@ import frc.robot.Constants.IntakeConstants;
  * Subsystem for the intake.
  */
 public class IntakeSubsystem extends SubsystemBase {
-    private final CANSparkFlex m_motor;
-    private final SparkPIDController m_pid;
-    private final RelativeEncoder m_encoder;
+    private final CANSparkFlex m_rollerMotor;
+    private final SparkPIDController m_rollerPid;
+    private final RelativeEncoder m_rollerEncoder;
+    private final CANSparkFlex m_agitatorMotor;
+    private final SparkPIDController m_agitatorPid;
+    private final RelativeEncoder m_agitatorEncoder;
 
     private double m_intakePowerCoefficient;
 
     /** Creates a new IntakeSubsystem. */
     public IntakeSubsystem() {
-        m_motor = new CANSparkFlex(IntakeConstants.kCANId, MotorType.kBrushless);
-        m_motor.restoreFactoryDefaults();
-        m_motor.setInverted(IntakeConstants.kInverted);
-        m_motor.setSmartCurrentLimit(60, 20, 3000);
-        m_pid = m_motor.getPIDController();
-        m_encoder = m_motor.getEncoder();
+        m_rollerMotor = new CANSparkFlex(IntakeConstants.kRollerCANId, MotorType.kBrushless);
+        m_rollerMotor.restoreFactoryDefaults();
+        m_rollerMotor.setInverted(IntakeConstants.kRollerInverted);
+        m_rollerMotor.setSmartCurrentLimit(60, 20, 3000);
+        m_rollerPid = m_rollerMotor.getPIDController();
+        m_rollerEncoder = m_rollerMotor.getEncoder();
+        m_agitatorMotor = new CANSparkFlex(IntakeConstants.kAgitatorCANId, MotorType.kBrushless);
+        m_agitatorMotor.restoreFactoryDefaults();
+        m_agitatorMotor.setInverted(IntakeConstants.kAgitatorInverted);
+        m_agitatorMotor.setSmartCurrentLimit(60, 20, 3000);
+        m_agitatorPid = m_agitatorMotor.getPIDController();
+        m_agitatorEncoder = m_agitatorMotor.getEncoder();
         m_intakePowerCoefficient = 1.0;
     }
 
@@ -40,7 +49,8 @@ public class IntakeSubsystem extends SubsystemBase {
      * @param power The open loop output of the motor [-1, 1]
      */
     public void setOpenLoopOutput(double power) {
-        m_motor.set(power);
+        m_rollerMotor.set(power);
+        m_agitatorMotor.set(power);
     }
 
     /**
@@ -49,7 +59,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * @param newIntakeRMPSetpoint The new setpoint (RPM) which updates the old one.
      */
     public void setIntakeRPMSetpoint(double newIntakeRMPSetpoint) {
-        m_pid.setReference(newIntakeRMPSetpoint, ControlType.kVelocity);
+        m_rollerPid.setReference(newIntakeRMPSetpoint, ControlType.kVelocity);
     }
 
     /**
@@ -69,6 +79,6 @@ public class IntakeSubsystem extends SubsystemBase {
      * @return the intake velocity in RPMs.
      */
     public double intakeRPM() {
-        return m_encoder.getVelocity();
+        return m_rollerEncoder.getVelocity();
     }
 }

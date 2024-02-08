@@ -102,9 +102,13 @@ public final class Constants {
     }
 
     /** Constants for the kicker wheel. */
-    public static final class KickerWheelConstants {
+    public static final class KickerConstants {
         /** The CAN Id of the kicker wheel motor controller. */
         public static final int kCANId = 14;
+        /** The gear ratio (x input rotations : 1 output rotation) of the kicker motor to the kicker wheels. */
+        public static final double kKickerGearRatio = 5.0;
+        /** The diameter of the kickers in mm. */
+        public static final double kKickerDiameter = 24.5;
     }
 
     /** Constants for the intake. */
@@ -117,6 +121,14 @@ public final class Constants {
         public static final boolean kRollerInverted = true;
         /** Whether or not to invert the agitator motor. */
         public static final boolean kAgitatorInverted = true;
+        /** The gear ratio (x input rotations : 1 output rotation) of the roller motor to the rollers. */
+        public static final double kRollerGearRatio = 3.0;
+        /** The diameter of the rollers in mm. */
+        public static final double kRollerDiameter = 40.5;
+        /** The gear ratio (x input rotations : 1 output rotation) of the agitator motor to the agitators. */
+        public static final double kAgitatorGearRatio = 1.0;
+        /** The diameter of the rollers in mm. */
+        public static final double kAgitatorDiameter = 101.6;
     }
 
     /** Constants for the wrist. */

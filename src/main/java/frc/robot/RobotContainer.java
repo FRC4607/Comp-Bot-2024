@@ -21,6 +21,7 @@ import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.commands.RunIntake;
+import frc.robot.commands.RunIntakeSync;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -50,9 +51,9 @@ public class RobotContainer {
     private final KickerSubsystem m_kicker = new KickerSubsystem();
 
     private void configureBindings() {
-        m_intake.setDefaultCommand(new RunIntake(() -> {
+        m_kicker.setDefaultCommand(new RunIntakeSync(() -> {
             return joystick.getRightTriggerAxis() - joystick.getLeftTriggerAxis();
-        }, m_intake));
+        }, m_intake, m_kicker));
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed)

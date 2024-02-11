@@ -1,12 +1,16 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Calibrations.WristCalibrations;
@@ -19,24 +23,29 @@ import frc.robot.util.rev.CANSparkUtil;
 public class WristSubsystem extends SubsystemBase {
     private final CANSparkFlex m_motor;
 
-    private double m_setpoint = 0.0;
+    private double m_setpoint = 90.0;
 
     private final RelativeEncoder m_encoder;
     private final SparkPIDController m_pid;
+
+    private final DoubleSupplier m_armAngleSupplier;
 
     private double m_wristPowerCoefficient;
 
     /**
      * Creates a new WristSubsystem.
      */
-    public WristSubsystem() {
+    public WristSubsystem(DoubleSupplier armAngleSupplier) {
         m_motor = new CANSparkFlex(Constants.WristConstants.kCANId, MotorType.kBrushless);
 
         m_motor.restoreFactoryDefaults();
 
+        m_motor.setIdleMode(IdleMode.kBrake);
+
         m_encoder = m_motor.getEncoder();
         m_encoder.setPositionConversionFactor(
                 (1 / (WristConstants.kRotorToSensor * WristConstants.kSensorToMechanism)) * 360.0);
+        m_encoder.setPosition(90.0);
 
         CANSparkUtil.ConfigPIDCANSpark(WristCalibrations.kP, WristCalibrations.kI, WristCalibrations.kD,
                 WristCalibrations.kFF, m_motor);
@@ -44,6 +53,13 @@ public class WristSubsystem extends SubsystemBase {
         m_pid.setOutputRange(-0.5, 0.5);
 
         m_wristPowerCoefficient = 1.0;
+
+        m_armAngleSupplier = armAngleSupplier;
+    }
+
+    public void periodic() {
+        m_pid.setReference(m_setpoint - m_armAngleSupplier.getAsDouble(), ControlType.kPosition, 0, 0, ArbFFUnits.kPercentOut);
+        SmartDashboard.putNumber("Wrist Angle", m_setpoint);
     }
 
     /**
@@ -62,7 +78,6 @@ public class WristSubsystem extends SubsystemBase {
      */
     public void setWristSetpoint(double newWristSetpoint) {
         m_setpoint = newWristSetpoint;
-        m_pid.setReference(newWristSetpoint, ControlType.kPosition, 0, 0, ArbFFUnits.kPercentOut);
     }
 
     /**
@@ -75,12 +90,16 @@ public class WristSubsystem extends SubsystemBase {
         m_wristPowerCoefficient = newWristPowerCoefficient;
     }
 
+    public double getRawWristPosition() {
+        return m_encoder.getPosition();
+    }
+
     /**
      * Gets the wrist position in degrees.
      * 
      * @return The wrist's position in degrees.
      */
-    public double writstPosition() {
-        return m_encoder.getPosition();
+    public double getWristPosition() {
+        return getRawWristPosition() + m_armAngleSupplier.getAsDouble();
     }
 }

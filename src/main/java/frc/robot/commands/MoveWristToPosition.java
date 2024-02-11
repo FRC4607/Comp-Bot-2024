@@ -5,24 +5,29 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.WristSubsystem;
 
-public class ExtendToAmp extends Command {
-  /** Creates a new extendToAmp. */
-  public ExtendToAmp() {
-    // Use addRequirements() here to declare subsystem dependencies.
+public class MoveWristToPosition extends Command {
+  private final double m_position;
+  private final double m_tol;
+  private final WristSubsystem m_subsystem;
+  /** Creates a new MoveWristToPosition. */
+  public MoveWristToPosition(double position, double tol, WristSubsystem subsystem) {
+    m_position = position;
+    m_tol = tol;
+    m_subsystem = subsystem;
+    addRequirements(m_subsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // ArmSubsystem.setArmSetpoint(10.0);
+    m_subsystem.setWristSetpoint(m_position);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
@@ -32,6 +37,6 @@ public class ExtendToAmp extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return Math.abs(m_subsystem.getWristPosition() - m_position) < m_tol;
   }
 }

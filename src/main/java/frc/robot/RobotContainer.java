@@ -8,11 +8,12 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
 
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.BumpWrist;
 import frc.robot.commands.MoveArmToPosition;
 import frc.robot.commands.MoveWristToPosition;
 import frc.robot.commands.RunKickerWheel;
@@ -20,7 +21,6 @@ import frc.robot.commands.SetShooterSpeed;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WristSubsystem;
-import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunIntakeSync;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -60,11 +60,11 @@ public class RobotContainer {
                         .withRotationalRate(-joystick.getRightX() * MaxAngularRate)));
         joystick.a().whileTrue(new SetShooterSpeed(5200, m_shooter));
         joystick.b().whileTrue(new RunKickerWheel(-1.0, m_kicker));
-        joystick.x().whileTrue(new RunKickerWheel(1.0, m_kicker));
         joystick.y().onTrue(new InstantCommand(drivetrain::seedFieldRelative, drivetrain));
-        joystick.leftBumper().onTrue(new BumpWrist(-1.0, m_wrist));
-        joystick.rightBumper().onTrue(new BumpWrist(1.0, m_wrist));
-        joystick.povUp().onTrue(new MoveArmToPosition(90.0, 5.0, m_arm));
+        joystick.leftBumper().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 5.0, m_arm), new MoveWristToPosition(30.0, 5.0, m_wrist)));
+        joystick.rightBumper().onTrue(new MoveArmToPosition(5.0, 5.0, m_arm).andThen(new MoveWristToPosition(Preferences.getDouble("X Wrist", 110.0), 5.0, m_wrist)))
+                .onFalse(new ParallelCommandGroup(new SetShooterSpeed(5200, m_shooter).withTimeout(2.0),
+                        new WaitCommand(1.0).andThen(new RunKickerWheel(1.0, m_kicker).withTimeout(1.0))));
         joystick.povLeft().onTrue(new MoveArmToPosition(45.0, 5.0, m_arm));
         joystick.povRight().onTrue(new MoveArmToPosition(5.0, 5.0, m_arm));
         joystick.povDown().onTrue(new MoveWristToPosition(90.0, 5.0, m_wrist)
@@ -74,6 +74,7 @@ public class RobotContainer {
     }
 
     public RobotContainer() {
+        Preferences.initDouble("X Wrist", 110.0);
         configureBindings();
     }
 

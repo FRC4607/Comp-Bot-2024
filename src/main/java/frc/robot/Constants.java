@@ -118,7 +118,7 @@ public final class Constants {
         /** The CAN Id of the agitator motor controller. */
         public static final int kAgitatorCANId = 9;
         /** Whether or not to invert the roller motor. */
-        public static final boolean kRollerInverted = true;
+        public static final boolean kRollerInverted = false;
         /** Whether or not to invert the agitator motor. */
         public static final boolean kAgitatorInverted = true;
         /** The gear ratio (x input rotations : 1 output rotation) of the roller motor to the rollers. */
@@ -153,9 +153,11 @@ public final class Constants {
         public static final boolean kInvertMotors = true;
         /** The minimum angle (in rotations) the arm is allowed to go in reverse. SW limit only. */
         public static final double kReverseSoftLimit = 0.0;
-        /** The ratio of motor rotations to encoder rotations. */
-        public static final double kRotorToSensor = 1.0;
         /** The ratio of encoder rotations to wrist rotations. */
-        public static final double kSensorToMechanism = 60.19;
+        public static final double kSensorToMechanism = 60.0 / 37.0;
+        /** The ratio of motor rotations to encoder rotations. */
+        public static final double kRotorToSensor = 60.19 / kSensorToMechanism;
+		/** Whether or not to invert the encoder on the arm. */
+        public static final boolean kInvertEncoder = true;
     }
 }

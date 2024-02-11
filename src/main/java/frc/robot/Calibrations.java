@@ -107,6 +107,10 @@ public final class Calibrations {
         public static final double kMaxSpeedMotionMagic = 0.5;
         /** The maximum acceleration the arm should achieve in rot/sec^2. */
         public static final double kMaxAccelerationMotionMagic = 0.5;
+        /** The offset of the absolute encoder on the arm in rotations. */
+        public static final double kEncoderOffset = -0.75341796875;
+        /** The maximum amount of current each motor in the arm gearbox should be allowed to output. */
+        public static final double kMaxArmCurrentPerMotor = 40.0;;
     }
     /** Calibrations for the intake. */
     public static final class IntakeCalibrations {

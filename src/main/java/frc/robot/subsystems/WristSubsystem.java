@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Calibrations.WristCalibrations;
@@ -58,6 +59,7 @@ public class WristSubsystem extends SubsystemBase {
 
     public void periodic() {
         m_pid.setReference(m_setpoint - m_armAngleSupplier.getAsDouble(), ControlType.kPosition, 0, 0, ArbFFUnits.kPercentOut);
+        SmartDashboard.putNumber("Wrist Angle", m_setpoint);
     }
 
     /**

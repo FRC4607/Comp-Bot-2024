@@ -101,11 +101,11 @@ public final class Constants {
         public static final boolean kInvertLower = false;
     }
 
-    /** Constants for the kicker wheel. */
+    /** Constants for the kicker. */
     public static final class KickerConstants {
         /** The CAN Id of the kicker wheel motor controller. */
         public static final int kCANId = 14;
-        /** The gear ratio (x input rotations : 1 output rotation) of the kicker motor to the kicker wheels. */
+        /** The gear ratio (x input rotations : 1 output rotation) of the kicker motor to the kicker. */
         public static final double kKickerGearRatio = 5.0;
         /** The diameter of the kickers in mm. */
         public static final double kKickerDiameter = 24.5;
@@ -157,7 +157,7 @@ public final class Constants {
         public static final double kSensorToMechanism = 60.0 / 37.0;
         /** The ratio of motor rotations to encoder rotations. */
         public static final double kRotorToSensor = 60.19 / kSensorToMechanism;
-		/** Whether or not to invert the encoder on the arm. */
+        /** Whether or not to invert the encoder on the arm. */
         public static final boolean kInvertEncoder = true;
     }
 }

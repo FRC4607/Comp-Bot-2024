@@ -68,7 +68,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the setpoint (mm/s) for the arm to use with PID control.
+     * Sets the setpoint (mm/s) for the intake to use with PID control.
      * 
      * @param newIntakeRMPSetpoint The new setpoint (mm/s) which updates the old one.
      */
@@ -78,10 +78,10 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the max power to be used by the intake motors.
+     * Sets the max power to be used by the intake motor.
      * 
      * @param newIntakePowerCoefficient The new value which will be multiplied by
-     *                                  the amp limits of each motor.
+     *                                  the amp limits of the motor.
      */
     public void setIntakePower(double newIntakePowerCoefficient) {
 
@@ -102,8 +102,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * 
      * @return The agitator's velocity in mm/s.
      */
-    public double agitatorMmPerS() {
-        //return m_agitatorEncoder.getVelocity();
-        return 0.0;
-    }
+    // public double agitatorMmPerS() {
+    //     return m_agitatorEncoder.getVelocity();
+    // }
 }

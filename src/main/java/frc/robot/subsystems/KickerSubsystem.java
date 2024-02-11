@@ -14,7 +14,6 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Calibrations.KickerCalibrations;
-import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.KickerConstants;
 import frc.robot.util.rev.CANSparkUtil;
 

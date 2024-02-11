@@ -106,6 +106,7 @@ public class ArmSubsystem extends SubsystemBase {
         m_armPowerCoefficient = newArmPowerCoefficient;
     }
 
+    /** Sets the output of the arm to neutral. */
     public void setNeutral() {
         m_front.setControl(m_neutral);
     }

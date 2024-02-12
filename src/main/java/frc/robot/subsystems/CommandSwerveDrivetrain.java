@@ -66,6 +66,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         NamedCommands.registerCommand("RunIntake 20", new InstantCommand());
         NamedCommands.registerCommand("Retract", new InstantCommand());
         NamedCommands.registerCommand("RunIntake 0", new InstantCommand());
+        NamedCommands.registerCommand("ExtendToAmp", new InstantCommand());
+        NamedCommands.registerCommand("DropGamePiece", new InstantCommand());
         AutoBuilder.configureHolonomic(
                 () -> {
                     return this.getState().Pose;

@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Calibrations;
 import frc.robot.Constants;
+import frc.robot.commands.RunIntake;
 import frc.robot.commands.SetShooterSpeed;
 
 /**
@@ -42,7 +43,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
-        configPathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -50,7 +50,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     private CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
-        configPathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -59,15 +58,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     /**
      * Configures PathPlanner's auto builder.
      */
-    private void configPathPlanner() {
-        NamedCommands.registerCommand("SetShooterSpeed 5000", new InstantCommand());
-        NamedCommands.registerCommand("SetWristPosition 45", new InstantCommand());
-        NamedCommands.registerCommand("Shoot", new InstantCommand());
-        NamedCommands.registerCommand("RunIntake 20", new InstantCommand());
-        NamedCommands.registerCommand("Retract", new InstantCommand());
-        NamedCommands.registerCommand("RunIntake 0", new InstantCommand());
-        NamedCommands.registerCommand("ExtendToAmp", new InstantCommand());
-        NamedCommands.registerCommand("DropGamePiece", new InstantCommand());
+    public void configPathPlanner() {
+        
         AutoBuilder.configureHolonomic(
                 () -> {
                     return this.getState().Pose;

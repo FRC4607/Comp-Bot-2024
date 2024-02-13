@@ -8,6 +8,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -46,7 +47,7 @@ public class RobotContainer {
 
     private final KickerSubsystem m_kicker = new KickerSubsystem();
 
-    private final SendableChooser<Command> m_autoChooser =AutoBuilder.buildAutoChooser();
+    private final SendableChooser<Command> m_autoChooser;
 
 
     private void configureBindings() {
@@ -68,6 +69,16 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
+        NamedCommands.registerCommand("SetShooterSpeed 5000", new InstantCommand());
+        NamedCommands.registerCommand("SetWristPosition 45", new InstantCommand());
+        NamedCommands.registerCommand("Shoot", new InstantCommand());
+        NamedCommands.registerCommand("RunIntake 20", new RunIntake(()->-1.0, m_intake));
+        NamedCommands.registerCommand("Retract", new InstantCommand());
+        NamedCommands.registerCommand("RunIntake 0", new InstantCommand());
+        NamedCommands.registerCommand("ExtendToAmp", new InstantCommand());
+        NamedCommands.registerCommand("DropGamePiece", new InstantCommand());
+        drivetrain.configPathPlanner();
+        m_autoChooser =AutoBuilder.buildAutoChooser();
         SmartDashboard.putData(m_autoChooser);
     }
 

@@ -16,8 +16,8 @@ public final class Calibrations {
         // ** The gains for the steer motors of each swerve module, with gains in amps
         // and rotations. */
         public static final Slot0Configs kSteerGains = new Slot0Configs()
-                .withKP(300).withKI(0).withKD(25)
-                .withKS(2.885833333).withKV(0).withKA(0);
+                .withKP(500).withKI(0).withKD(25)
+                .withKS(10).withKV(0).withKA(0);
 
         /**
          * The gains for the drive motors of each swerve module, with gains in amps and

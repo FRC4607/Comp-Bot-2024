@@ -24,13 +24,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": null
+                  "name": "ExtendToAmp"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": null
+                  "name": "DropGamePiece"
                 }
               },
               {
@@ -112,13 +112,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "RunIntake 0"
+                  "name": "ExtendToAmp"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
+                  "name": "DropGamePiece"
                 }
               },
               {

@@ -16,7 +16,14 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.StructArrayLogEntry;
+import edu.wpi.first.util.datalog.StructLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +43,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
+    private DoubleLogEntry m_logFailDAQ = new DoubleLogEntry(DataLogManager.getLog(), "swerve/daq_fail");
+    private StructArrayLogEntry<SwerveModuleState> m_logCurrentState = StructArrayLogEntry.create(DataLogManager.getLog(), "swerve/modules", SwerveModuleState.struct);
+    private StructArrayLogEntry<SwerveModuleState> m_logTargetState = StructArrayLogEntry.create(DataLogManager.getLog(), "swerve/targets", SwerveModuleState.struct);
+    private DoubleLogEntry m_logPeriod = new DoubleLogEntry(DataLogManager.getLog(), "swerve/period");
+    private StructLogEntry<Pose2d> m_logPose = StructLogEntry.create(DataLogManager.getLog(), "swerve/pose", Pose2d.struct);
+    private StructLogEntry<ChassisSpeeds> m_logSpeeds = StructLogEntry.create(DataLogManager.getLog(), "swerve/speeds", ChassisSpeeds.struct);
+
     private CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
@@ -43,6 +57,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        this.registerTelemetry(this::telemetry);
     }
 
     private CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
@@ -51,6 +66,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        this.registerTelemetry(this::telemetry);
     }
 
     /**
@@ -105,6 +121,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      */
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
+    }
+
+    private void telemetry(SwerveDriveState state) {
+        m_logFailDAQ.append(state.FailedDaqs);
+        m_logCurrentState.append(state.ModuleStates);
+        m_logTargetState.append(state.ModuleTargets);
+        m_logPeriod.append(state.OdometryPeriod);
+        m_logPose.append(state.Pose);
+        m_logSpeeds.append(state.speeds);
     }
 
     /**

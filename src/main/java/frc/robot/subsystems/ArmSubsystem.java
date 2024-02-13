@@ -15,6 +15,9 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.IntegerLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Calibrations.ArmCalibrations;
 import frc.robot.Constants.ArmConstants;
@@ -31,6 +34,23 @@ public class ArmSubsystem extends SubsystemBase {
     private double m_armPowerCoefficient;
 
     private final StatusSignal<Double> m_armPos;
+    private final DoubleLogEntry m_armPosLog = new DoubleLogEntry(DataLogManager.getLog(), "arm/pos");
+    private final StatusSignal<Double> m_armSetpoint;
+    private final DoubleLogEntry m_armSetpointLog = new DoubleLogEntry(DataLogManager.getLog(), "arm/setpoint");
+    private final StatusSignal<Double> m_armTorquePerMotor;
+    private final DoubleLogEntry m_armTorquePerMotorLog = new DoubleLogEntry(DataLogManager.getLog(), "arm/torque_per_motor");
+    private final StatusSignal<Double> m_armVelocity;
+    private final DoubleLogEntry m_armVelocityLog = new DoubleLogEntry(DataLogManager.getLog(), "arm/vel");
+
+    private final StatusSignal<Double> m_deviceTempSecondaryFront;
+    private final DoubleLogEntry m_deviceTempSecondaryLogFront = new DoubleLogEntry(DataLogManager.getLog(), "arm/front/temp_secondary");
+    private final StatusSignal<Double> m_deviceTempFront;
+    private final DoubleLogEntry m_deviceTempLogFront = new DoubleLogEntry(DataLogManager.getLog(), "arm/front/temp");
+    private final StatusSignal<Double> m_processorTempFront;
+    private final DoubleLogEntry m_processorTempLogFront = new DoubleLogEntry(DataLogManager.getLog(), "arm/front/temp");
+
+    private final StatusSignal<Boolean> m_bootDuringEnableFront;
+    private final IntegerLogEntry m_bootDuringEnableLogFront = new IntegerLogEntry(DataLogManager.getLog(), "arm/front/fault_boot_during_enable");
     /**
      * The subsystem which contains all the motors/encoders/sensors on the arm of
      * the robot.
@@ -82,8 +102,25 @@ public class ArmSubsystem extends SubsystemBase {
         m_motionMagic = new MotionMagicTorqueCurrentFOC(0);
 
         m_armPos = m_front.getPosition();
+        m_armPos.setUpdateFrequency(50.0);
 
         m_neutral = new NeutralOut();
+
+        m_deviceTempSecondaryFront = m_front.getAncillaryDeviceTemp();
+        m_deviceTempSecondaryFront.setUpdateFrequency(4.0);
+        m_armSetpoint = m_front.getClosedLoopReference();
+        m_armSetpoint.setUpdateFrequency(50.0);
+        m_deviceTempFront = m_front.getDeviceTemp();
+        m_deviceTempFront.setUpdateFrequency(4.0);
+        m_processorTempFront = m_front.getProcessorTemp();
+        m_processorTempFront.setUpdateFrequency(4.0);
+        m_armTorquePerMotor = m_front.getTorqueCurrent();
+        m_armTorquePerMotor.setUpdateFrequency(50.0);
+        m_armVelocity = m_front.getVelocity();
+        m_armVelocity.setUpdateFrequency(50.0);
+
+        m_bootDuringEnableFront = m_front.getStickyFault_BootDuringEnable();
+        m_bootDuringEnableFront.setUpdateFrequency(4.0);
     }
 
     /**

@@ -18,7 +18,7 @@ public class RunIntakeSync extends Command {
     private final KickerSubsystem m_kicker;
     private final DoubleSupplier m_power;
 
-    private static final double MAX_SURFACE_SPEED = 1500.0;
+    private static final double MAX_SURFACE_SPEED = 3000.0;
 
     /**
      * Creates a new SetIntakeOpenLoop.

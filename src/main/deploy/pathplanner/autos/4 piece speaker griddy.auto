@@ -14,6 +14,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Retract"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "SetShooterSpeed 5000"
           }
         },
@@ -27,6 +33,12 @@
           "type": "named",
           "data": {
             "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
           }
         },
         {

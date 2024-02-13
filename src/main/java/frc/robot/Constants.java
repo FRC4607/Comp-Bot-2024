@@ -101,18 +101,34 @@ public final class Constants {
         public static final boolean kInvertLower = false;
     }
 
-    /** Constants for the kicker wheel. */
-    public static final class KickerWheelConstants {
+    /** Constants for the kicker. */
+    public static final class KickerConstants {
         /** The CAN Id of the kicker wheel motor controller. */
         public static final int kCANId = 14;
+        /** The gear ratio (x input rotations : 1 output rotation) of the kicker motor to the kicker. */
+        public static final double kKickerGearRatio = 5.0;
+        /** The diameter of the kickers in mm. */
+        public static final double kKickerDiameter = 24.5;
     }
 
     /** Constants for the intake. */
     public static final class IntakeConstants {
-        /** The CAN Id of the intake motor controller. */
-        public static final int kCANId = 12;
-        /** Whether or not to invert the intake motor. */
-        public static final boolean kInverted = true;
+        /** The CAN Id of the roller motor controller. */
+        public static final int kRollerCANId = 12;
+        /** The CAN Id of the agitator motor controller. */
+        public static final int kAgitatorCANId = 9;
+        /** Whether or not to invert the roller motor. */
+        public static final boolean kRollerInverted = false;
+        /** Whether or not to invert the agitator motor. */
+        public static final boolean kAgitatorInverted = true;
+        /** The gear ratio (x input rotations : 1 output rotation) of the roller motor to the rollers. */
+        public static final double kRollerGearRatio = 3.0;
+        /** The diameter of the rollers in mm. */
+        public static final double kRollerDiameter = 40.5;
+        /** The gear ratio (x input rotations : 1 output rotation) of the agitator motor to the agitators. */
+        public static final double kAgitatorGearRatio = 1.0;
+        /** The diameter of the rollers in mm. */
+        public static final double kAgitatorDiameter = 101.6;
     }
 
     /** Constants for the wrist. */
@@ -125,5 +141,23 @@ public final class Constants {
         public static final double kSensorToMechanism = 100.0;
         /** In manual control, the top speed of the wrist in degrees per second. */
         public static final double kWristManualDegreesPerSecond = 10.0;
+    }
+
+    /** Constants for the arm. */
+    public static final class ArmConstants {
+        /** The CAN Id of the front (closest to intake) motor in the arm gearbox. */
+        public static final int kFrontCANId = 8;
+        /** The CAN Id of the rear (closest to battery) motor in the arm gearbox. */
+        public static final int kRearCANId = 7;
+        /** Whether or not to invert both motors. */
+        public static final boolean kInvertMotors = true;
+        /** The minimum angle (in rotations) the arm is allowed to go in reverse. SW limit only. */
+        public static final double kReverseSoftLimit = 0.0;
+        /** The ratio of encoder rotations to wrist rotations. */
+        public static final double kSensorToMechanism = 60.0 / 37.0;
+        /** The ratio of motor rotations to encoder rotations. */
+        public static final double kRotorToSensor = 60.19 / kSensorToMechanism;
+        /** Whether or not to invert the encoder on the arm. */
+        public static final boolean kInvertEncoder = true;
     }
 }

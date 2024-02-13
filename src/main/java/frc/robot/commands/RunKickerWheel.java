@@ -29,13 +29,13 @@ public class RunKickerWheel extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_subsystem.setKicker(m_speed);
+        m_subsystem.setOpenLoop(m_speed);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_subsystem.setKicker(0);
+        m_subsystem.setOpenLoop(0);
     }
 
     // Returns true when the command should end.

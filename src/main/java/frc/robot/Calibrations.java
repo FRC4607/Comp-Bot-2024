@@ -31,7 +31,7 @@ public final class Calibrations {
          * The maximum current that can be applied to the drive motor of a robot locked
          * in place before the wheels start to slip.
          */
-        public static final double kSlipCurrentA = 300;
+        public static final double kSlipCurrentA = 50;
 
         /**
          * The speed the robot would attain in meters per second if each of its drive
@@ -76,7 +76,7 @@ public final class Calibrations {
          * The kP constant of the wrist motor. In units of (fractional duty
          * cycle)/degree.
          */
-        public static final double kP = 0.008333;
+        public static final double kP = 0.01;
         /**
          * The kI constant of the wrist motor. In units of (fractional duty
          * cycle)/degree^2.
@@ -92,5 +92,42 @@ public final class Calibrations {
          * cycle.
          */
         public static final double kFF = 0.0;
+    }
+    /** Calibrations for the arm. */
+    public static final class ArmCalibrations {
+        /** The gravity constant for arm feedforward in Amps. */
+        public static final double kG = 25.0;
+        /** The static constant for arm feedforward in Amps. */
+        public static final double kS = 0.4375;
+        /** The proportional constant for arm feedback in A/rot. */
+        public static final double kP = 1400.0;
+        /** The derivative constant for arm feedback in A/rot*sec. */
+        public static final double kD = 200.0;
+        /** The maximum speed the arm should acheieve in rot/sec.  */
+        public static final double kMaxSpeedMotionMagic = 0.5;
+        /** The maximum acceleration the arm should achieve in rot/sec^2. */
+        public static final double kMaxAccelerationMotionMagic = 0.5;
+        /** The offset of the absolute encoder on the arm in rotations. */
+        public static final double kEncoderOffset = -0.75341796875;
+        /** The maximum amount of current each motor in the arm gearbox should be allowed to output. */
+        public static final double kMaxArmCurrentPerMotor = 40.0;;
+    }
+    /** Calibrations for the intake. */
+    public static final class IntakeCalibrations {
+        /** The proportional constant for roller feedback in duty cycle / (mm/s) */
+        public static final double kRollerP = 0.0002;
+        /** The proportional constant for roller feedback in duty cycle / (mm/s) */
+        public static final double kRollerFF = 0.00024;
+        /** The proportional constant for agitator feedback in duty cycle / (mm/s) */
+        public static final double kAgitatorP = 0.01;
+    }
+    /** Calibrations for the kicker. */
+    public static final class KickerCalibrations {
+        /** The proportional constant for roller feedback in duty cycle / (mm/s) */
+        public static final double kP = 0.0003;
+        /** The derivative constant for roller feedback in duty cycle / (mm/s^2) */
+        public static final double kD = 0.005;
+        /** The roller feedforward constant in duty cycle / (mm/s) */
+        public static final double kFF = 0.0007;
     }
 }

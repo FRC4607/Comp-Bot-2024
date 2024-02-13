@@ -28,6 +28,7 @@ import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.commands.RunIntakeSync;
+import frc.robot.commands.RunIntakeSyncAuto;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -85,16 +86,16 @@ public class RobotContainer {
     public RobotContainer() {
         Preferences.initDouble("X Wrist", 110.0);
         configureBindings();
-        NamedCommands.registerCommand("SetShooterSpeed 5000", new InstantCommand());
-        NamedCommands.registerCommand("SetWristPosition 45", new InstantCommand());
-        NamedCommands.registerCommand("Shoot", new InstantCommand());
-        NamedCommands.registerCommand("RunIntake 20", new RunIntakeSync(()->-1.0, m_intake, m_kicker).withTimeout(2.0));
+        NamedCommands.registerCommand("SetShooterSpeed 5000", new SetShooterSpeed(5200, m_shooter));
+        NamedCommands.registerCommand("SetWristPosition 45", new MoveWristToPosition(Preferences.getDouble("X Wrist", 110.0), 5.0, m_wrist));
+        NamedCommands.registerCommand("Shoot", new RunKickerWheel(1.0, m_kicker).withTimeout(1.0));
+        NamedCommands.registerCommand("RunIntake Full", new RunIntakeSyncAuto(()->1.0, m_intake, m_kicker));
         NamedCommands.registerCommand("Retract", new Retract(m_wrist, m_arm));
-        NamedCommands.registerCommand("RunIntake 0", new InstantCommand());
+        NamedCommands.registerCommand("RunIntake 0", new RunIntakeSyncAuto(()->0.0, m_intake, m_kicker));
         NamedCommands.registerCommand("ExtendToAmp", new InstantCommand());
         NamedCommands.registerCommand("DropGamePiece", new InstantCommand());
         drivetrain.configPathPlanner();
-        m_autoChooser =AutoBuilder.buildAutoChooser();
+        m_autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData(m_autoChooser);
     }
 

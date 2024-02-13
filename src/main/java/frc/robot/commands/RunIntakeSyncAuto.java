@@ -13,7 +13,7 @@ import frc.robot.subsystems.KickerSubsystem;
 /**
  * Controls the intake and kicker so they are at the same linear speed.
  */
-public class RunIntakeSync extends Command {
+public class RunIntakeSyncAuto extends Command {
     private final IntakeSubsystem m_intake;
     private final KickerSubsystem m_kicker;
     private final DoubleSupplier m_power;
@@ -21,11 +21,11 @@ public class RunIntakeSync extends Command {
     private static final double MAX_SURFACE_SPEED = 3000.0;
 
     /**
-     * Creates a new RunIntakeSync.
+     * Creates a new RunIntakeSyncAuto. Provides the same functionality as {@link RunIntakesSync}, but exits immidiately without setting speeds to 0 on exit.
      * 
      * @param speed The percentage of the max surface speed to run the kicker and intake at in the range [-1, 1].
      */
-    public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker) {
+    public RunIntakeSyncAuto(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker) {
         m_power = power;
         m_intake = intake;
         m_kicker = kicker;
@@ -44,13 +44,11 @@ public class RunIntakeSync extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_intake.setIntakeSetpoint(0);
-        m_kicker.setKickerSetpoint(0);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }

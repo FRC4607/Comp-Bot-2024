@@ -38,6 +38,12 @@
         {
           "type": "named",
           "data": {
+            "name": "SetShooterSpeed 1000"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Retract"
           }
         },
@@ -56,14 +62,14 @@
                 "data": {
                   "name": "RunIntake 1"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetWristPosition"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.35
           }
         },
         {

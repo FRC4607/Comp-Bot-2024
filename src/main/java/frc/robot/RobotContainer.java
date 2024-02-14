@@ -86,10 +86,11 @@ public class RobotContainer {
     public RobotContainer() {
         Preferences.initDouble("X Wrist", 110.0);
         configureBindings();
-        NamedCommands.registerCommand("SetShooterSpeed 5000", new SetShooterSpeed(5200, m_shooter));
+        NamedCommands.registerCommand("SetShooterSpeed 5000", new SetShooterSpeed(5000, m_shooter));
+        NamedCommands.registerCommand("SetShooterSpeed 1000", new SetShooterSpeed(1000, m_shooter));
         NamedCommands.registerCommand("SetWristPosition 45", new MoveWristToPosition(Preferences.getDouble("X Wrist", 110.0), 5.0, m_wrist));
-        NamedCommands.registerCommand("Shoot", new RunKickerWheel(1.0, m_kicker).withTimeout(1.0));
-        NamedCommands.registerCommand("RunIntake Full", new RunIntakeSyncAuto(()->1.0, m_intake, m_kicker));
+        NamedCommands.registerCommand("Shoot", new RunKickerWheel(1.0, m_kicker).withTimeout(0.5));
+        NamedCommands.registerCommand("RunIntake 1", new RunIntakeSyncAuto(()->1.0, m_intake, m_kicker));
         NamedCommands.registerCommand("Retract", new Retract(m_wrist, m_arm));
         NamedCommands.registerCommand("RunIntake 0", new RunIntakeSyncAuto(()->0.0, m_intake, m_kicker));
         NamedCommands.registerCommand("ExtendToAmp", new InstantCommand());

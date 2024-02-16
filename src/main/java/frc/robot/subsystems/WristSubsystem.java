@@ -60,6 +60,8 @@ public class WristSubsystem extends SubsystemBase {
     public void periodic() {
         m_pid.setReference(m_setpoint - m_armAngleSupplier.getAsDouble(), ControlType.kPosition, 0, 0, ArbFFUnits.kPercentOut);
         SmartDashboard.putNumber("Wrist Angle", m_setpoint);
+        SmartDashboard.putNumber("Arm Angle", m_armAngleSupplier.getAsDouble());
+        SmartDashboard.putNumber("Setpoint", m_setpoint - m_armAngleSupplier.getAsDouble());
     }
 
     /**

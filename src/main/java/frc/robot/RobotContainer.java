@@ -27,6 +27,7 @@ import frc.robot.commands.SetShooterSpeed;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WristSubsystem;
+import frc.robot.util.swerve.SlipCurrentTest;
 import frc.robot.commands.RunIntakeSync;
 import frc.robot.commands.RunIntakeSyncAuto;
 import frc.robot.subsystems.ArmSubsystem;
@@ -34,7 +35,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class RobotContainer {
-    private static final double MaxSpeed = edu.wpi.first.math.util.Units.feetToMeters(17.3) - 0.5;
+    private static final double MaxSpeed = Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps;
     private static final double MaxAngularRate = Math.PI;
 
     private final CommandXboxController joystick = new CommandXboxController(0);
@@ -45,7 +46,7 @@ public class RobotContainer {
 
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.Velocity)
-            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+            .withSteerRequestType(SteerRequestType.MotionMagic)
             .withDeadband(0.1 * MaxSpeed)
             .withRotationalDeadband(0.1 * MaxAngularRate);
 

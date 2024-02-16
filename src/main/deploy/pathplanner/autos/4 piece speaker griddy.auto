@@ -67,12 +67,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.35
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "RunIntake 0"
@@ -88,6 +82,12 @@
           "type": "named",
           "data": {
             "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
           }
         },
         {
@@ -103,12 +103,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SetWristPosition 0"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "RunIntake 1"
                 }
               }
@@ -131,6 +125,12 @@
           "type": "named",
           "data": {
             "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
           }
         },
         {
@@ -146,12 +146,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SetWristPosition 0"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "RunIntake 1"
                 }
               }
@@ -174,6 +168,12 @@
           "type": "named",
           "data": {
             "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
           }
         }
       ]

@@ -11,6 +11,8 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Calibrations.IntakeCalibrations;
 import frc.robot.Constants.IntakeConstants;
@@ -120,4 +122,8 @@ public class IntakeSubsystem extends SubsystemBase {
     // public double agitatorMmPerS() {
     //     return m_agitatorEncoder.getVelocity();
     // }
+
+    public void periodic() {
+        SmartDashboard.putBoolean("Beam Break", m_input.get());
+    }
 }

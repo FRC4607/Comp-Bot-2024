@@ -34,7 +34,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class RobotContainer {
-    private static final double MaxSpeed = edu.wpi.first.math.util.Units.feetToMeters(17.3) - 0.5;
+    private static final double MaxSpeed = Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps - 0.5;
     private static final double MaxAngularRate = Math.PI;
 
     private final CommandXboxController joystick = new CommandXboxController(0);
@@ -71,6 +71,9 @@ public class RobotContainer {
         joystick.a().onTrue(new SetShooterSpeed(5200, m_shooter)).onFalse(new SetShooterSpeed(0, m_shooter));
         joystick.b().whileTrue(new RunKickerWheel(-1.0, m_kicker));
         joystick.y().onTrue(new InstantCommand(drivetrain::seedFieldRelative, drivetrain));
+        joystick.x().onTrue(new RunIntakeSync(() -> {
+            return 1;
+        }, m_intake, m_kicker).withTimeout(4));
         joystick.leftBumper().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 5.0, m_arm), new MoveWristToPosition(30.0, 5.0, m_wrist)));
         joystick.rightBumper().onTrue(new MoveArmToPosition(5.0, 5.0, m_arm).andThen(new MoveWristToPosition(Preferences.getDouble("X Wrist", 110.0), 5.0, m_wrist)))
                 .onFalse(new ParallelCommandGroup(new SetShooterSpeed(5200, m_shooter).withTimeout(2.0),

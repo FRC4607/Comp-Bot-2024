@@ -19,6 +19,7 @@ public class RunIntakeSync extends Command {
     private final DoubleSupplier m_power;
 
     private boolean m_hadNote;
+    private int i;
 
     private static final double MAX_SURFACE_SPEED = 3000.0;
 
@@ -59,14 +60,23 @@ public class RunIntakeSync extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
+
+        
+
         if (m_intake.hasNote() == false) {
-            m_hadNote = true;    
+            m_hadNote = true; 
+            i = 0;
         } else if (m_hadNote) {
+
             if (m_intake.hasNote()) {
+                i ++;
+            }
+            
+            if (i >= 5) {
                 return true;
             }
-        }
-
+        } 
+        
         return false;
     }
 }

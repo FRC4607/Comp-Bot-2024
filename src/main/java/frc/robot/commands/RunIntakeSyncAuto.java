@@ -70,7 +70,7 @@ public class RunIntakeSyncAuto extends Command {
                 i ++;
             }
             
-            if (i >= 5) {
+            if (i >= 20) {
                 return true;
             }
         }

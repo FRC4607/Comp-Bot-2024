@@ -70,35 +70,38 @@ public class RobotContainer {
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed)
                         .withRotationalRate(-joystick.getRightX() * MaxAngularRate)));
         joystick.a().onTrue(new SetShooterSpeed(5200, m_shooter)).onFalse(new SetShooterSpeed(0, m_shooter));
-        joystick.b().whileTrue(new RunKickerWheel(-1.0, m_kicker));
+        joystick.b().onTrue(new SetShooterSpeed(0, m_shooter).andThen(new MoveWristToPosition(90.0, 5.0, m_wrist)
+                .andThen(new MoveArmToPosition(0.0, 5.0, m_arm)).andThen(new InstantCommand(() -> {
+                    m_arm.setNeutral();
+                }, m_arm))));
         joystick.y().onTrue(new InstantCommand(drivetrain::seedFieldRelative, drivetrain));
         joystick.x().onTrue(new RunIntakeSync(() -> {
             return 1;
         }, m_intake, m_kicker).withTimeout(4));
         joystick.leftBumper().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 5.0, m_arm), new MoveWristToPosition(30.0, 5.0, m_wrist)));
-        joystick.rightBumper().onTrue(new MoveArmToPosition(5.0, 5.0, m_arm).andThen(new MoveWristToPosition(Preferences.getDouble("X Wrist", 110.0), 5.0, m_wrist)))
-                .onFalse(new ParallelCommandGroup(new SetShooterSpeed(5200, m_shooter).withTimeout(2.0),
-                        new WaitCommand(1.0).andThen(new RunKickerWheel(1.0, m_kicker).withTimeout(1.0))));
+        joystick.rightBumper().onTrue(new MoveArmToPosition(5.0, 5.0, m_arm).andThen(new MoveWristToPosition(Preferences.getDouble("X Wrist", 110.0), 5.0, m_wrist)).andThen(new SetShooterSpeed(5200, m_shooter)))
+                .onFalse(new ParallelCommandGroup(new RunKickerWheel(1.0, m_kicker).withTimeout(1.0).andThen(new SetShooterSpeed(0, m_shooter))));
         joystick.povLeft().onTrue(new MoveArmToPosition(45.0, 5.0, m_arm));
         joystick.povRight().onTrue(new MoveArmToPosition(5.0, 5.0, m_arm));
-        joystick.povDown().onTrue(new MoveWristToPosition(90.0, 5.0, m_wrist)
-                .andThen(new MoveArmToPosition(0.0, 5.0, m_arm)).andThen(new InstantCommand(() -> {
-                    m_arm.setNeutral();
-                }, m_arm)));
     }
 
     public RobotContainer() {
         Preferences.initDouble("X Wrist", 110.0);
         configureBindings();
         NamedCommands.registerCommand("SetShooterSpeed 5000", new SetShooterSpeed(5000, m_shooter));
+        NamedCommands.registerCommand("SetShooterSpeed 4000", new SetShooterSpeed(4000, m_shooter));
         NamedCommands.registerCommand("SetShooterSpeed 1000", new SetShooterSpeed(1000, m_shooter));
+        NamedCommands.registerCommand("SetShooterSpeed 0", new SetShooterSpeed(1, m_shooter));
+        NamedCommands.registerCommand("SetArmPosition 36", new MoveArmToPosition(36, 3, m_arm));
         NamedCommands.registerCommand("SetWristPosition 45", new MoveWristToPosition(Preferences.getDouble("X Wrist", 110.0), 5.0, m_wrist));
+        NamedCommands.registerCommand("SetWristPosition 81", new MoveWristToPosition(146, 3, m_wrist));
         NamedCommands.registerCommand("Shoot", new RunKickerWheel(1.0, m_kicker).withTimeout(0.5));
         NamedCommands.registerCommand("RunIntake 1", new RunIntakeSyncAuto(()->1.0, m_intake, m_kicker));
         NamedCommands.registerCommand("Retract", new Retract(m_wrist, m_arm));
         NamedCommands.registerCommand("RunIntake 0", new RunIntakeSyncAuto(()->0.0, m_intake, m_kicker));
         NamedCommands.registerCommand("ExtendToAmp", new InstantCommand());
         NamedCommands.registerCommand("DropGamePiece", new InstantCommand());
+        NamedCommands.registerCommand("RunKicker -0.5", new RunKickerWheel(-0.5, m_kicker));
         drivetrain.configPathPlanner();
         m_autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData(m_autoChooser);

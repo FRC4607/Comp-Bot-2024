@@ -13,7 +13,7 @@ public class Retract extends SequentialCommandGroup {
   /** Creates a new retract. */
   public Retract(WristSubsystem wrist, ArmSubsystem arm) {
     super(
-      new MoveArmToPosition(5.0, 5.0, arm),
+      new MoveArmToPosition(5.0, 2.0, arm),
       new MoveWristToPosition(90.0, 5.0, wrist)
     );
     // Use addRequirements() here to declare subsystem dependencies.

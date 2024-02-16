@@ -18,6 +18,8 @@ public class RunIntakeSyncAuto extends Command {
     private final KickerSubsystem m_kicker;
     private final DoubleSupplier m_power;
 
+    private boolean m_hadNote;
+
     private static final double MAX_SURFACE_SPEED = 3000.0;
 
     /**
@@ -35,6 +37,12 @@ public class RunIntakeSyncAuto extends Command {
 
     // Called when the command is initially scheduled.
     @Override
+    public void initialize() {
+        m_hadNote = false;
+    }
+
+    // Called when the command is initially scheduled.
+    @Override
     public void execute() {
         double surfaceSpeed = m_power.getAsDouble() * MAX_SURFACE_SPEED;
         m_intake.setIntakeSetpoint(surfaceSpeed);
@@ -44,11 +52,22 @@ public class RunIntakeSyncAuto extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        m_intake.setIntakeSetpoint(0);
+        m_kicker.setKickerSetpoint(0);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return true;
+
+        if (m_intake.hasNote()) {
+            m_hadNote = true;    
+        } else if (m_hadNote) {
+            if (m_intake.hasNote() == false) {
+                return true;
+            }
+        }
+
+        return false;    
     }
 }

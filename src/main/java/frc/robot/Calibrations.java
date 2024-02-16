@@ -31,7 +31,7 @@ public final class Calibrations {
          * The maximum current that can be applied to the drive motor of a robot locked
          * in place before the wheels start to slip.
          */
-        public static final double kSlipCurrentA = 800;
+        public static final double kSlipCurrentA = 123.5;
 
         /**
          * The speed the robot would attain in meters per second if each of its drive

@@ -1,0 +1,80 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.33647620677948,
+      "y": 5.551538944244385
+    },
+    "rotation": -2.0163097044259813e-34
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "SetWristPosition 45"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetShooterSpeed 5000"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "2 piece speaker.1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RunIntake 1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetWristPosition 45"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}

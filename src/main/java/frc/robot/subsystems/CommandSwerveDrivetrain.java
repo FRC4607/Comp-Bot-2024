@@ -35,7 +35,7 @@ import frc.robot.commands.SetShooterSpeed;
 public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private static final SwerveRequest.ApplyChassisSpeeds m_autoSetter = new SwerveRequest.ApplyChassisSpeeds()
-            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+            .withSteerRequestType(SteerRequestType.MotionMagic)
             .withDriveRequestType(DriveRequestType.Velocity);
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
@@ -123,7 +123,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SwerveModuleConstantsFactory ConstantCreator = new SwerveModuleConstantsFactory()
                 .withDriveMotorGearRatio(Constants.DrivetrainConstants.kDriveGearRatio)
                 .withSteerMotorGearRatio(Constants.DrivetrainConstants.kSteerGearRatio)
-                .withWheelRadius(Constants.DrivetrainConstants.kWheelRadiusInches)
+                .withWheelRadius(Calibrations.DrivetrainCalibrations.kWheelRadiusInches)
                 .withSlipCurrent(Calibrations.DrivetrainCalibrations.kSlipCurrentA)
                 .withSteerMotorGains(Calibrations.DrivetrainCalibrations.kSteerGains)
                 .withDriveMotorGains(Calibrations.DrivetrainCalibrations.kDriveGains)

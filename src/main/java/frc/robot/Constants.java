@@ -20,8 +20,6 @@ public final class Constants {
         public static final double kDriveGearRatio = 6.122448979591837;
         /** The ratio of steer motor turns to one azimuth rotation. */
         public static final double kSteerGearRatio = 12.8;
-        /** The radius of the wheel attached to each swerve module. */
-        public static final double kWheelRadiusInches = 1.878;
 
         /** Whether or not the steer motors on the robot should be inverted. */
         public static final boolean kSteerMotorReversed = false;

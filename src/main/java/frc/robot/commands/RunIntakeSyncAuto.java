@@ -60,10 +60,10 @@ public class RunIntakeSyncAuto extends Command {
     @Override
     public boolean isFinished() {
 
-        if (m_intake.hasNote()) {
+        if (m_intake.hasNote() == false) {
             m_hadNote = true;    
         } else if (m_hadNote) {
-            if (m_intake.hasNote() == false) {
+            if (m_intake.hasNote()) {
                 return true;
             }
         }

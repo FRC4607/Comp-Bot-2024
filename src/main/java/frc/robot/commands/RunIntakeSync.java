@@ -40,7 +40,7 @@ public class RunIntakeSync extends Command {
     public void initialize() {
         m_hadNote = false;
     }
-    
+
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
@@ -59,10 +59,10 @@ public class RunIntakeSync extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (m_intake.hasNote()) {
+        if (m_intake.hasNote() == false) {
             m_hadNote = true;    
         } else if (m_hadNote) {
-            if (m_intake.hasNote() == false) {
+            if (m_intake.hasNote()) {
                 return true;
             }
         }

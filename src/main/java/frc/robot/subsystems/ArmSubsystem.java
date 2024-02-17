@@ -51,6 +51,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     private final StatusSignal<Boolean> m_bootDuringEnableFront;
     private final IntegerLogEntry m_bootDuringEnableLogFront = new IntegerLogEntry(DataLogManager.getLog(), "arm/front/fault_boot_during_enable");
+     private final StatusSignal<Boolean> m_hardwareFront;
+    private final IntegerLogEntry m_hardwareFrontLog = new IntegerLogEntry(DataLogManager.getLog(), "arm/front/fault_hardware");
     /**
      * The subsystem which contains all the motors/encoders/sensors on the arm of
      * the robot.
@@ -119,6 +121,11 @@ public class ArmSubsystem extends SubsystemBase {
 
         m_bootDuringEnableFront = m_front.getStickyFault_BootDuringEnable();
         m_bootDuringEnableFront.setUpdateFrequency(4.0);
+        m_hardwareFront = m_front.getStickyFault_Hardware();
+        m_hardwareFront.setUpdateFrequency(4.0);
+        m_front.getStickyFault_DeviceTemp();
+        m_front.getStickyFault_ProcTemp();
+        m_front.getSt
     }
 
     /**

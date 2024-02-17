@@ -66,9 +66,10 @@ public final class Calibrations {
          * The kP constant of each of the halves of the shooter. In units of
          * amps/(rotation per second).
          */
-        public static final double kP = 12.0;
+        public static final double kP = 15.0;
         /** The kS constant of each of the halves of the shooter. In unit of amps. */
-        public static final double kS = 4.875;
+        public static final double kS = 6.0;
+        public static final double kMaxCurrent = 40.0;
     }
 
     /**
@@ -79,7 +80,7 @@ public final class Calibrations {
          * The kP constant of the wrist motor. In units of (fractional duty
          * cycle)/degree.
          */
-        public static final double kP = 0.01;
+        public static final double kP = 1400.0;
         /**
          * The kI constant of the wrist motor. In units of (fractional duty
          * cycle)/degree^2.
@@ -89,28 +90,30 @@ public final class Calibrations {
          * The kD constant of the wrist motor. In units of (fractional duty
          * cycle)/(degrees per second).
          */
-        public static final double kD = 0.0;
+        public static final double kD = 32.0;
         public static final int kEncoderOffset = 0;
-        public static final double kS = 0;
+        public static final double kS = 0.25;
+        public static final double kMotionMagicMaxVelocity = 1.0;
+        public static final double kMotionMagicMaxAcceleration = 5.0;
     }
     /** Calibrations for the arm. */
     public static final class ArmCalibrations {
         /** The gravity constant for arm feedforward in Amps. */
-        public static final double kG = 25.0;
+        public static final double kG = 20.0;
         /** The static constant for arm feedforward in Amps. */
-        public static final double kS = 0.4375;
+        public static final double kS = 2.0;
         /** The proportional constant for arm feedback in A/rot. */
-        public static final double kP = 1400.0;
+        public static final double kP = 1600.0;
         /** The derivative constant for arm feedback in A/rot*sec. */
-        public static final double kD = 200.0;
+        public static final double kD = 275.0;
         /** The maximum speed the arm should acheieve in rot/sec.  */
-        public static final double kMaxSpeedMotionMagic = 0.5;
+        public static final double kMaxSpeedMotionMagic = 0.3;
         /** The maximum acceleration the arm should achieve in rot/sec^2. */
-        public static final double kMaxAccelerationMotionMagic = 0.5;
+        public static final double kMaxAccelerationMotionMagic = 0.75;
         /** The offset of the absolute encoder on the arm in rotations. */
-        public static final double kEncoderOffset = -0.75341796875;
+        public static final double kEncoderOffset = -0.2646484375;
         /** The maximum amount of current each motor in the arm gearbox should be allowed to output. */
-        public static final double kMaxArmCurrentPerMotor = 40.0;;
+        public static final double kMaxArmCurrentPerMotor = 40.0;
     }
     /** Calibrations for the intake. */
     public static final class IntakeCalibrations {
@@ -124,10 +127,10 @@ public final class Calibrations {
     /** Calibrations for the kicker. */
     public static final class KickerCalibrations {
         /** The proportional constant for roller feedback in duty cycle / (mm/s) */
-        public static final double kP = 0;
+        public static final double kP = 15;
         /** The derivative constant for roller feedback in duty cycle / (mm/s^2) */
         public static final double kD = 0;
         /** The roller feedforward constant in duty cycle / (mm/s) */
-        public static final double kS = 0;
+        public static final double kS = 20;
     }
 }

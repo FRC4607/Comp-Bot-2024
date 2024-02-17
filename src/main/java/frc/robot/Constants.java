@@ -2,6 +2,8 @@ package frc.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 
+import edu.wpi.first.math.util.Units;
+
 /**
  * A collection of static classes that hold constant values. These values are not expected to change often.
  */
@@ -102,11 +104,11 @@ public final class Constants {
         /** The CAN Id of the kicker wheel motor controller. */
         public static final int kCANId = 14;
         /** The gear ratio (x input rotations : 1 output rotation) of the kicker motor to the kicker. */
-        public static final double kKickerGearRatio = 3.0 * (20.0 / 17.0);
+        public static final double kKickerGearRatio = 3.0 * (17.0 / 20.0);
         /** The diameter of the kickers in mm. */
-        public static final double kKickerDiameter = 24.5;
+        public static final double kKickerDiameter = Units.inchesToMeters(1.0) * 1000;
         /** Whether or not to invert the kicker motor. */
-        public static final boolean kInverted = true;
+        public static final boolean kInverted = false;
     }
 
     /** Constants for the intake. */

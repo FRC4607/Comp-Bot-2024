@@ -56,6 +56,9 @@ public class ShooterSubsystem extends SubsystemBase {
         config.Slot0.kS = ShooterCalibrations.kS;
         config.Slot0.kP = ShooterCalibrations.kP;
 
+        config.TorqueCurrent.PeakForwardTorqueCurrent = ShooterCalibrations.kMaxCurrent;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -ShooterCalibrations.kMaxCurrent;
+
         config.MotorOutput.Inverted = Constants.ShooterConstants.kInvertOuter ? InvertedValue.Clockwise_Positive
                 : InvertedValue.CounterClockwise_Positive;
         m_outer.getConfigurator().apply(config);
@@ -95,7 +98,7 @@ public class ShooterSubsystem extends SubsystemBase {
         if (Double.compare(newShooterRPMSetpoint, 0.0) == 0) {
             m_outer.setControl(m_neutral);
         } else {
-            m_inner.setControl(m_req.withVelocity(newShooterRPMSetpoint / 60.0));
+            m_outer.setControl(m_req.withVelocity(newShooterRPMSetpoint / 60.0));
         }
     }
 

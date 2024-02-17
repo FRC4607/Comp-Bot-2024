@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -15,9 +16,11 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.IntegerLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Calibrations.ArmCalibrations;
 import frc.robot.Constants.ArmConstants;
@@ -45,14 +48,34 @@ public class ArmSubsystem extends SubsystemBase {
     private final StatusSignal<Double> m_deviceTempSecondaryFront;
     private final DoubleLogEntry m_deviceTempSecondaryLogFront = new DoubleLogEntry(DataLogManager.getLog(), "arm/front/temp_secondary");
     private final StatusSignal<Double> m_deviceTempFront;
-    private final DoubleLogEntry m_deviceTempLogFront = new DoubleLogEntry(DataLogManager.getLog(), "arm/front/temp");
+    private final DoubleLogEntry m_deviceTempLogFront = new DoubleLogEntry(DataLogManager.getLog(), "arm/front/temp_device");
     private final StatusSignal<Double> m_processorTempFront;
-    private final DoubleLogEntry m_processorTempLogFront = new DoubleLogEntry(DataLogManager.getLog(), "arm/front/temp");
+    private final DoubleLogEntry m_processorTempLogFront = new DoubleLogEntry(DataLogManager.getLog(), "arm/front/temp_proc");
 
     private final StatusSignal<Boolean> m_bootDuringEnableFront;
-    private final IntegerLogEntry m_bootDuringEnableLogFront = new IntegerLogEntry(DataLogManager.getLog(), "arm/front/fault_boot_during_enable");
-     private final StatusSignal<Boolean> m_hardwareFront;
-    private final IntegerLogEntry m_hardwareFrontLog = new IntegerLogEntry(DataLogManager.getLog(), "arm/front/fault_hardware");
+    private final BooleanLogEntry m_bootDuringEnableLogFront = new BooleanLogEntry(DataLogManager.getLog(), "arm/front/fault_boot_during_enable");
+    private final StatusSignal<Boolean> m_hardwareFront;
+    private final BooleanLogEntry m_hardwareFrontLog = new BooleanLogEntry(DataLogManager.getLog(), "arm/front/fault_hardware");
+    private final StatusSignal<Boolean> m_deviceTempFaultFront;
+    private final BooleanLogEntry m_deviceTempFaultFrontLog = new BooleanLogEntry(DataLogManager.getLog(), "arm/front/fault_motor_temp");
+    private final StatusSignal<Boolean> m_procTempFaultFront;
+    private final BooleanLogEntry m_procTempFaultFrontLog = new BooleanLogEntry(DataLogManager.getLog(), "arm/front/fault_proc_temp");
+
+    private final StatusSignal<Double> m_deviceTempSecondaryBack;
+    private final DoubleLogEntry m_deviceTempSecondaryLogBack = new DoubleLogEntry(DataLogManager.getLog(), "arm/back/temp_secondary");
+    private final StatusSignal<Double> m_deviceTempBack;
+    private final DoubleLogEntry m_deviceTempLogBack = new DoubleLogEntry(DataLogManager.getLog(), "arm/back/temp_device");
+    private final StatusSignal<Double> m_processorTempBack;
+    private final DoubleLogEntry m_processorTempLogBack = new DoubleLogEntry(DataLogManager.getLog(), "arm/back/temp_proc");
+
+    private final StatusSignal<Boolean> m_bootDuringEnableBack;
+    private final BooleanLogEntry m_bootDuringEnableLogBack = new BooleanLogEntry(DataLogManager.getLog(), "arm/back/fault_boot_during_enable");
+    private final StatusSignal<Boolean> m_hardwareBack;
+    private final BooleanLogEntry m_hardwareBackLog = new BooleanLogEntry(DataLogManager.getLog(), "arm/back/fault_hardware");
+    private final StatusSignal<Boolean> m_deviceTempFaultBack;
+    private final BooleanLogEntry m_deviceTempFaultBackLog = new BooleanLogEntry(DataLogManager.getLog(), "arm/back/fault_motor_temp");
+    private final StatusSignal<Boolean> m_procTempFaultBack;
+    private final BooleanLogEntry m_procTempFaultBackLog = new BooleanLogEntry(DataLogManager.getLog(), "arm/back/fault_proc_temp");
     /**
      * The subsystem which contains all the motors/encoders/sensors on the arm of
      * the robot.
@@ -77,12 +100,10 @@ public class ArmSubsystem extends SubsystemBase {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-        // config.Slot0.kS = ArmCalibrations.kS; These values need to be retuned
-        // config.Slot0.kG = ArmCalibrations.kG;
+        config.Slot0.kS = ArmCalibrations.kS;
+        config.Slot0.kG = ArmCalibrations.kG;
         config.Slot0.kP = ArmCalibrations.kP;
         config.Slot0.kD = ArmCalibrations.kD;
-        config.Slot0.kG = 25.0;
-        config.Slot0.kS = 0.0;
 
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = ArmConstants.kReverseSoftLimit;
@@ -123,9 +144,68 @@ public class ArmSubsystem extends SubsystemBase {
         m_bootDuringEnableFront.setUpdateFrequency(4.0);
         m_hardwareFront = m_front.getStickyFault_Hardware();
         m_hardwareFront.setUpdateFrequency(4.0);
-        m_front.getStickyFault_DeviceTemp();
-        m_front.getStickyFault_ProcTemp();
-        m_front.getSt
+        m_deviceTempFaultFront = m_front.getStickyFault_DeviceTemp();
+        m_deviceTempFaultFront.setUpdateFrequency(4.0);
+        m_procTempFaultFront = m_front.getStickyFault_ProcTemp();
+        m_procTempFaultFront.setUpdateFrequency(4.0);
+
+        m_deviceTempSecondaryBack = m_rear.getAncillaryDeviceTemp();
+        m_deviceTempSecondaryBack.setUpdateFrequency(4.0);
+        m_deviceTempBack = m_rear.getDeviceTemp();
+        m_deviceTempBack.setUpdateFrequency(4.0);
+        m_processorTempBack = m_rear.getProcessorTemp();
+        m_processorTempBack.setUpdateFrequency(4.0);
+
+        m_bootDuringEnableBack = m_rear.getStickyFault_BootDuringEnable();
+        m_bootDuringEnableBack.setUpdateFrequency(4.0);
+        m_hardwareBack = m_rear.getStickyFault_Hardware();
+        m_hardwareBack.setUpdateFrequency(4.0);
+        m_deviceTempFaultBack = m_rear.getStickyFault_DeviceTemp();
+        m_deviceTempFaultBack.setUpdateFrequency(4.0);
+        m_procTempFaultBack = m_rear.getStickyFault_ProcTemp();
+        m_procTempFaultBack.setUpdateFrequency(4.0);
+    }
+
+    public void periodic() {
+        BaseStatusSignal.refreshAll(
+            m_armPos,
+            m_armSetpoint,
+            m_armTorquePerMotor,
+            m_armVelocity,
+            m_bootDuringEnableBack,
+            m_bootDuringEnableFront,
+            m_deviceTempBack,
+            m_deviceTempFaultBack,
+            m_deviceTempFaultFront,
+            m_deviceTempFront,
+            m_deviceTempSecondaryBack,
+            m_deviceTempSecondaryFront,
+            m_hardwareBack,
+            m_hardwareFront,
+            m_procTempFaultBack,
+            m_procTempFaultFront,
+            m_processorTempBack,
+            m_processorTempFront
+        );
+        m_armPosLog.append(m_armPos.getValueAsDouble(), (long) (m_armPos.getTimestamp().getTime() * 1e6));
+        m_armSetpointLog.append(m_armSetpoint.getValueAsDouble(), (long) (m_armSetpoint.getTimestamp().getTime() * 1e6));
+        m_armTorquePerMotorLog.append(m_armTorquePerMotor.getValueAsDouble(), (long) (m_armTorquePerMotor.getTimestamp().getTime() * 1e6));
+        m_armVelocityLog.append(m_armVelocity.getValueAsDouble(), (long) (m_armVelocity.getTimestamp().getTime() * 1e6));
+        m_deviceTempLogBack.append(m_deviceTempBack.getValueAsDouble(), (long) (m_deviceTempBack.getTimestamp().getTime() * 1e6));
+        m_deviceTempLogFront.append(m_deviceTempFront.getValueAsDouble(), (long) (m_deviceTempFront.getTimestamp().getTime() * 1e6));
+        m_deviceTempSecondaryLogBack.append(m_deviceTempSecondaryBack.getValueAsDouble(), (long) (m_deviceTempSecondaryBack.getTimestamp().getTime() * 1e6));
+        m_deviceTempSecondaryLogFront.append(m_deviceTempSecondaryFront.getValueAsDouble(), (long) (m_deviceTempSecondaryFront.getTimestamp().getTime() * 1e6));
+        m_processorTempLogBack.append(m_processorTempBack.getValueAsDouble(), (long) (m_processorTempBack.getTimestamp().getTime() * 1e6));
+        m_processorTempLogFront.append(m_processorTempFront.getValueAsDouble(), (long) (m_processorTempFront.getTimestamp().getTime() * 1e6));
+
+        m_bootDuringEnableLogBack.append(m_bootDuringEnableBack.getValue(), (long) (m_bootDuringEnableBack.getTimestamp().getTime() * 1e6));
+        if (m_bootDuringEnableBack.getValue()) {
+            m_rear.clearStickyFault_BootDuringEnable();
+        }
+        m_bootDuringEnableLogFront.append(m_bootDuringEnableFront.getValue(), (long) (m_bootDuringEnableFront.getTimestamp().getTime() * 1e6));
+        if (m_bootDuringEnableBack.getValue()) {
+            m_rear.clearStickyFault_BootDuringEnable();
+        }
     }
 
     /**
@@ -159,7 +239,6 @@ public class ArmSubsystem extends SubsystemBase {
      * @return the arm position in degrees.
      */
     public double armPosition() {
-        m_armPos.refresh();
         return m_armPos.getValueAsDouble() * 360.0;
     }
 }

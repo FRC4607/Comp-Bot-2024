@@ -21,6 +21,7 @@ import com.revrobotics.CANSparkBase.ControlType;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Calibrations.KickerCalibrations;
 import frc.robot.Constants.KickerConstants;
 import frc.robot.util.rev.CANSparkUtil;
@@ -69,7 +70,7 @@ public class KickerSubsystem extends SubsystemBase {
      * @param speed The speed to set the kicker wheels to in mm/s.
      */
     public void setKickerSetpoint(double speed) {
-        m_pid.Velocity = speed / 1000.0;
+        m_pid.Velocity = speed / (Math.PI * Constants.KickerConstants.kKickerDiameter);
         m_kicker.setControl(m_pid);
     }
 

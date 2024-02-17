@@ -71,13 +71,15 @@ public class WristSubsystem extends SubsystemBase {
         config.Slot0.kD = Calibrations.WristCalibrations.kD;
         config.Slot0.kP = Calibrations.WristCalibrations.kP;
         config.Slot0.kS = Calibrations.WristCalibrations.kS;
+        config.MotionMagic.MotionMagicAcceleration = Calibrations.WristCalibrations.kMotionMagicMaxAcceleration;
+        config.MotionMagic.MotionMagicCruiseVelocity = Calibrations.WristCalibrations.kMotionMagicMaxVelocity;
         m_motor = new TalonFX(Constants.WristConstants.kCANId);
         m_motor.getConfigurator().apply(config);
 
         m_motor.setPosition(0.25);
 
-        m_setpoint = 0.25;
-        m_pid = new MotionMagicTorqueCurrentFOC(m_setpoint);
+        m_setpoint = 90;
+        m_pid = new MotionMagicTorqueCurrentFOC(0.25);
 
         //m_position = m_encoder.getPosition();
         m_position = m_motor.getPosition();
@@ -89,7 +91,8 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
-        m_pid.Position = m_setpoint - m_armAngleSupplier.getAsDouble();
+        m_pid.Position = (m_setpoint - m_armAngleSupplier.getAsDouble()) / 360.0;
+        m_motor.setControl(m_pid);
         SmartDashboard.putNumber("Wrist Angle", m_setpoint);
         SmartDashboard.putNumber("Arm Angle", m_armAngleSupplier.getAsDouble());
         SmartDashboard.putNumber("Setpoint", m_setpoint - m_armAngleSupplier.getAsDouble());
@@ -125,7 +128,7 @@ public class WristSubsystem extends SubsystemBase {
 
     public double getRawWristPosition() {
         m_position.refresh();
-        return m_position.getValueAsDouble();
+        return m_position.getValueAsDouble() * 360;
     }
 
     /**

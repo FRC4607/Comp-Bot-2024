@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.MoveArmToPosition;
@@ -70,17 +71,26 @@ public class RobotContainer {
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed)
                         .withRotationalRate(-joystick.getRightX() * MaxAngularRate)));
         joystick.a().onTrue(new SetShooterSpeed(5200, m_shooter)).onFalse(new SetShooterSpeed(0, m_shooter));
-        joystick.b().onTrue(new ParallelCommandGroup(new SetShooterSpeed(0, m_shooter), new MoveWristToPosition(90.0, 5.0, m_wrist)
-                .andThen(new MoveArmToPosition(0.0, 5.0, m_arm)).andThen(new InstantCommand(() -> {
+        joystick.b().onTrue(new ParallelCommandGroup(
+            new SetShooterSpeed(0, m_shooter),
+            new SequentialCommandGroup(
+                new MoveWristToPosition(90.0, 5.0, m_wrist),
+                new MoveArmToPosition(0, 10.0, m_arm),
+                new InstantCommand(() -> {
                     m_arm.setNeutral();
-                }, m_arm))));
+                }, m_arm)
+            )
+        ));
         joystick.y().onTrue(new InstantCommand(drivetrain::seedFieldRelative, drivetrain));
         joystick.x().onTrue(new RunIntakeSync(() -> {
             return 1;
         }, m_intake, m_kicker).withTimeout(4));
-        joystick.leftBumper().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 5.0, m_arm), new MoveWristToPosition(30.0, 5.0, m_wrist)));
-        joystick.rightBumper().onTrue(new MoveArmToPosition(5.0, 5.0, m_arm).andThen(new MoveWristToPosition(Preferences.getDouble("X Wrist", 110.0), 5.0, m_wrist)).andThen(new SetShooterSpeed(5200, m_shooter)))
-                .onFalse(new ParallelCommandGroup(new RunKickerWheel(1.0, m_kicker).withTimeout(1.0).andThen(new SetShooterSpeed(0, m_shooter))));
+        joystick.leftBumper().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 7.5, m_arm), new MoveWristToPosition(30.0, 7.5, m_wrist)));
+        joystick.rightBumper().onTrue(new SequentialCommandGroup(
+            new MoveArmToPosition(5.0, 7.5, m_arm),
+            new MoveWristToPosition(Preferences.getDouble("X Wrist", 110.0), 10, m_wrist),
+            new SetShooterSpeed(5200, m_shooter))
+        ).onFalse(new RunKickerWheel(1.0, m_kicker).withTimeout(1.0).andThen(new SetShooterSpeed(0, m_shooter)));
         joystick.povLeft().onTrue(new MoveArmToPosition(45.0, 5.0, m_arm));
         joystick.povRight().onTrue(new MoveArmToPosition(5.0, 5.0, m_arm));
     }

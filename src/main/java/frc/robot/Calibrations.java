@@ -16,8 +16,8 @@ public final class Calibrations {
         // ** The gains for the steer motors of each swerve module, with gains in amps
         // and rotations. */
         public static final Slot0Configs kSteerGains = new Slot0Configs()
-                .withKP(300).withKI(0).withKD(25)
-                .withKS(2.885833333).withKV(0).withKA(0);
+                .withKP(800).withKI(0).withKD(25)
+                .withKS(17.5).withKV(0).withKA(0);
 
         /**
          * The gains for the drive motors of each swerve module, with gains in amps and
@@ -25,20 +25,23 @@ public final class Calibrations {
          */
         public static final Slot0Configs kDriveGains = new Slot0Configs()
                 .withKP(7).withKI(0).withKD(0)
-                .withKS(7.75).withKV(0).withKA(0);
+                .withKS(8.25).withKV(0).withKA(0);
 
         /**
          * The maximum current that can be applied to the drive motor of a robot locked
          * in place before the wheels start to slip.
          */
-        public static final double kSlipCurrentA = 50;
+        public static final double kSlipCurrentA = 123.5;
+
+        /** The radius of the wheel attached to each swerve module. */
+        public static final double kWheelRadiusInches = 1.878;
 
         /**
          * The speed the robot would attain in meters per second if each of its drive
          * motors had 12V applied to them.
          */
-        public static final double kSpeedAt12VoltsMps = Units.feetToMeters(17.3); // From SDS's website for a FOC Falcon
-                                                                                  // with L3 gearing
+        public static final double kSpeedAt12VoltsMps = 91.0 / Constants.DrivetrainConstants.kDriveGearRatio * (2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches));
+
         /** The CANcoder offset of the front left module. */
         public static final double kFrontLeftEncoderOffset = -0.150146484375;
         /** The CANcoder offset of the front right module. */
@@ -87,11 +90,8 @@ public final class Calibrations {
          * cycle)/(degrees per second).
          */
         public static final double kD = 0.0;
-        /**
-         * The kFF constant of the wrist motor. In units of fractional duty
-         * cycle.
-         */
-        public static final double kFF = 0.0;
+        public static final int kEncoderOffset = 0;
+        public static final double kS = 0;
     }
     /** Calibrations for the arm. */
     public static final class ArmCalibrations {
@@ -124,10 +124,10 @@ public final class Calibrations {
     /** Calibrations for the kicker. */
     public static final class KickerCalibrations {
         /** The proportional constant for roller feedback in duty cycle / (mm/s) */
-        public static final double kP = 0.0003;
+        public static final double kP = 0;
         /** The derivative constant for roller feedback in duty cycle / (mm/s^2) */
-        public static final double kD = 0.005;
+        public static final double kD = 0;
         /** The roller feedforward constant in duty cycle / (mm/s) */
-        public static final double kFF = 0.0007;
+        public static final double kS = 0;
     }
 }

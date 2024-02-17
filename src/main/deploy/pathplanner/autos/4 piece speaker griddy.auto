@@ -1,0 +1,184 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7503048181533813,
+      "y": 6.661335468292236
+    },
+    "rotation": 59.264531872204245
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetShooterSpeed 5000"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetWristPosition 45"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetShooterSpeed 1000"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "4 piece speaker griddy.1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RunIntake 1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RunIntake 0"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetWristPosition 45"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "4 piece speaker griddy.2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RunIntake 1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RunIntake 0"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetWristPosition 45"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "4 piece speaker griddy.3"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RunIntake 1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RunIntake 0"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetWristPosition 45"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}

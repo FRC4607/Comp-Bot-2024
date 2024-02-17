@@ -10,6 +10,9 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Calibrations.IntakeCalibrations;
 import frc.robot.Constants.IntakeConstants;
@@ -25,6 +28,8 @@ public class IntakeSubsystem extends SubsystemBase {
     // private final CANSparkFlex m_agitatorMotor;
     // private final SparkPIDController m_agitatorPid;
     // private final RelativeEncoder m_agitatorEncoder;
+
+    private final DigitalInput m_input;
 
     private double m_intakePowerCoefficient;
 
@@ -54,6 +59,9 @@ public class IntakeSubsystem extends SubsystemBase {
         // );
         // CANSparkUtil.ConfigPIDCANSpark(IntakeCalibrations.kAgitatorP, 0, 0, 0, m_agitatorMotor);
         // m_agitatorPid = m_agitatorMotor.getPIDController();
+
+        m_input = new DigitalInput(0);
+
         m_intakePowerCoefficient = 1.0;
     }
 
@@ -98,6 +106,15 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /**
+     * returns true whenever the Intake is intaking a note.
+     * 
+     * @return whether there is a note currently in the intake.
+     */
+    public boolean hasNote() {
+        return m_input.get();
+    }
+
+    /**
      * Returns the agitator's velocity in mm/s.
      * 
      * @return The agitator's velocity in mm/s.
@@ -105,4 +122,8 @@ public class IntakeSubsystem extends SubsystemBase {
     // public double agitatorMmPerS() {
     //     return m_agitatorEncoder.getVelocity();
     // }
+
+    public void periodic() {
+        SmartDashboard.putBoolean("Beam Break", m_input.get());
+    }
 }

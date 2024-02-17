@@ -5,6 +5,14 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -21,24 +29,29 @@ import frc.robot.util.rev.CANSparkUtil;
  * Subsystem that controls the kicker.
  */
 public class KickerSubsystem extends SubsystemBase {
-    private final CANSparkMax m_kicker;
-    private final RelativeEncoder m_encoder;
-    private final SparkPIDController m_pid;
+    private final TalonFX m_kicker;
+
+    private final StatusSignal<Double> m_velocity;
     private final DoubleLogEntry m_velocityLog = new DoubleLogEntry(DataLogManager.getLog(), "kicker/velocity");
+
+    private final VelocityTorqueCurrentFOC m_pid;
 
     /** Creates a new KickerSubsystem. */
     public KickerSubsystem() {
-        m_kicker = new CANSparkMax(KickerConstants.kCANId, MotorType.kBrushless);
-        m_kicker.restoreFactoryDefaults();
-        m_kicker.setInverted(true);
-        m_encoder = m_kicker.getEncoder();
-        m_encoder.setVelocityConversionFactor(
-            (1.0 / 60.0) * // RPM -> RPS
-            (1.0 / KickerConstants.kKickerGearRatio) * // Account for gearing
-            (Math.PI * KickerConstants.kKickerDiameter) // RPS -> MM/S
-        );
-        CANSparkUtil.ConfigPIDCANSpark(KickerCalibrations.kP, 0, KickerCalibrations.kD, KickerCalibrations.kFF, m_kicker);
-        m_pid = m_kicker.getPIDController();
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        config.Feedback.SensorToMechanismRatio = KickerConstants.kKickerGearRatio;
+        config.MotorOutput.Inverted = KickerConstants.kInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        config.Slot0.kP = KickerCalibrations.kP;
+        config.Slot0.kD = KickerCalibrations.kD;
+        config.Slot0.kS = KickerCalibrations.kS;
+        m_kicker = new TalonFX(KickerConstants.kCANId);
+        m_kicker.getConfigurator().apply(config);
+        m_velocity = m_kicker.getVelocity();
+        m_velocity.setUpdateFrequency(50);
+
+        m_pid = new VelocityTorqueCurrentFOC(0);
     }
 
     /**
@@ -56,11 +69,13 @@ public class KickerSubsystem extends SubsystemBase {
      * @param speed The speed to set the kicker wheels to in mm/s.
      */
     public void setKickerSetpoint(double speed) {
-        m_pid.setReference(speed, ControlType.kVelocity);
+        m_pid.Velocity = speed / 1000.0;
+        m_kicker.setControl(m_pid);
     }
 
     @Override
     public void periodic() {
-        m_velocityLog.append(m_encoder.getVelocity());
+        m_velocity.refresh();
+        m_velocityLog.append(m_velocity.getValueAsDouble());
     }
 }

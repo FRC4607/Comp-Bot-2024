@@ -77,12 +77,10 @@ public class ArmSubsystem extends SubsystemBase {
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         // config.Slot0.kS = ArmCalibrations.kS; These values need to be retuned
         // config.Slot0.kG = ArmCalibrations.kG;
-        // config.Slot0.kP = ArmCalibrations.kP;
-        // config.Slot0.kD = ArmCalibrations.kD;
+        config.Slot0.kP = ArmCalibrations.kP;
+        config.Slot0.kD = ArmCalibrations.kD;
         config.Slot0.kG = 25.0;
         config.Slot0.kS = 0.0;
-        config.Slot0.kP = 0;
-        config.Slot0.kD = 0;
 
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = ArmConstants.kReverseSoftLimit;

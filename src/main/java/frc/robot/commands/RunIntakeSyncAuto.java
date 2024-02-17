@@ -13,7 +13,7 @@ import frc.robot.subsystems.KickerSubsystem;
 /**
  * Controls the intake and kicker so they are at the same linear speed.
  */
-public class RunIntakeSync extends Command {
+public class RunIntakeSyncAuto extends Command {
     private final IntakeSubsystem m_intake;
     private final KickerSubsystem m_kicker;
     private final DoubleSupplier m_power;
@@ -24,11 +24,11 @@ public class RunIntakeSync extends Command {
     private static final double MAX_SURFACE_SPEED = 3000.0;
 
     /**
-     * Creates a new RunIntakeSync.
+     * Creates a new RunIntakeSyncAuto. Provides the same functionality as {@link RunIntakesSync}, but exits immidiately without setting speeds to 0 on exit.
      * 
      * @param speed The percentage of the max surface speed to run the kicker and intake at in the range [-1, 1].
      */
-    public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker) {
+    public RunIntakeSyncAuto(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker) {
         m_power = power;
         m_intake = intake;
         m_kicker = kicker;
@@ -42,7 +42,7 @@ public class RunIntakeSync extends Command {
         m_hadNote = false;
     }
 
-    // Called every time the scheduler runs while the command is scheduled.
+    // Called when the command is initially scheduled.
     @Override
     public void execute() {
         double surfaceSpeed = m_power.getAsDouble() * MAX_SURFACE_SPEED;
@@ -61,12 +61,10 @@ public class RunIntakeSync extends Command {
     @Override
     public boolean isFinished() {
 
-        
-
         if (m_intake.hasNote() == false) {
-            m_hadNote = true; 
-            i = 0;
+            m_hadNote = true;    
         } else if (m_hadNote) {
+
 
             if (m_intake.hasNote()) {
                 i ++;
@@ -75,8 +73,8 @@ public class RunIntakeSync extends Command {
             if (i >= 20) {
                 return true;
             }
-        } 
-        
-        return false;
+        }
+
+        return false;    
     }
 }

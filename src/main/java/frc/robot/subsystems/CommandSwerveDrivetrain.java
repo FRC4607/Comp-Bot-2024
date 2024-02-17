@@ -12,6 +12,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants.SteerFeedbackTy
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -27,9 +28,12 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Calibrations;
 import frc.robot.Constants;
+import frc.robot.commands.RunIntake;
+import frc.robot.commands.SetShooterSpeed;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -38,7 +42,7 @@ import frc.robot.Constants;
 public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private static final SwerveRequest.ApplyChassisSpeeds m_autoSetter = new SwerveRequest.ApplyChassisSpeeds()
-            .withSteerRequestType(SteerRequestType.MotionMagicExpo)
+            .withSteerRequestType(SteerRequestType.MotionMagic)
             .withDriveRequestType(DriveRequestType.Velocity);
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
@@ -53,7 +57,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
-        configPathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -62,7 +65,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     private CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
-        configPathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
         }
@@ -72,7 +74,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     /**
      * Configures PathPlanner's auto builder.
      */
-    private void configPathPlanner() {
+    public void configPathPlanner() {
+        
         AutoBuilder.configureHolonomic(
                 () -> {
                     return this.getState().Pose;
@@ -85,7 +88,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     this.setControl(m_autoSetter.withSpeeds(speeds));
                 },
                 new HolonomicPathFollowerConfig(
-                        new PIDConstants(10.0, 0.0, 0.0),
+                        new PIDConstants(20.0, 0.0, 0.0),
                         new PIDConstants(10.0, 0.0, 0.0),
                         Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps,
                         m_moduleLocations[0].getNorm(),
@@ -94,8 +97,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                 false),
                         1 / this.UpdateFrequency),
                 () -> false, // change
-                this);
-    }
+                this);        
+    }  
 
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
@@ -145,7 +148,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SwerveModuleConstantsFactory ConstantCreator = new SwerveModuleConstantsFactory()
                 .withDriveMotorGearRatio(Constants.DrivetrainConstants.kDriveGearRatio)
                 .withSteerMotorGearRatio(Constants.DrivetrainConstants.kSteerGearRatio)
-                .withWheelRadius(Constants.DrivetrainConstants.kWheelRadiusInches)
+                .withWheelRadius(Calibrations.DrivetrainCalibrations.kWheelRadiusInches)
                 .withSlipCurrent(Calibrations.DrivetrainCalibrations.kSlipCurrentA)
                 .withSteerMotorGains(Calibrations.DrivetrainCalibrations.kSteerGains)
                 .withDriveMotorGains(Calibrations.DrivetrainCalibrations.kDriveGains)

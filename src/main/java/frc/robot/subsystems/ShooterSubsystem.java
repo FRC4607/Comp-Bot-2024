@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -25,13 +26,14 @@ import frc.robot.Constants.ShooterConstants;
  * Subsystem for the shooter on the robot.
  */
 public class ShooterSubsystem extends SubsystemBase {
-    private final TalonFX m_upper;
-    private final TalonFX m_lower;
+    private final TalonFX m_outer;
+    private final TalonFX m_inner;
 
-    private final StatusSignal<Double> m_upperVel;
-    private final StatusSignal<Double> m_lowerVel;
+    private final StatusSignal<Double> m_outerVel;
+    private final StatusSignal<Double> m_innerVel;
 
     private final VelocityTorqueCurrentFOC m_req;
+    private final Follower m_follow;
     private final NeutralOut m_neutral;
 
     private double m_shooterPowerCoefficient;
@@ -43,8 +45,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** Creates a new ShooterSubsystem. */
     public ShooterSubsystem() {
-        m_upper = new TalonFX(ShooterConstants.kUpperCANId);
-        m_lower = new TalonFX(ShooterConstants.kLowerCANId);
+        m_outer = new TalonFX(ShooterConstants.kOuterCANId);
+        m_inner = new TalonFX(ShooterConstants.kInnerCANId);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -54,15 +56,17 @@ public class ShooterSubsystem extends SubsystemBase {
         config.Slot0.kS = ShooterCalibrations.kS;
         config.Slot0.kP = ShooterCalibrations.kP;
 
-        config.MotorOutput.Inverted = Constants.ShooterConstants.kInvertUpper ? InvertedValue.Clockwise_Positive
+        config.MotorOutput.Inverted = Constants.ShooterConstants.kInvertOuter ? InvertedValue.Clockwise_Positive
                 : InvertedValue.CounterClockwise_Positive;
-        m_upper.getConfigurator().apply(config);
-        config.MotorOutput.Inverted = Constants.ShooterConstants.kInvertLower ? InvertedValue.Clockwise_Positive
-                : InvertedValue.CounterClockwise_Positive;
-        m_lower.getConfigurator().apply(config);
+        m_outer.getConfigurator().apply(config);
+        config.MotorOutput.Inverted = Constants.ShooterConstants.kInvertOuter ? InvertedValue.CounterClockwise_Positive
+                : InvertedValue.Clockwise_Positive;
+        m_inner.getConfigurator().apply(config);
 
-        m_upperVel = m_upper.getVelocity();
-        m_lowerVel = m_lower.getVelocity();
+        m_follow = new Follower(ShooterConstants.kOuterCANId, true);
+
+        m_outerVel = m_outer.getVelocity();
+        m_innerVel = m_inner.getVelocity();
 
         m_req = new VelocityTorqueCurrentFOC(0);
 
@@ -73,7 +77,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        BaseStatusSignal.refreshAll(m_upperVel, m_lowerVel);
+        m_inner.setControl(m_follow);
+        BaseStatusSignal.refreshAll(m_outerVel, m_innerVel);
         // m_uVelLog.append(m_upperVel.getValueAsDouble()); // This function was causing
         // a ton of loop overruns at one point, so these lines are commented out, at
         // least for now.
@@ -88,11 +93,9 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public void setShooterRPMSetpoint(double newShooterRPMSetpoint) {
         if (Double.compare(newShooterRPMSetpoint, 0.0) == 0) {
-            m_upper.setControl(m_neutral);
-            m_lower.setControl(m_neutral);
+            m_outer.setControl(m_neutral);
         } else {
-            m_upper.setControl(m_req.withVelocity(newShooterRPMSetpoint / 60.0));
-            m_lower.setControl(m_req.withVelocity(newShooterRPMSetpoint / 60.0));
+            m_inner.setControl(m_req.withVelocity(newShooterRPMSetpoint / 60.0));
         }
     }
 
@@ -107,20 +110,20 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
-     * Returns the current RPM of the upper shooter.
+     * Returns the current RPM of the outer shooter.
      * 
-     * @return The current RPM of the upper shooter.
+     * @return The current RPM of the outer shooter.
      */
-    public double upperShooterRPM() {
-        return m_upperVel.getValueAsDouble();
+    public double outerShooterRPM() {
+        return m_outerVel.getValueAsDouble() * 60.0;
     }
 
     /**
-     * Returns the current RPM of the lower shooter.
+     * Returns the current RPM of the outer shooter.
      * 
-     * @return the current RPM of the lower hooter.
+     * @return the current RPM of the outer hooter.
      */
-    public double lowerShooterRPM() {
-        return m_upperVel.getValueAsDouble();
+    public double innerShooterRPM() {
+        return m_innerVel.getValueAsDouble() * 60.0;
     }
 }

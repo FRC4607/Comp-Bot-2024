@@ -70,7 +70,7 @@ public class RobotContainer {
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed)
                         .withRotationalRate(-joystick.getRightX() * MaxAngularRate)));
         joystick.a().onTrue(new SetShooterSpeed(5200, m_shooter)).onFalse(new SetShooterSpeed(0, m_shooter));
-        joystick.b().onTrue(new SetShooterSpeed(0, m_shooter).andThen(new MoveWristToPosition(90.0, 5.0, m_wrist)
+        joystick.b().onTrue(new ParallelCommandGroup(new SetShooterSpeed(0, m_shooter), new MoveWristToPosition(90.0, 5.0, m_wrist)
                 .andThen(new MoveArmToPosition(0.0, 5.0, m_arm)).andThen(new InstantCommand(() -> {
                     m_arm.setNeutral();
                 }, m_arm))));

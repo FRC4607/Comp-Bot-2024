@@ -90,11 +90,8 @@ public final class Calibrations {
          * cycle)/(degrees per second).
          */
         public static final double kD = 0.0;
-        /**
-         * The kFF constant of the wrist motor. In units of fractional duty
-         * cycle.
-         */
-        public static final double kFF = 0.0;
+        public static final int kEncoderOffset = 0;
+        public static final double kS = 0;
     }
     /** Calibrations for the arm. */
     public static final class ArmCalibrations {
@@ -127,10 +124,10 @@ public final class Calibrations {
     /** Calibrations for the kicker. */
     public static final class KickerCalibrations {
         /** The proportional constant for roller feedback in duty cycle / (mm/s) */
-        public static final double kP = 0.0003;
+        public static final double kP = 0;
         /** The derivative constant for roller feedback in duty cycle / (mm/s^2) */
-        public static final double kD = 0.005;
+        public static final double kD = 0;
         /** The roller feedforward constant in duty cycle / (mm/s) */
-        public static final double kFF = 0.0007;
+        public static final double kS = 0;
     }
 }

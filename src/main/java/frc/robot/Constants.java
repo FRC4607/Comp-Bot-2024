@@ -89,14 +89,12 @@ public final class Constants {
     /** Constants for the shooter. */
     public static final class ShooterConstants {
         /** The CAN Id of the upper shooter motor. */
-        public static final int kUpperCANId = 5;
+        public static final int kOuterCANId = 44;
         /** The CAN Id of the lower shooter motor. */
-        public static final int kLowerCANId = 4;
+        public static final int kInnerCANId = 46;
 
-        /** Whether or not to invert the upper shooter motor. */
-        public static final boolean kInvertUpper = true;
-        /** Whether or not to invert the lower shooter motor. */
-        public static final boolean kInvertLower = false;
+        /** Whether or not to invert the outer shooter motor. */
+        public static final boolean kInvertOuter = false;
     }
 
     /** Constants for the kicker. */
@@ -104,9 +102,11 @@ public final class Constants {
         /** The CAN Id of the kicker wheel motor controller. */
         public static final int kCANId = 14;
         /** The gear ratio (x input rotations : 1 output rotation) of the kicker motor to the kicker. */
-        public static final double kKickerGearRatio = 5.0;
+        public static final double kKickerGearRatio = 3.0 * (20.0 / 17.0);
         /** The diameter of the kickers in mm. */
         public static final double kKickerDiameter = 24.5;
+        /** Whether or not to invert the kicker motor. */
+        public static final boolean kInverted = true;
     }
 
     /** Constants for the intake. */
@@ -134,11 +134,13 @@ public final class Constants {
         /** The CAN Id of the wrist motor controller. */
         public static final int kCANId = 15;
         /** The number of rotor rotations to produce one sensor rotation. */
-        public static final double kRotorToSensor = 1.0;
+        public static final double kRotorToSensor = 28.0;
         /** The number of sensor rotations to produce one mechanism rotation. */
-        public static final double kSensorToMechanism = 100.0;
+        public static final double kSensorToMechanism = 1.0;
         /** In manual control, the top speed of the wrist in degrees per second. */
         public static final double kWristManualDegreesPerSecond = 10.0;
+        public static final boolean kInverted = false;
+        public static final boolean kInvertEncoder = false;
     }
 
     /** Constants for the arm. */

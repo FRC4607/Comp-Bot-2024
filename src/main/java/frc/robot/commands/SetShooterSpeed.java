@@ -42,6 +42,6 @@ public class SetShooterSpeed extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(m_subsystem.upperShooterRPM() - (m_speed / 60.0)) < 5.0;
+        return Math.abs(m_subsystem.outerShooterRPM() - m_speed) < 300.0;
     }
 }

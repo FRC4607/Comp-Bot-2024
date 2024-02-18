@@ -15,12 +15,15 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 // import edu.wpi.first.util.datalog.DoubleLogEntry;
 // import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Calibrations.ShooterCalibrations;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.util.ctre.TalonFXStandardSignalLogger;
 
 /**
  * Subsystem for the shooter on the robot.
@@ -29,8 +32,10 @@ public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX m_outer;
     private final TalonFX m_inner;
 
-    private final StatusSignal<Double> m_outerVel;
-    private final StatusSignal<Double> m_innerVel;
+    private final TalonFXStandardSignalLogger m_outerLog;
+    private final TalonFXStandardSignalLogger m_innerLog;
+
+    private final DoubleLogEntry m_setpointLog = new DoubleLogEntry(DataLogManager.getLog(), "/shooter/setpoint");
 
     private final VelocityTorqueCurrentFOC m_req;
     private final Follower m_follow;
@@ -68,8 +73,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
         m_follow = new Follower(ShooterConstants.kOuterCANId, true);
 
-        m_outerVel = m_outer.getVelocity();
-        m_innerVel = m_inner.getVelocity();
+        m_outerLog = new TalonFXStandardSignalLogger(m_outer, "/shooter/outer");
+        m_innerLog = new TalonFXStandardSignalLogger(m_outer, "/shooter/outer");
 
         m_req = new VelocityTorqueCurrentFOC(0);
 
@@ -81,7 +86,8 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         m_inner.setControl(m_follow);
-        BaseStatusSignal.refreshAll(m_outerVel, m_innerVel);
+        m_outerLog.log();
+        m_innerLog.log();
         // m_uVelLog.append(m_upperVel.getValueAsDouble()); // This function was causing
         // a ton of loop overruns at one point, so these lines are commented out, at
         // least for now.
@@ -95,6 +101,7 @@ public class ShooterSubsystem extends SubsystemBase {
      *                              one.
      */
     public void setShooterRPMSetpoint(double newShooterRPMSetpoint) {
+        m_setpointLog.append(newShooterRPMSetpoint);
         if (Double.compare(newShooterRPMSetpoint, 0.0) == 0) {
             m_outer.setControl(m_neutral);
         } else {
@@ -118,7 +125,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return The current RPM of the outer shooter.
      */
     public double outerShooterRPM() {
-        return m_outerVel.getValueAsDouble() * 60.0;
+        return m_outerLog.m_velocity.getValueAsDouble() * 60.0;
     }
 
     /**
@@ -127,6 +134,6 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return the current RPM of the outer hooter.
      */
     public double innerShooterRPM() {
-        return m_innerVel.getValueAsDouble() * 60.0;
+        return m_innerLog.m_velocity.getValueAsDouble() * 60.0;
     }
 }

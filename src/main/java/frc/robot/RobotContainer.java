@@ -93,6 +93,7 @@ public class RobotContainer {
         ).onFalse(new RunKickerWheel(1.0, m_kicker).withTimeout(1.0).andThen(new SetShooterSpeed(0, m_shooter)));
         joystick.povLeft().onTrue(new MoveArmToPosition(45.0, 5.0, m_arm));
         joystick.povRight().onTrue(new MoveArmToPosition(5.0, 5.0, m_arm));
+        joystick.povDown().onTrue(new SetShooterSpeed(-1000, m_shooter));
     }
 
     public RobotContainer() {

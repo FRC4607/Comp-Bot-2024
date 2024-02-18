@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -11,9 +12,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
+    private static BaseStatusSignal[] m_signalsToRefresh = {};
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
+
+    public static void addSignals(BaseStatusSignal... signals) {
+        BaseStatusSignal[] newSignals = new BaseStatusSignal[m_signalsToRefresh.length + signals.length];
+        System.arraycopy(m_signalsToRefresh, 0, newSignals, 0, m_signalsToRefresh.length);
+        System.arraycopy(signals, 0, newSignals, m_signalsToRefresh.length, newSignals.length);
+        m_signalsToRefresh = newSignals;
+    }
 
     @Override
     public void robotInit() {
@@ -23,6 +32,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
+        // Refresh every signal in one go before running loop
+        BaseStatusSignal.refreshAll(m_signalsToRefresh);
         CommandScheduler.getInstance().run();
     }
 

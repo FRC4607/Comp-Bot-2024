@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Calibrations.KickerCalibrations;
 import frc.robot.Constants.KickerConstants;
+import frc.robot.util.ctre.TalonFXStandardSignalLogger;
 import frc.robot.util.rev.CANSparkUtil;
 
 /**
@@ -32,8 +33,8 @@ import frc.robot.util.rev.CANSparkUtil;
 public class KickerSubsystem extends SubsystemBase {
     private final TalonFX m_kicker;
 
-    private final StatusSignal<Double> m_velocity;
-    private final DoubleLogEntry m_velocityLog = new DoubleLogEntry(DataLogManager.getLog(), "kicker/velocity");
+    private final TalonFXStandardSignalLogger m_log;
+    private final DoubleLogEntry m_setpointLog = new DoubleLogEntry(DataLogManager.getLog(), "/kicker/setpoint");
 
     private final VelocityTorqueCurrentFOC m_pid;
 
@@ -49,8 +50,8 @@ public class KickerSubsystem extends SubsystemBase {
         config.Slot0.kS = KickerCalibrations.kS;
         m_kicker = new TalonFX(KickerConstants.kCANId);
         m_kicker.getConfigurator().apply(config);
-        m_velocity = m_kicker.getVelocity();
-        m_velocity.setUpdateFrequency(50);
+
+        m_log = new TalonFXStandardSignalLogger(m_kicker, "/kicker");
 
         m_pid = new VelocityTorqueCurrentFOC(0);
     }
@@ -71,12 +72,12 @@ public class KickerSubsystem extends SubsystemBase {
      */
     public void setKickerSetpoint(double speed) {
         m_pid.Velocity = speed / (Math.PI * Constants.KickerConstants.kKickerDiameter);
+        m_setpointLog.append(m_pid.Velocity);
         m_kicker.setControl(m_pid);
     }
 
     @Override
     public void periodic() {
-        m_velocity.refresh();
-        m_velocityLog.append(m_velocity.getValueAsDouble());
+        m_log.log();
     }
 }

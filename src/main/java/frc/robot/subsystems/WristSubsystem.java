@@ -21,13 +21,17 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Calibrations;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.Calibrations.WristCalibrations;
 import frc.robot.Constants.WristConstants;
+import frc.robot.util.ctre.TalonFXStandardSignalLogger;
 import frc.robot.util.rev.CANSparkUtil;
 
 /**
@@ -45,7 +49,12 @@ public class WristSubsystem extends SubsystemBase {
 
     private double m_setpoint;
 
-    private final StatusSignal<Double> m_position;
+    private final TalonFXStandardSignalLogger m_log;
+
+    private final StatusSignal<Double> m_armSetpoint;
+    private final DoubleLogEntry m_armSetpointLog = new DoubleLogEntry(DataLogManager.getLog(), "/arm/setpoint");
+
+    private final DoubleLogEntry m_armGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/arm/goal");
 
     /**
      * Creates a new WristSubsystem.
@@ -82,8 +91,11 @@ public class WristSubsystem extends SubsystemBase {
         m_pid = new MotionMagicTorqueCurrentFOC(0.25);
 
         //m_position = m_encoder.getPosition();
-        m_position = m_motor.getPosition();
-        m_position.setUpdateFrequency(500);
+        m_log = new TalonFXStandardSignalLogger(m_motor, "/wrist");
+
+        m_armSetpoint = m_motor.getClosedLoopReference();
+        m_armSetpoint.setUpdateFrequency(50.0);
+        Robot.addSignals(m_armSetpoint);
 
         m_wristPowerCoefficient = 1.0;
 
@@ -93,6 +105,10 @@ public class WristSubsystem extends SubsystemBase {
     public void periodic() {
         m_pid.Position = (m_setpoint - m_armAngleSupplier.getAsDouble()) / 360.0;
         m_motor.setControl(m_pid);
+
+        m_armGoalLog.append(m_pid.Position);
+        m_armSetpointLog.append(m_armSetpoint.getValueAsDouble(), (long) (m_armSetpoint.getTimestamp().getTime() * 1e6));
+
         SmartDashboard.putNumber("Wrist Angle", m_setpoint);
         SmartDashboard.putNumber("Arm Angle", m_armAngleSupplier.getAsDouble());
         SmartDashboard.putNumber("Setpoint", m_setpoint - m_armAngleSupplier.getAsDouble());
@@ -127,8 +143,7 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public double getRawWristPosition() {
-        m_position.refresh();
-        return m_position.getValueAsDouble() * 360;
+        return m_log.m_pos.getValueAsDouble() * 360;
     }
 
     /**

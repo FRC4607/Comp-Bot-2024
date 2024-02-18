@@ -4,36 +4,33 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.MoveArmToPosition;
 import frc.robot.commands.MoveWristToPosition;
 import frc.robot.commands.Retract;
-import frc.robot.commands.RunIntake;
-import frc.robot.commands.RunKickerWheel;
-import frc.robot.commands.SetShooterSpeed;
-import frc.robot.subsystems.KickerSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.WristSubsystem;
-import frc.robot.util.swerve.SlipCurrentTest;
 import frc.robot.commands.RunIntakeSync;
 import frc.robot.commands.RunIntakeSyncAuto;
+import frc.robot.commands.RunKickerWheel;
+import frc.robot.commands.SetShooterSpeed;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.KickerSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.WristSubsystem;
 
 public class RobotContainer {
     private static final double MaxSpeed = Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps;

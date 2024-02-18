@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.NeutralOut;
@@ -17,11 +15,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
-// import edu.wpi.first.util.datalog.DoubleLogEntry;
-// import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Calibrations.ShooterCalibrations;
+import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.util.ctre.TalonFXStandardSignalLogger;
 
@@ -42,11 +38,6 @@ public class ShooterSubsystem extends SubsystemBase {
     private final NeutralOut m_neutral;
 
     private double m_shooterPowerCoefficient;
-
-    // private final DoubleLogEntry m_uVelLog = new
-    // DoubleLogEntry(DataLogManager.getLog(), "shooter/upper_vel");
-    // private final DoubleLogEntry m_lVelLog = new
-    // DoubleLogEntry(DataLogManager.getLog(), "shooter/lower_vel");
 
     /** Creates a new ShooterSubsystem. */
     public ShooterSubsystem() {
@@ -88,10 +79,6 @@ public class ShooterSubsystem extends SubsystemBase {
         m_inner.setControl(m_follow);
         m_outerLog.log();
         m_innerLog.log();
-        // m_uVelLog.append(m_upperVel.getValueAsDouble()); // This function was causing
-        // a ton of loop overruns at one point, so these lines are commented out, at
-        // least for now.
-        // m_lVelLog.append(m_lowerVel.getValueAsDouble());
     }
 
     /**

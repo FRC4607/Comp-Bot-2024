@@ -4,28 +4,20 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
 
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Calibrations.KickerCalibrations;
+import frc.robot.Constants;
 import frc.robot.Constants.KickerConstants;
 import frc.robot.util.ctre.TalonFXStandardSignalLogger;
-import frc.robot.util.rev.CANSparkUtil;
 
 /**
  * Subsystem that controls the kicker.

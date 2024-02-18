@@ -44,11 +44,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double m_lastSimTime;
 
     private DoubleLogEntry m_logFailDAQ = new DoubleLogEntry(DataLogManager.getLog(), "swerve/daq_fail");
-    private StructArrayLogEntry<SwerveModuleState> m_logCurrentState = StructArrayLogEntry.create(DataLogManager.getLog(), "swerve/modules", SwerveModuleState.struct);
-    private StructArrayLogEntry<SwerveModuleState> m_logTargetState = StructArrayLogEntry.create(DataLogManager.getLog(), "swerve/targets", SwerveModuleState.struct);
+    private StructArrayLogEntry<SwerveModuleState> m_logCurrentState = StructArrayLogEntry
+            .create(DataLogManager.getLog(), "swerve/modules", SwerveModuleState.struct);
+    private StructArrayLogEntry<SwerveModuleState> m_logTargetState = StructArrayLogEntry
+            .create(DataLogManager.getLog(), "swerve/targets", SwerveModuleState.struct);
     private DoubleLogEntry m_logPeriod = new DoubleLogEntry(DataLogManager.getLog(), "swerve/period");
-    private StructLogEntry<Pose2d> m_logPose = StructLogEntry.create(DataLogManager.getLog(), "swerve/pose", Pose2d.struct);
-    private StructLogEntry<ChassisSpeeds> m_logSpeeds = StructLogEntry.create(DataLogManager.getLog(), "swerve/speeds", ChassisSpeeds.struct);
+    private StructLogEntry<Pose2d> m_logPose = StructLogEntry.create(DataLogManager.getLog(), "swerve/pose",
+            Pose2d.struct);
+    private StructLogEntry<ChassisSpeeds> m_logSpeeds = StructLogEntry.create(DataLogManager.getLog(), "swerve/speeds",
+            ChassisSpeeds.struct);
 
     private CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
             SwerveModuleConstants... modules) {
@@ -71,7 +75,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      * Configures PathPlanner's auto builder.
      */
     public void configPathPlanner() {
-        
         AutoBuilder.configureHolonomic(
                 () -> {
                     return this.getState().Pose;
@@ -93,8 +96,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                 false),
                         1 / this.UpdateFrequency),
                 () -> false, // change
-                this);        
-    }  
+                this);
+    }
 
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
@@ -122,6 +125,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return run(() -> this.setControl(requestSupplier.get()));
     }
 
+    /**
+     * A callback that is called by the odometry thread when new data is available.
+     * 
+     * @param state The
+     *              {@link com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain.SwerveDriveState}
+     *              object given by the odometry thread.
+     */
     private void telemetry(SwerveDriveState state) {
         m_logFailDAQ.append(state.FailedDaqs);
         m_logCurrentState.append(state.ModuleStates);
@@ -138,7 +148,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      */
     public static CommandSwerveDrivetrain getInstance() {
         SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
-                .withPigeon2Id(Constants.DrivetrainConstants.kPigeonId)
+                .withPigeon2Id(Constants.DrivetrainConstants.kPigeonID)
                 .withCANbusName(Constants.DrivetrainConstants.kCANbusName);
 
         SwerveModuleConstantsFactory ConstantCreator = new SwerveModuleConstantsFactory()
@@ -158,30 +168,30 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 .withSteerMotorInverted(Constants.DrivetrainConstants.kSteerMotorReversed);
 
         SwerveModuleConstants FrontLeft = ConstantCreator.createModuleConstants(
-                Constants.DrivetrainConstants.kFrontLeftSteerMotorId,
-                Constants.DrivetrainConstants.kFrontLeftDriveMotorId, Constants.DrivetrainConstants.kFrontLeftEncoderId,
+                Constants.DrivetrainConstants.kFrontLeftSteerMotorID,
+                Constants.DrivetrainConstants.kFrontLeftDriveMotorID, Constants.DrivetrainConstants.kFrontLeftEncoderID,
                 Calibrations.DrivetrainCalibrations.kFrontLeftEncoderOffset,
                 Units.inchesToMeters(Constants.DrivetrainConstants.kFrontLeftXPosInches),
                 Units.inchesToMeters(Constants.DrivetrainConstants.kFrontLeftYPosInches),
                 Constants.DrivetrainConstants.kInvertLeftSide);
         SwerveModuleConstants FrontRight = ConstantCreator.createModuleConstants(
-                Constants.DrivetrainConstants.kFrontRightSteerMotorId,
-                Constants.DrivetrainConstants.kFrontRightDriveMotorId,
-                Constants.DrivetrainConstants.kFrontRightEncoderId,
+                Constants.DrivetrainConstants.kFrontRightSteerMotorID,
+                Constants.DrivetrainConstants.kFrontRightDriveMotorID,
+                Constants.DrivetrainConstants.kFrontRightEncoderID,
                 Calibrations.DrivetrainCalibrations.kFrontRightEncoderOffset,
                 Units.inchesToMeters(Constants.DrivetrainConstants.kFrontRightXPosInches),
                 Units.inchesToMeters(Constants.DrivetrainConstants.kFrontRightYPosInches),
                 Constants.DrivetrainConstants.kInvertRightSide);
         SwerveModuleConstants BackLeft = ConstantCreator.createModuleConstants(
-                Constants.DrivetrainConstants.kBackLeftSteerMotorId,
-                Constants.DrivetrainConstants.kBackLeftDriveMotorId, Constants.DrivetrainConstants.kBackLeftEncoderId,
+                Constants.DrivetrainConstants.kBackLeftSteerMotorID,
+                Constants.DrivetrainConstants.kBackLeftDriveMotorID, Constants.DrivetrainConstants.kBackLeftEncoderID,
                 Calibrations.DrivetrainCalibrations.kBackLeftEncoderOffset,
                 Units.inchesToMeters(Constants.DrivetrainConstants.kBackLeftXPosInches),
                 Units.inchesToMeters(Constants.DrivetrainConstants.kBackLeftYPosInches),
                 Constants.DrivetrainConstants.kInvertLeftSide);
         SwerveModuleConstants BackRight = ConstantCreator.createModuleConstants(
-                Constants.DrivetrainConstants.kBackRightSteerMotorId,
-                Constants.DrivetrainConstants.kBackRightDriveMotorId, Constants.DrivetrainConstants.kBackRightEncoderId,
+                Constants.DrivetrainConstants.kBackRightSteerMotorID,
+                Constants.DrivetrainConstants.kBackRightDriveMotorID, Constants.DrivetrainConstants.kBackRightEncoderID,
                 Calibrations.DrivetrainCalibrations.kBackRightEncoderOffset,
                 Units.inchesToMeters(Constants.DrivetrainConstants.kBackRightXPosInches),
                 Units.inchesToMeters(Constants.DrivetrainConstants.kBackRightYPosInches),

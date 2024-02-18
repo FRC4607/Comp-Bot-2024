@@ -17,6 +17,11 @@ public class Robot extends TimedRobot {
 
     private RobotContainer m_robotContainer;
 
+    /**
+     * Adds signals to be refreshed before every loop.
+     * 
+     * @param signals The signals to be refreshed.
+     */
     public static void addSignals(BaseStatusSignal... signals) {
         BaseStatusSignal[] newSignals = new BaseStatusSignal[m_signalsToRefresh.length + signals.length];
         System.arraycopy(m_signalsToRefresh, 0, newSignals, 0, m_signalsToRefresh.length);

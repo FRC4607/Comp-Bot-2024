@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class SlipCurrentTest implements SwerveRequest {
     private static final SwerveModuleState ZERO_STATE = new SwerveModuleState();
-    
+
     @Override
     public StatusCode apply(SwerveControlRequestParameters parameters, SwerveModule... modules) {
         for (SwerveModule module : modules) {

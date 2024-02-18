@@ -8,20 +8,26 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSubsystem;
 
 /**
- * Sets the shooter to a given speed.
+ * Sets the shooter to a given velocity and waits for it to be within a given
+ * tolerance before ending.
  */
 public class SetShooterSpeed extends Command {
     private final double m_speed;
+    private final double m_tol;
     private final ShooterSubsystem m_subsystem;
 
     /**
      * Creates a new SetShooterSpeed.
      * 
-     * @param speedRPM  The speed to set the shooter to in rotations per minute.
-     * @param subsystem A reference to the shooter subsystem.
+     * @param speedRPM  The velocity to set the shooter to in rotations per minute.
+     * @param tol       The tolerance to wait for before ending the command in
+     *                  rotations per minute.
+     * @param subsystem A reference to the
+     *                  {@link frc.robot.subsystems.ShooterSubsystem} object.
      */
-    public SetShooterSpeed(double speedRPM, ShooterSubsystem subsystem) {
+    public SetShooterSpeed(double speedRPM, double tol, ShooterSubsystem subsystem) {
         m_speed = speedRPM;
+        m_tol = tol;
         m_subsystem = subsystem;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(m_subsystem);
@@ -42,6 +48,6 @@ public class SetShooterSpeed extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(m_subsystem.outerShooterRPM() - m_speed) < 300.0;
+        return Math.abs(m_subsystem.outerShooterRPM() - m_speed) < m_tol;
     }
 }

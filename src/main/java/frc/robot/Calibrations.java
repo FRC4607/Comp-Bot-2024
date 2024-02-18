@@ -13,8 +13,10 @@ public final class Calibrations {
      * Calibrations for the drivetrain.
      */
     public static final class DrivetrainCalibrations {
-        // ** The gains for the steer motors of each swerve module, with gains in amps
-        // and rotations. */
+        /**
+         * The gains for the steer motors of each swerve module, with gains in amps
+         * and rotations.
+         */
         public static final Slot0Configs kSteerGains = new Slot0Configs()
                 .withKP(800).withKI(0).withKD(25)
                 .withKS(17.5).withKV(0).withKA(0);
@@ -33,14 +35,16 @@ public final class Calibrations {
          */
         public static final double kSlipCurrentA = 123.5;
 
-        /** The radius of the wheel attached to each swerve module. */
+        /** The effective radius of the wheel attached to each swerve module. */
         public static final double kWheelRadiusInches = 1.878;
 
         /**
          * The speed the robot would attain in meters per second if each of its drive
          * motors had 12V applied to them.
          */
-        public static final double kSpeedAt12VoltsMps = 91.0 / Constants.DrivetrainConstants.kDriveGearRatio * (2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches));
+        public static final double kSpeedAt12VoltsMps = 91.0 / Constants.DrivetrainConstants.kDriveGearRatio
+                * (2 * Math.PI * Units.inchesToMeters(kWheelRadiusInches)); // Calculates the robot's free speed from a
+                                                                            // max motor speed of 91 rps.
 
         /** The CANcoder offset of the front left module. */
         public static final double kFrontLeftEncoderOffset = -0.150146484375;
@@ -63,12 +67,15 @@ public final class Calibrations {
      */
     public static final class ShooterCalibrations {
         /**
-         * The kP constant of each of the halves of the shooter. In units of
-         * amps/(rotation per second).
+         * The kP constant of the shooter, in Amps/(rotation per second).
          */
         public static final double kP = 15.0;
-        /** The kS constant of each of the halves of the shooter. In unit of amps. */
+        /** The kS constant of the shooter in Amps. */
         public static final double kS = 6.0;
+        /**
+         * The maximum current that the velocity PID should output in either direction
+         * in Amps.
+         */
         public static final double kMaxCurrent = 40.0;
     }
 
@@ -77,25 +84,27 @@ public final class Calibrations {
      */
     public static final class WristCalibrations {
         /**
-         * The kP constant of the wrist motor. In units of (fractional duty
-         * cycle)/degree.
+         * The kP constant of the wrist motor. In units of Amps/rotation.
          */
         public static final double kP = 1400.0;
         /**
-         * The kI constant of the wrist motor. In units of (fractional duty
-         * cycle)/degree^2.
+         * The kI constant of the wrist motor. In units of Amps/rotation^2.
          */
         public static final double kI = 0.0;
         /**
-         * The kD constant of the wrist motor. In units of (fractional duty
-         * cycle)/(degrees per second).
+         * The kD constant of the wrist motor. In units of Amps/rps.
          */
         public static final double kD = 32.0;
+        /** The absolute encoder offset of the wrist in rotations. */
         public static final int kEncoderOffset = 0;
+        /** The kS constant of the wrist in Amps. */
         public static final double kS = 0.25;
+        /** The maximum velocity motion magic should use in rps. */
         public static final double kMotionMagicMaxVelocity = 1.0;
+        /** The maximum acceleration motion magic should use in rps^2. */
         public static final double kMotionMagicMaxAcceleration = 5.0;
     }
+
     /** Calibrations for the arm. */
     public static final class ArmCalibrations {
         /** The gravity constant for arm feedforward in Amps. */
@@ -106,31 +115,36 @@ public final class Calibrations {
         public static final double kP = 1600.0;
         /** The derivative constant for arm feedback in A/rot*sec. */
         public static final double kD = 275.0;
-        /** The maximum speed the arm should acheieve in rot/sec.  */
+        /** The maximum speed the arm should acheieve in rot/sec. */
         public static final double kMaxSpeedMotionMagic = 0.3;
         /** The maximum acceleration the arm should achieve in rot/sec^2. */
         public static final double kMaxAccelerationMotionMagic = 0.75;
         /** The offset of the absolute encoder on the arm in rotations. */
         public static final double kEncoderOffset = -0.2646484375;
-        /** The maximum amount of current each motor in the arm gearbox should be allowed to output. */
+        /**
+         * The maximum amount of current the controller should be allowed to output in
+         * either direction in Amps.
+         */
         public static final double kMaxArmCurrentPerMotor = 40.0;
     }
+
     /** Calibrations for the intake. */
     public static final class IntakeCalibrations {
-        /** The proportional constant for roller feedback in duty cycle / (mm/s) */
+        /** The proportional constant for roller feedback in duty cycle / (mm/s). */
         public static final double kRollerP = 0.0002;
-        /** The proportional constant for roller feedback in duty cycle / (mm/s) */
+        /** The proportional constant for roller feedback in duty cycle / (mm/s). */
         public static final double kRollerFF = 0.00024;
-        /** The proportional constant for agitator feedback in duty cycle / (mm/s) */
+        /** The proportional constant for agitator feedback in duty cycle / (mm/s). */
         public static final double kAgitatorP = 0.01;
     }
+
     /** Calibrations for the kicker. */
     public static final class KickerCalibrations {
-        /** The proportional constant for roller feedback in duty cycle / (mm/s) */
+        /** The proportional constant for roller feedback in Amps/rps. */
         public static final double kP = 15;
-        /** The derivative constant for roller feedback in duty cycle / (mm/s^2) */
+        /** The derivative constant for roller feedback in Amps/rps^2. */
         public static final double kD = 0;
-        /** The roller feedforward constant in duty cycle / (mm/s) */
+        /** The roller feedforward constant in Amps. */
         public static final double kS = 20;
     }
 }

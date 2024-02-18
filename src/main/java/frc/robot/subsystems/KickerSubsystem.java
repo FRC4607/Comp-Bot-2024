@@ -35,12 +35,13 @@ public class KickerSubsystem extends SubsystemBase {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         config.Feedback.SensorToMechanismRatio = KickerConstants.kKickerGearRatio;
-        config.MotorOutput.Inverted = KickerConstants.kInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = KickerConstants.kInverted ? InvertedValue.Clockwise_Positive
+                : InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.Slot0.kP = KickerCalibrations.kP;
         config.Slot0.kD = KickerCalibrations.kD;
         config.Slot0.kS = KickerCalibrations.kS;
-        m_kicker = new TalonFX(KickerConstants.kCANId);
+        m_kicker = new TalonFX(KickerConstants.kCANID);
         m_kicker.getConfigurator().apply(config);
 
         m_log = new TalonFXStandardSignalLogger(m_kicker, "/kicker");
@@ -58,12 +59,12 @@ public class KickerSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the closed loop speed of the kicker wheels in mm/s.
+     * Sets the closed loop velocity of the kicker wheels in mm/s.
      * 
-     * @param speed The speed to set the kicker wheels to in mm/s.
+     * @param speed The velocity to set the kicker wheels to in mm/s.
      */
-    public void setKickerSetpoint(double speed) {
-        m_pid.Velocity = speed / (Math.PI * Constants.KickerConstants.kKickerDiameter);
+    public void setKickerSetpoint(double velocity) {
+        m_pid.Velocity = velocity / (Math.PI * Constants.KickerConstants.kKickerDiameter);
         m_setpointLog.append(m_pid.Velocity);
         m_kicker.setControl(m_pid);
     }

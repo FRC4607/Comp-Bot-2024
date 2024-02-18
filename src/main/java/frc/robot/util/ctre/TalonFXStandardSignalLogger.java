@@ -9,7 +9,11 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import frc.robot.Robot;
 
-public class TalonFXStandardSignalLogger {    
+/**
+ * A class that manages the logging and storage of useful signals of a single
+ * TalonFX object.
+ */
+public class TalonFXStandardSignalLogger {
     private final TalonFX m_device;
 
     public final StatusSignal<Double> m_pos;
@@ -37,11 +41,18 @@ public class TalonFXStandardSignalLogger {
     public final StatusSignal<Boolean> m_procTempFault;
     private final BooleanLogEntry m_procTempFaultLog;
 
+    /**
+     * Creates a new TalonFXStandardSignalLogger.
+     * 
+     * @param device The {@link com.ctre.phoenix6.hardware.TalonFX} to use.
+     * @param prefix A string that will be prefixed to the various log entries.
+     *               Should not end with a trailing slash.
+     */
     public TalonFXStandardSignalLogger(TalonFX device, String prefix) {
         m_device = device;
 
         DataLog managedLog = DataLogManager.getLog();
-        
+
         m_pos = device.getPosition();
         m_pos.setUpdateFrequency(50.0);
         m_posLog = new DoubleLogEntry(managedLog, prefix + "/pos");
@@ -79,30 +90,38 @@ public class TalonFXStandardSignalLogger {
         m_procTempFaultLog = new BooleanLogEntry(managedLog, prefix + "/faults/proc_temp");
 
         Robot.addSignals(
-            m_pos,
-            m_torque,
-            m_velocity,
-            m_acceleration,
-            m_deviceTempSecondary,
-            m_deviceTemp,
-            m_processorTemp,
-            m_bootDuringEnable,
-            m_hardware,
-            m_deviceTempFault,
-            m_procTempFault
-        );
+                m_pos,
+                m_torque,
+                m_velocity,
+                m_acceleration,
+                m_deviceTempSecondary,
+                m_deviceTemp,
+                m_processorTemp,
+                m_bootDuringEnable,
+                m_hardware,
+                m_deviceTempFault,
+                m_procTempFault);
     }
 
+    /**
+     * Writes the current values of the signals to the log with their timestamps.
+     * This method should be called in the {@code periodic} method of a
+     * {@link edu.wpi.first.wpilibj2.command.Subsystem}.
+     */
     public void log() {
         m_posLog.append(m_pos.getValueAsDouble(), (long) (m_pos.getTimestamp().getTime() * 1e6));
         m_torqueLog.append(m_torque.getValueAsDouble(), (long) (m_torque.getTimestamp().getTime() * 1e6));
         m_velocityLog.append(m_velocity.getValueAsDouble(), (long) (m_velocity.getTimestamp().getTime() * 1e6));
-        m_accelerationLog.append(m_acceleration.getValueAsDouble(), (long) (m_acceleration.getTimestamp().getTime() * 1e6));
+        m_accelerationLog.append(m_acceleration.getValueAsDouble(),
+                (long) (m_acceleration.getTimestamp().getTime() * 1e6));
         m_deviceTempLog.append(m_deviceTemp.getValueAsDouble(), (long) (m_deviceTemp.getTimestamp().getTime() * 1e6));
-        m_deviceTempSecondaryLog.append(m_deviceTempSecondary.getValueAsDouble(), (long) (m_deviceTempSecondary.getTimestamp().getTime() * 1e6));
-        m_processorTempLog.append(m_processorTemp.getValueAsDouble(), (long) (m_processorTemp.getTimestamp().getTime() * 1e6));
+        m_deviceTempSecondaryLog.append(m_deviceTempSecondary.getValueAsDouble(),
+                (long) (m_deviceTempSecondary.getTimestamp().getTime() * 1e6));
+        m_processorTempLog.append(m_processorTemp.getValueAsDouble(),
+                (long) (m_processorTemp.getTimestamp().getTime() * 1e6));
 
-        m_bootDuringEnableLog.append(m_bootDuringEnable.getValue(), (long) (m_bootDuringEnable.getTimestamp().getTime() * 1e6));
+        m_bootDuringEnableLog.append(m_bootDuringEnable.getValue(),
+                (long) (m_bootDuringEnable.getTimestamp().getTime() * 1e6));
         if (m_bootDuringEnable.getValue()) {
             m_device.clearStickyFault_BootDuringEnable();
         }
@@ -110,7 +129,8 @@ public class TalonFXStandardSignalLogger {
         if (m_bootDuringEnable.getValue()) {
             m_device.clearStickyFault_Hardware();
         }
-        m_deviceTempFaultLog.append(m_deviceTempFault.getValue(), (long) (m_deviceTempFault.getTimestamp().getTime() * 1e6));
+        m_deviceTempFaultLog.append(m_deviceTempFault.getValue(),
+                (long) (m_deviceTempFault.getTimestamp().getTime() * 1e6));
         if (m_bootDuringEnable.getValue()) {
             m_device.clearStickyFault_DeviceTemp();
         }

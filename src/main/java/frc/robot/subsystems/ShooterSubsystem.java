@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -35,14 +34,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private final VelocityTorqueCurrentFOC m_req;
     private final Follower m_follow;
-    private final NeutralOut m_neutral;
 
     private double m_shooterPowerCoefficient;
 
     /** Creates a new ShooterSubsystem. */
     public ShooterSubsystem() {
-        m_outer = new TalonFX(ShooterConstants.kOuterCANId);
-        m_inner = new TalonFX(ShooterConstants.kInnerCANId);
+        m_outer = new TalonFX(ShooterConstants.kOuterCANID);
+        m_inner = new TalonFX(ShooterConstants.kInnerCANID);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -62,14 +60,12 @@ public class ShooterSubsystem extends SubsystemBase {
                 : InvertedValue.Clockwise_Positive;
         m_inner.getConfigurator().apply(config);
 
-        m_follow = new Follower(ShooterConstants.kOuterCANId, true);
+        m_follow = new Follower(ShooterConstants.kOuterCANID, true);
 
         m_outerLog = new TalonFXStandardSignalLogger(m_outer, "/shooter/outer");
         m_innerLog = new TalonFXStandardSignalLogger(m_outer, "/shooter/outer");
 
         m_req = new VelocityTorqueCurrentFOC(0);
-
-        m_neutral = new NeutralOut();
 
         m_shooterPowerCoefficient = 1.0;
     }
@@ -89,11 +85,7 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public void setShooterRPMSetpoint(double newShooterRPMSetpoint) {
         m_setpointLog.append(newShooterRPMSetpoint);
-        if (Double.compare(newShooterRPMSetpoint, 0.0) == 0) {
-            m_outer.setControl(m_neutral);
-        } else {
-            m_outer.setControl(m_req.withVelocity(newShooterRPMSetpoint / 60.0));
-        }
+        m_outer.setControl(m_req.withVelocity(newShooterRPMSetpoint / 60.0));
     }
 
     /**

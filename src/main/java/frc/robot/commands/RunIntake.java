@@ -19,7 +19,9 @@ public class RunIntake extends Command {
     /**
      * Creates a new SetIntakeOpenLoop.
      * 
-     * @param speed The open loop speed to run the kicker at in the range [-1, 1].
+     * @param speed  The open loop speed to run the kicker at in the range [-1, 1].
+     * @param intake A refernce to the {@link frc.robot.subsystems.IntakeSubsystem}
+     *               object.
      */
     public RunIntake(DoubleSupplier power, IntakeSubsystem intake) {
         m_power = power;

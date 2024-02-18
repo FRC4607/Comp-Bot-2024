@@ -34,29 +34,31 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** Creates a new IntakeSubsystem. */
     public IntakeSubsystem() {
-        m_rollerMotor = new CANSparkFlex(IntakeConstants.kRollerCANId, MotorType.kBrushless);
+        m_rollerMotor = new CANSparkFlex(IntakeConstants.kRollerCANID, MotorType.kBrushless);
         m_rollerMotor.restoreFactoryDefaults();
         m_rollerMotor.setInverted(IntakeConstants.kRollerInverted);
         m_rollerMotor.setSmartCurrentLimit(60, 20, 3000);
         m_rollerEncoder = m_rollerMotor.getEncoder();
         m_rollerEncoder.setVelocityConversionFactor(
-            (1.0 / 60.0) * // RPM -> RPS
-            (1.0 / IntakeConstants.kRollerGearRatio) * // Account for gearing
-            (Math.PI * IntakeConstants.kRollerDiameter) // RPS -> MM/S
+                (1.0 / 60.0) * // RPM -> RPS
+                        (1.0 / IntakeConstants.kRollerGearRatio) * // Account for gearing
+                        (Math.PI * IntakeConstants.kRollerDiameter) // RPS -> MM/S
         );
         CANSparkUtil.ConfigPIDCANSpark(IntakeCalibrations.kRollerP, 0, 0, IntakeCalibrations.kRollerFF, m_rollerMotor);
         m_rollerPid = m_rollerMotor.getPIDController();
-        // m_agitatorMotor = new CANSparkFlex(IntakeConstants.kAgitatorCANId, MotorType.kBrushless);
+        // m_agitatorMotor = new CANSparkFlex(IntakeConstants.kAgitatorCANID,
+        // MotorType.kBrushless);
         // m_agitatorMotor.restoreFactoryDefaults();
         // m_agitatorMotor.setInverted(IntakeConstants.kAgitatorInverted);
         // m_agitatorMotor.setSmartCurrentLimit(60, 20, 3000);
         // m_agitatorEncoder = m_agitatorMotor.getEncoder();
         // m_agitatorEncoder.setVelocityConversionFactor(
-        //     (1.0 / 60.0) * // RPM -> RPS
-        //     (1.0 / IntakeConstants.kAgitatorGearRatio) * // Account for gearing
-        //     (Math.PI * IntakeConstants.kAgitatorDiameter) // RPS -> MM/S
+        // (1.0 / 60.0) * // RPM -> RPS
+        // (1.0 / IntakeConstants.kAgitatorGearRatio) * // Account for gearing
+        // (Math.PI * IntakeConstants.kAgitatorDiameter) // RPS -> MM/S
         // );
-        // CANSparkUtil.ConfigPIDCANSpark(IntakeCalibrations.kAgitatorP, 0, 0, 0, m_agitatorMotor);
+        // CANSparkUtil.ConfigPIDCANSpark(IntakeCalibrations.kAgitatorP, 0, 0, 0,
+        // m_agitatorMotor);
         // m_agitatorPid = m_agitatorMotor.getPIDController();
 
         m_input = new DigitalInput(0);
@@ -77,7 +79,8 @@ public class IntakeSubsystem extends SubsystemBase {
     /**
      * Sets the setpoint (mm/s) for the intake to use with PID control.
      * 
-     * @param newIntakeRMPSetpoint The new setpoint (mm/s) which updates the old one.
+     * @param newIntakeRMPSetpoint The new setpoint (mm/s) which updates the old
+     *                             one.
      */
     public void setIntakeSetpoint(double newIntakeSetpoint) {
         m_rollerPid.setReference(newIntakeSetpoint, ControlType.kVelocity);
@@ -105,12 +108,12 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /**
-     * returns true whenever the Intake is intaking a note.
+     * Returns true whenever the Intake is intaking a note.
      * 
-     * @return whether there is a note currently in the intake.
+     * @return Whether there is a note currently in the intake.
      */
     public boolean hasNote() {
-        return m_input.get();
+        return !m_input.get();
     }
 
     /**
@@ -119,7 +122,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * @return The agitator's velocity in mm/s.
      */
     // public double agitatorMmPerS() {
-    //     return m_agitatorEncoder.getVelocity();
+    // return m_agitatorEncoder.getVelocity();
     // }
 
     public void periodic() {

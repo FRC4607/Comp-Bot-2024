@@ -11,7 +11,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 
 /**
- * Controls the intake and kicker so they are at the same linear speed.
+ * Controls the intake and kicker so they run at the same linear speed.
  */
 public class RunIntakeSync extends Command {
     private final IntakeSubsystem m_intake;
@@ -26,7 +26,12 @@ public class RunIntakeSync extends Command {
     /**
      * Creates a new RunIntakeSync.
      * 
-     * @param speed The percentage of the max surface speed to run the kicker and intake at in the range [-1, 1].
+     * @param speed  The percentage of the max surface speed to run the kicker and
+     *               intake at in the range [-1, 1].
+     * @param intake A refernce to the {@link frc.robot.subsystems.IntakeSubsystem}
+     *               object.
+     * @param kicker A refernce to the {@link frc.robot.subsystems.KickerSubsystem}
+     *               object.
      */
     public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker) {
         m_power = power;
@@ -60,23 +65,20 @@ public class RunIntakeSync extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-
-        
-
-        if (m_intake.hasNote() == false) {
-            m_hadNote = true; 
+        // If we have a note, reset the counter.
+        if (m_intake.hasNote()) {
+            m_hadNote = true;
             i = 0;
         } else if (m_hadNote) {
-
-            if (m_intake.hasNote()) {
-                i ++;
+            // Wait 20 cycles before exiting for debouncing and delay.
+            if (!m_intake.hasNote()) {
+                i++;
             }
-            
+
             if (i >= 20) {
                 return true;
             }
-        } 
-        
+        }
         return false;
     }
 }

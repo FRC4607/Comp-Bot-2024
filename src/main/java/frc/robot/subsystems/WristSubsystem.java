@@ -54,12 +54,12 @@ public class WristSubsystem extends SubsystemBase {
         // Constants.WristConstants.kInvertEncoder ?
         // SensorDirectionValue.Clockwise_Positive :
         // SensorDirectionValue.CounterClockwise_Positive;
-        // m_encoder = new CANcoder(Constants.WristConstants.kCANId);
+        // m_encoder = new CANcoder(Constants.WristConstants.kCANID);
         // m_encoder.getConfigurator().apply(encoder_config);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.ClosedLoopGeneral.ContinuousWrap = true;
-        // config.Feedback.FeedbackRemoteSensorID = Constants.WristConstants.kCANId;
+        // config.Feedback.FeedbackRemoteSensorID = Constants.WristConstants.kCANID;
         // config.Feedback.FeedbackSensorSource =
         // FeedbackSensorSourceValue.FusedCANcoder;
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -75,7 +75,7 @@ public class WristSubsystem extends SubsystemBase {
         config.Slot0.kS = Calibrations.WristCalibrations.kS;
         config.MotionMagic.MotionMagicAcceleration = Calibrations.WristCalibrations.kMotionMagicMaxAcceleration;
         config.MotionMagic.MotionMagicCruiseVelocity = Calibrations.WristCalibrations.kMotionMagicMaxVelocity;
-        m_motor = new TalonFX(Constants.WristConstants.kCANId);
+        m_motor = new TalonFX(Constants.WristConstants.kCANID);
         m_motor.getConfigurator().apply(config);
 
         m_motor.setPosition(0.25);
@@ -120,14 +120,15 @@ public class WristSubsystem extends SubsystemBase {
     /**
      * Sets the setpoint of the wrist in degrees.
      * 
-     * @param newWristSetpoint The new setpoint for the wrist (degrees)
+     * @param newWristSetpoint The new setpoint for the wrist in degrees. 0deg
+     *                         points along +X, 90deg points along +Z.
      */
     public void setWristSetpoint(double newWristSetpoint) {
         m_setpoint = newWristSetpoint;
     }
 
     /**
-     * sets the max power that can be used by the wrist.
+     * Sets the max power that can be used by the wrist.
      * 
      * @param newWristPowerCoefficient The new value which will be multiplied by the
      *                                 amp limits of each motor.
@@ -136,6 +137,11 @@ public class WristSubsystem extends SubsystemBase {
         m_wristPowerCoefficient = newWristPowerCoefficient;
     }
 
+    /**
+     * Return's the wrist position without compensation for the angle of the arm.
+     * 
+     * @return The wrist's uncompensated position in CCW+ degrees.
+     */
     public double getRawWristPosition() {
         return m_log.m_pos.getValueAsDouble() * 360;
     }
@@ -143,7 +149,8 @@ public class WristSubsystem extends SubsystemBase {
     /**
      * Gets the wrist position in degrees.
      * 
-     * @return The wrist's position in degrees.
+     * @return The wrist's position in degrees, where 0deg points along +X and 90deg
+     *         points along +Z.
      */
     public double getWristPosition() {
         return getRawWristPosition() + m_armAngleSupplier.getAsDouble();

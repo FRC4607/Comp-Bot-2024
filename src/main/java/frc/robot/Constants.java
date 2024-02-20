@@ -160,4 +160,18 @@ public final class Constants {
         /** Whether or not to invert the encoder on the arm. */
         public static final boolean kInvertEncoder = true;
     }
+
+    /** Constants for the climber. */
+    public static final class ClimberConstants {
+        /** the CAN Id of the left side climber motor */
+        public static final int kLeftCANId = 0;
+        /** the can Id of the right side climber motor */
+        public static final int kRightCANId = 0;
+        /** the amp limit for each motor */
+        public static final int kSupplyAmpLimit = 120;
+    
+    
+    
+    
+    }
 }

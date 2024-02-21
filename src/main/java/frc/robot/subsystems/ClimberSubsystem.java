@@ -51,7 +51,7 @@ public class ClimberSubsystem extends SubsystemBase {
      * @param speed The new setpoint (inches) which will upate the
      *                                old one.
      */
-    public void setRightClimberSetpoint(double speed) {
+    public void setRightClimberSpeed(double speed) {
 
         m_rightMotor.set(speed);
     }

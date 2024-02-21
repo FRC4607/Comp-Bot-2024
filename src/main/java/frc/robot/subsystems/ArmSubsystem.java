@@ -109,6 +109,7 @@ public class ArmSubsystem extends SubsystemBase {
     /** Sets the output of the arm to neutral. */
     public void setNeutral() {
         m_front.setControl(m_neutral);
+        
     }
 
     /**

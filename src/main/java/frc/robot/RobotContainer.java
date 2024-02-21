@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.Climb;
 import frc.robot.commands.MoveArmToPosition;
 import frc.robot.commands.MoveWristToPosition;
 import frc.robot.commands.RunKickerWheel;
@@ -23,6 +24,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.commands.RunIntakeSync;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -31,6 +33,7 @@ public class RobotContainer {
     private static final double MaxAngularRate = Math.PI;
 
     private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController operatorJoystick = new CommandXboxController(1);
 
     private final CommandSwerveDrivetrain drivetrain = CommandSwerveDrivetrain.getInstance();
 
@@ -49,6 +52,8 @@ public class RobotContainer {
     private final WristSubsystem m_wrist = new WristSubsystem(m_arm::armPosition);
 
     private final KickerSubsystem m_kicker = new KickerSubsystem();
+
+    private final ClimberSubsystem m_climber = new ClimberSubsystem();
 
     private void configureBindings() {
         m_kicker.setDefaultCommand(new RunIntakeSync(() -> {
@@ -71,6 +76,8 @@ public class RobotContainer {
                 .andThen(new MoveArmToPosition(0.0, 5.0, m_arm)).andThen(new InstantCommand(() -> {
                     m_arm.setNeutral();
                 }, m_arm)));
+        operatorJoystick.leftBumper().whileTrue(new Climb(0.5));
+        operatorJoystick.rightBumper().whileTrue(new Climb(-0.5));
     }
 
     public RobotContainer() {

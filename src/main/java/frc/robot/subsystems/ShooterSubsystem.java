@@ -108,9 +108,9 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
-     * Returns the current RPM of the outer shooter.
+     * Returns the current RPM of the inner shooter.
      * 
-     * @return the current RPM of the outer hooter.
+     * @return The current RPM of the inner shooter.
      */
     public double innerShooterRPM() {
         return m_innerLog.m_velocity.getValueAsDouble() * 60.0;

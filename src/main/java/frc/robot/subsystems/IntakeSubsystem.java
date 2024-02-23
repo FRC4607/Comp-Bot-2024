@@ -108,7 +108,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /**
-     * Returns true whenever the Intake is intaking a note.
+     * Returns true whenever the intake is intaking a note.
      * 
      * @return Whether there is a note currently in the intake.
      */

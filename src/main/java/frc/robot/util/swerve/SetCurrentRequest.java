@@ -13,9 +13,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * A {@link com.ctre.phoenix6.mechanisms.swerve.SwerveRequest} for
- * characterizing the kS value of a drive motor on a swerve drive.
+ * applying a given current value to all of the wheels of a swerve drive. This
+ * works by hijacking the feedforward parameter of the velocity control request,
+ * so ensure the PIDFF constants of the drive wheels are set to 0 in
+ * {@link frc.robot.Calibrations.DrivetrainCalibrations}. If you expect to
+ * command current values over the slip current limit, make sure to set that
+ * value to 800.0 as well.
  */
-public class SlipCurrentTest implements SwerveRequest {
+public class SetCurrentRequest implements SwerveRequest {
     private static final SwerveModuleState ZERO_STATE = new SwerveModuleState();
 
     @Override
@@ -35,7 +40,7 @@ public class SlipCurrentTest implements SwerveRequest {
                 System.err.println(e.toString());
                 return StatusCode.GeneralError;
             }
-            request.FeedForward = SmartDashboard.getNumber("Slip Test Current", 0);
+            request.FeedForward = SmartDashboard.getNumber("Set Current Request", 0);
             module.apply(ZERO_STATE, DriveRequestType.Velocity);
         }
         return StatusCode.OK;

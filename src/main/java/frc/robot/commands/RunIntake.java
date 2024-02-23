@@ -19,7 +19,9 @@ public class RunIntake extends Command {
     /**
      * Creates a new SetIntakeOpenLoop.
      * 
-     * @param speed The open loop speed to run the kicker at in the range [-1, 1].
+     * @param speed  The open loop speed to run the kicker at in the range [-1, 1].
+     * @param intake A refernce to the {@link frc.robot.subsystems.IntakeSubsystem}
+     *               object.
      */
     public RunIntake(DoubleSupplier power, IntakeSubsystem intake) {
         m_power = power;
@@ -37,12 +39,12 @@ public class RunIntake extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_intake.setOpenLoopOutput(0);
+        // m_intake.setOpenLoopOutput(0);
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }

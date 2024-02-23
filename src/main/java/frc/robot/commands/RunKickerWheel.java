@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.KickerSubsystem;
 
 /**
- * Command that sets the kicker wheel to a given speed.
+ * Command that sets the kicker wheel to a given velocity.
  */
 public class RunKickerWheel extends Command {
     private final double m_speed;
@@ -17,7 +17,9 @@ public class RunKickerWheel extends Command {
     /**
      * Creates a new RunKickerWheel.
      * 
-     * @param speed The open loop speed to run the kicker at in the range [-1, 1].
+     * @param speed    The llinear velocity to command the kicker wheel to in mm/s.
+     * @param subsytem A reference to the
+     *                 {@link frc.robot.subsystems.KickerSubsystem} object.
      */
     public RunKickerWheel(double speed, KickerSubsystem subsystem) {
         m_subsystem = subsystem;
@@ -29,13 +31,13 @@ public class RunKickerWheel extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_subsystem.setOpenLoop(m_speed);
+        m_subsystem.setKickerSetpoint(m_speed);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_subsystem.setOpenLoop(0);
+        m_subsystem.setKickerSetpoint(0);
     }
 
     // Returns true when the command should end.

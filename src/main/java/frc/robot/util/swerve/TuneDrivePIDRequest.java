@@ -36,7 +36,7 @@ public class TuneDrivePIDRequest implements SwerveRequest {
             if (configChanged) {
                 modules[i].getDriveMotor().getConfigurator().apply(m_config);
             }
-            modules[i].apply(m_state, DriveRequestType.Velocity, SteerRequestType.MotionMagicExpo);
+            modules[i].apply(m_state, DriveRequestType.Velocity, SteerRequestType.MotionMagic);
         }
         configChanged = false;
         return StatusCode.OK;

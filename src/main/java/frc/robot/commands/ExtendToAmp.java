@@ -5,33 +5,32 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ArmSubsystem;
 
 public class ExtendToAmp extends Command {
-  /** Creates a new extendToAmp. */
-  public ExtendToAmp() {
-    // Use addRequirements() here to declare subsystem dependencies.
-  }
+    /** Creates a new extendToAmp. */
+    public ExtendToAmp() {
+        // Use addRequirements() here to declare subsystem dependencies.
+    }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    // ArmSubsystem.setArmSetpoint(10.0);
-  }
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        // ArmSubsystem.setArmSetpoint(10.0);
+    }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-  }
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+    }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-  }
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+    }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }

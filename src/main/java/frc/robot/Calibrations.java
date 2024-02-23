@@ -18,7 +18,7 @@ public final class Calibrations {
          * and rotations.
          */
         public static final Slot0Configs kSteerGains = new Slot0Configs()
-                .withKP(800).withKI(0).withKD(25)
+                .withKP(1200).withKI(0).withKD(25)
                 .withKS(17.5).withKV(0).withKA(0);
 
         /**
@@ -96,7 +96,7 @@ public final class Calibrations {
          */
         public static final double kD = 32.0;
         /** The absolute encoder offset of the wrist in rotations. */
-        public static final int kEncoderOffset = 0;
+        public static final double kEncoderOffset = -0.4931640625;
         /** The kS constant of the wrist in Amps. */
         public static final double kS = 0.25;
         /** The maximum velocity motion magic should use in rps. */
@@ -120,7 +120,7 @@ public final class Calibrations {
         /** The maximum acceleration the arm should achieve in rot/sec^2. */
         public static final double kMaxAccelerationMotionMagic = 0.75;
         /** The offset of the absolute encoder on the arm in rotations. */
-        public static final double kEncoderOffset = -0.2646484375;
+        public static final double kEncoderOffset = -0.32177734375;
         /**
          * The maximum amount of current the controller should be allowed to output in
          * either direction in Amps.

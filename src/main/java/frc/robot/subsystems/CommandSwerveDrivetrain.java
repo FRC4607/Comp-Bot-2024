@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.EnumSet;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
@@ -17,9 +18,14 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.networktables.NetworkTableEvent.Kind;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StructArrayLogEntry;
 import edu.wpi.first.util.datalog.StructLogEntry;
@@ -30,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Calibrations;
 import frc.robot.Constants;
+import frc.robot.util.ctre.TalonFXStandardSignalLogger;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -43,16 +50,29 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
-    private DoubleLogEntry m_logFailDAQ = new DoubleLogEntry(DataLogManager.getLog(), "swerve/daq_fail");
+    private DoubleLogEntry m_logFailDAQ = new DoubleLogEntry(DataLogManager.getLog(), "/swerve/daqfail");
     private StructArrayLogEntry<SwerveModuleState> m_logCurrentState = StructArrayLogEntry
             .create(DataLogManager.getLog(), "swerve/modules", SwerveModuleState.struct);
     private StructArrayLogEntry<SwerveModuleState> m_logTargetState = StructArrayLogEntry
             .create(DataLogManager.getLog(), "swerve/targets", SwerveModuleState.struct);
-    private DoubleLogEntry m_logPeriod = new DoubleLogEntry(DataLogManager.getLog(), "swerve/period");
-    private StructLogEntry<Pose2d> m_logPose = StructLogEntry.create(DataLogManager.getLog(), "swerve/pose",
+    private DoubleLogEntry m_logPeriod = new DoubleLogEntry(DataLogManager.getLog(), "/swerve/period");
+    private StructLogEntry<Pose2d> m_logPose = StructLogEntry.create(DataLogManager.getLog(), "/swerve/pose",
             Pose2d.struct);
-    private StructLogEntry<ChassisSpeeds> m_logSpeeds = StructLogEntry.create(DataLogManager.getLog(), "swerve/speeds",
+    private StructLogEntry<ChassisSpeeds> m_logSpeeds = StructLogEntry.create(DataLogManager.getLog(),
+            "/swerve/speeds",
             ChassisSpeeds.struct);
+
+    private static final String[] PREFIXES = { "/fl/turn", "/fl/drive", "/fr/turn", "/fr/drive", "/rl/turn",
+            "/rl/drive", "/rr/turn", "/rr/drive" };
+    private final TalonFXStandardSignalLogger[] m_logs = new TalonFXStandardSignalLogger[8];
+
+    private final int m_kickerSubscriber;
+    private final StructLogEntry<Pose2d> m_kickerLog = StructLogEntry.create(DataLogManager.getLog(), "kickerll",
+            Pose2d.struct);
+    private final int m_flywheelSubscriber;
+    private final StructLogEntry<Pose2d> m_flywheelLog = StructLogEntry.create(DataLogManager.getLog(),
+            "flywheelll",
+            Pose2d.struct);
 
     private CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
             SwerveModuleConstants... modules) {
@@ -61,14 +81,61 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             startSimThread();
         }
         this.registerTelemetry(this::telemetry);
+        for (int i = 0; i < 4; i++) {
+            m_logs[i * 2] = new TalonFXStandardSignalLogger(this.Modules[i].getSteerMotor(),
+                    PREFIXES[i * 2], true);
+            m_logs[i * 2 + 1] = new TalonFXStandardSignalLogger(this.Modules[i].getDriveMotor(),
+                    PREFIXES[i * 2 + 1],
+                    true);
+        }
+        m_kickerSubscriber = NetworkTableInstance.getDefault().getTable("limelight-kick").addListener(
+                "botpose_wpiblue",
+                EnumSet.of(Kind.kValueRemote),
+                (NetworkTable table, String topic, NetworkTableEvent event) -> {
+                    double[] result = event.valueData.value.getDoubleArray();
+                    m_kickerLog.append(new Pose2d(result[0], result[1],
+                            Rotation2d.fromDegrees(result[5])));
+                });
+        m_flywheelSubscriber = NetworkTableInstance.getDefault().getTable("limelight-fw").addListener(
+                "botpose_wpiblue",
+                EnumSet.of(Kind.kValueRemote),
+                (NetworkTable table, String topic, NetworkTableEvent event) -> {
+                    double[] result = event.valueData.value.getDoubleArray();
+                    m_flywheelLog.append(new Pose2d(result[0], result[1],
+                            Rotation2d.fromDegrees(result[5])));
+                });
     }
 
-    private CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
+    private CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants,
+            SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
         if (Utils.isSimulation()) {
             startSimThread();
         }
         this.registerTelemetry(this::telemetry);
+        for (int i = 0; i < 4; i++) {
+            m_logs[i * 2] = new TalonFXStandardSignalLogger(this.Modules[i].getSteerMotor(),
+                    PREFIXES[i * 2], true);
+            m_logs[i * 2 + 1] = new TalonFXStandardSignalLogger(this.Modules[i].getDriveMotor(),
+                    PREFIXES[i * 2 + 1],
+                    true);
+        }
+        m_kickerSubscriber = NetworkTableInstance.getDefault().getTable("limelight-kick").addListener(
+                "botpose_wpiblue",
+                EnumSet.of(Kind.kValueRemote),
+                (NetworkTable table, String topic, NetworkTableEvent event) -> {
+                    double[] result = event.valueData.value.getDoubleArray();
+                    m_kickerLog.append(new Pose2d(result[0], result[1],
+                            Rotation2d.fromDegrees(result[5])));
+                });
+        m_flywheelSubscriber = NetworkTableInstance.getDefault().getTable("limelight-fw").addListener(
+                "botpose_wpiblue",
+                EnumSet.of(Kind.kValueRemote),
+                (NetworkTable table, String topic, NetworkTableEvent event) -> {
+                    double[] result = event.valueData.value.getDoubleArray();
+                    m_flywheelLog.append(new Pose2d(result[0], result[1],
+                            Rotation2d.fromDegrees(result[5])));
+                });
     }
 
     /**
@@ -141,6 +208,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         m_logSpeeds.append(state.speeds);
     }
 
+    @Override
+    public void periodic() {
+        for (TalonFXStandardSignalLogger log : m_logs) {
+            log.log();
+        }
+    }
+
     /**
      * Creates an instance of this class with proper configuration values.
      * 
@@ -169,7 +243,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
         SwerveModuleConstants FrontLeft = ConstantCreator.createModuleConstants(
                 Constants.DrivetrainConstants.kFrontLeftSteerMotorID,
-                Constants.DrivetrainConstants.kFrontLeftDriveMotorID, Constants.DrivetrainConstants.kFrontLeftEncoderID,
+                Constants.DrivetrainConstants.kFrontLeftDriveMotorID,
+                Constants.DrivetrainConstants.kFrontLeftEncoderID,
                 Calibrations.DrivetrainCalibrations.kFrontLeftEncoderOffset,
                 Units.inchesToMeters(Constants.DrivetrainConstants.kFrontLeftXPosInches),
                 Units.inchesToMeters(Constants.DrivetrainConstants.kFrontLeftYPosInches),
@@ -184,14 +259,16 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 Constants.DrivetrainConstants.kInvertRightSide);
         SwerveModuleConstants BackLeft = ConstantCreator.createModuleConstants(
                 Constants.DrivetrainConstants.kBackLeftSteerMotorID,
-                Constants.DrivetrainConstants.kBackLeftDriveMotorID, Constants.DrivetrainConstants.kBackLeftEncoderID,
+                Constants.DrivetrainConstants.kBackLeftDriveMotorID,
+                Constants.DrivetrainConstants.kBackLeftEncoderID,
                 Calibrations.DrivetrainCalibrations.kBackLeftEncoderOffset,
                 Units.inchesToMeters(Constants.DrivetrainConstants.kBackLeftXPosInches),
                 Units.inchesToMeters(Constants.DrivetrainConstants.kBackLeftYPosInches),
                 Constants.DrivetrainConstants.kInvertLeftSide);
         SwerveModuleConstants BackRight = ConstantCreator.createModuleConstants(
                 Constants.DrivetrainConstants.kBackRightSteerMotorID,
-                Constants.DrivetrainConstants.kBackRightDriveMotorID, Constants.DrivetrainConstants.kBackRightEncoderID,
+                Constants.DrivetrainConstants.kBackRightDriveMotorID,
+                Constants.DrivetrainConstants.kBackRightEncoderID,
                 Calibrations.DrivetrainCalibrations.kBackRightEncoderOffset,
                 Units.inchesToMeters(Constants.DrivetrainConstants.kBackRightXPosInches),
                 Units.inchesToMeters(Constants.DrivetrainConstants.kBackRightYPosInches),

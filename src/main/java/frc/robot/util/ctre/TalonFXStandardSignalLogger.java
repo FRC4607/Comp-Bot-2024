@@ -1,7 +1,7 @@
 package frc.robot.util.ctre;
 
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.hardware.core.CoreTalonFX;
 
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DataLog;
@@ -14,7 +14,7 @@ import frc.robot.Robot;
  * TalonFX object.
  */
 public class TalonFXStandardSignalLogger {
-    private final TalonFX m_device;
+    private final CoreTalonFX m_device;
 
     public final StatusSignal<Double> m_pos;
     private final DoubleLogEntry m_posLog;
@@ -32,10 +32,6 @@ public class TalonFXStandardSignalLogger {
     public final StatusSignal<Double> m_processorTemp;
     private final DoubleLogEntry m_processorTempLog;
 
-    public final StatusSignal<Boolean> m_bootDuringEnable;
-    private final BooleanLogEntry m_bootDuringEnableLog;
-    public final StatusSignal<Boolean> m_hardware;
-    private final BooleanLogEntry m_hardwareLog;
     public final StatusSignal<Boolean> m_deviceTempFault;
     private final BooleanLogEntry m_deviceTempFaultLog;
     public final StatusSignal<Boolean> m_procTempFault;
@@ -44,11 +40,13 @@ public class TalonFXStandardSignalLogger {
     /**
      * Creates a new TalonFXStandardSignalLogger.
      * 
-     * @param device The {@link com.ctre.phoenix6.hardware.TalonFX} to use.
+     * @param device The {@link com.ctre.phoenix6.hardware.CoreTalonFX} to use.
      * @param prefix A string that will be prefixed to the various log entries.
      *               Should not end with a trailing slash.
+     * @param caniv  Whether or not the signals of this object should be refreshed
+     *               with the CANivore signals.
      */
-    public TalonFXStandardSignalLogger(TalonFX device, String prefix) {
+    public TalonFXStandardSignalLogger(CoreTalonFX device, String prefix, boolean caniv) {
         m_device = device;
 
         DataLog managedLog = DataLogManager.getLog();
@@ -68,39 +66,63 @@ public class TalonFXStandardSignalLogger {
 
         m_deviceTempSecondary = device.getAncillaryDeviceTemp();
         m_deviceTempSecondary.setUpdateFrequency(4.0);
-        m_deviceTempSecondaryLog = new DoubleLogEntry(managedLog, prefix + "/temp_secondary");
+        m_deviceTempSecondaryLog = new DoubleLogEntry(managedLog, prefix + "/tempsecondary");
         m_deviceTemp = device.getDeviceTemp();
         m_deviceTemp.setUpdateFrequency(4.0);
         m_deviceTempLog = new DoubleLogEntry(managedLog, prefix + "/temp");
         m_processorTemp = device.getProcessorTemp();
         m_processorTemp.setUpdateFrequency(4.0);
-        m_processorTempLog = new DoubleLogEntry(managedLog, prefix + "/temp_proc");
+        m_processorTempLog = new DoubleLogEntry(managedLog, prefix + "/tempproc");
 
-        m_bootDuringEnable = device.getStickyFault_BootDuringEnable();
-        m_bootDuringEnable.setUpdateFrequency(4.0);
-        m_bootDuringEnableLog = new BooleanLogEntry(managedLog, prefix + "/faults/boot_during_enable");
-        m_hardware = device.getStickyFault_Hardware();
-        m_hardware.setUpdateFrequency(4.0);
-        m_hardwareLog = new BooleanLogEntry(managedLog, prefix + "/faults/hardware");
-        m_deviceTempFault = device.getStickyFault_DeviceTemp();
+        new BooleanLogEntry(managedLog, prefix + "/faults/bootduringenable", prefix)
+                .append(device.getStickyFault_BootDuringEnable().getValue());
+        new BooleanLogEntry(managedLog, prefix + "/faults/hardware", prefix)
+                .append(device.getStickyFault_Hardware().getValue());
+
+        m_deviceTempFault = device.getFault_DeviceTemp();
         m_deviceTempFault.setUpdateFrequency(4.0);
-        m_deviceTempFaultLog = new BooleanLogEntry(managedLog, prefix + "/faults/device_temp");
-        m_procTempFault = device.getStickyFault_ProcTemp();
+        m_deviceTempFaultLog = new BooleanLogEntry(managedLog, prefix + "/faults/devicetemp");
+        m_procTempFault = device.getFault_ProcTemp();
         m_procTempFault.setUpdateFrequency(4.0);
-        m_procTempFaultLog = new BooleanLogEntry(managedLog, prefix + "/faults/proc_temp");
+        m_procTempFaultLog = new BooleanLogEntry(managedLog, prefix + "/faults/proctemp");
 
-        Robot.addSignals(
-                m_pos,
-                m_torque,
-                m_velocity,
-                m_acceleration,
-                m_deviceTempSecondary,
-                m_deviceTemp,
-                m_processorTemp,
-                m_bootDuringEnable,
-                m_hardware,
-                m_deviceTempFault,
-                m_procTempFault);
+        if (caniv) {
+            Robot.addSignalsCaniv(
+                    m_pos,
+                    m_torque,
+                    m_velocity,
+                    m_acceleration,
+                    m_deviceTempSecondary,
+                    m_deviceTemp,
+                    m_processorTemp,
+                    m_deviceTempFault,
+                    m_procTempFault);
+        } else {
+            Robot.addSignalsRio(
+                    m_pos,
+                    m_torque,
+                    m_velocity,
+                    m_acceleration,
+                    m_deviceTempSecondary,
+                    m_deviceTemp,
+                    m_processorTemp,
+                    m_deviceTempFault,
+                    m_procTempFault);
+        }
+
+        m_device.clearStickyFaults();
+    }
+
+    /**
+     * Creates a new TalonFXStandardSignalLogger. The device provided must be on the
+     * RIO CAN bus for correct functionality.
+     * 
+     * @param device The {@link com.ctre.phoenix6.hardware.CoreTalonFX} to use.
+     * @param prefix A string that will be prefixed to the various log entries.
+     *               Should not end with a trailing slash.
+     */
+    public TalonFXStandardSignalLogger(CoreTalonFX device, String prefix) {
+        this(device, prefix, false);
     }
 
     /**
@@ -109,34 +131,15 @@ public class TalonFXStandardSignalLogger {
      * {@link edu.wpi.first.wpilibj2.command.Subsystem}.
      */
     public void log() {
-        m_posLog.append(m_pos.getValueAsDouble(), (long) (m_pos.getTimestamp().getTime() * 1e6));
-        m_torqueLog.append(m_torque.getValueAsDouble(), (long) (m_torque.getTimestamp().getTime() * 1e6));
-        m_velocityLog.append(m_velocity.getValueAsDouble(), (long) (m_velocity.getTimestamp().getTime() * 1e6));
-        m_accelerationLog.append(m_acceleration.getValueAsDouble(),
-                (long) (m_acceleration.getTimestamp().getTime() * 1e6));
-        m_deviceTempLog.append(m_deviceTemp.getValueAsDouble(), (long) (m_deviceTemp.getTimestamp().getTime() * 1e6));
-        m_deviceTempSecondaryLog.append(m_deviceTempSecondary.getValueAsDouble(),
-                (long) (m_deviceTempSecondary.getTimestamp().getTime() * 1e6));
-        m_processorTempLog.append(m_processorTemp.getValueAsDouble(),
-                (long) (m_processorTemp.getTimestamp().getTime() * 1e6));
+        m_posLog.append(m_pos.getValueAsDouble());
+        m_torqueLog.append(m_torque.getValueAsDouble());
+        m_velocityLog.append(m_velocity.getValueAsDouble());
+        m_accelerationLog.append(m_acceleration.getValueAsDouble());
+        m_deviceTempLog.append(m_deviceTemp.getValueAsDouble());
+        m_deviceTempSecondaryLog.append(m_deviceTempSecondary.getValueAsDouble());
+        m_processorTempLog.append(m_processorTemp.getValueAsDouble());
 
-        m_bootDuringEnableLog.append(m_bootDuringEnable.getValue(),
-                (long) (m_bootDuringEnable.getTimestamp().getTime() * 1e6));
-        if (m_bootDuringEnable.getValue()) {
-            m_device.clearStickyFault_BootDuringEnable();
-        }
-        m_hardwareLog.append(m_hardware.getValue(), (long) (m_hardware.getTimestamp().getTime() * 1e6));
-        if (m_bootDuringEnable.getValue()) {
-            m_device.clearStickyFault_Hardware();
-        }
-        m_deviceTempFaultLog.append(m_deviceTempFault.getValue(),
-                (long) (m_deviceTempFault.getTimestamp().getTime() * 1e6));
-        if (m_bootDuringEnable.getValue()) {
-            m_device.clearStickyFault_DeviceTemp();
-        }
-        m_procTempFaultLog.append(m_procTempFault.getValue(), (long) (m_procTempFault.getTimestamp().getTime() * 1e6));
-        if (m_bootDuringEnable.getValue()) {
-            m_device.clearStickyFault_ProcTemp();
-        }
+        m_deviceTempFaultLog.append(m_deviceTempFault.getValue());
+        m_procTempFaultLog.append(m_procTempFault.getValue());
     }
 }

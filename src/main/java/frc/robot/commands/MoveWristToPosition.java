@@ -51,6 +51,6 @@ public class MoveWristToPosition extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(m_subsystem.getWristPosition() - m_position) < m_tol;
+        return Math.abs(Math.IEEEremainder(m_subsystem.getWristPosition(), 360.0) - m_position) < m_tol;
     }
 }

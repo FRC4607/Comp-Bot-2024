@@ -3,12 +3,16 @@ package frc.robot.subsystems;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -23,7 +27,7 @@ import frc.robot.util.ctre.TalonFXStandardSignalLogger;
  * Subsystem that controls the wrist on the robot.
  */
 public class WristSubsystem extends SubsystemBase {
-    // private final CANcoder m_encoder;
+    private final CANcoder m_encoder;
     private final TalonFX m_motor;
 
     private final DoubleSupplier m_armAngleSupplier;
@@ -37,36 +41,29 @@ public class WristSubsystem extends SubsystemBase {
     private final TalonFXStandardSignalLogger m_log;
 
     private final StatusSignal<Double> m_armSetpoint;
-    private final DoubleLogEntry m_armSetpointLog = new DoubleLogEntry(DataLogManager.getLog(), "/arm/setpoint");
+    private final DoubleLogEntry m_wristSetpointLog = new DoubleLogEntry(DataLogManager.getLog(), "/wrist/setpoint");
 
-    private final DoubleLogEntry m_armGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/arm/goal");
+    private final DoubleLogEntry m_wristGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/wrist/goal");
 
     /**
      * Creates a new WristSubsystem.
      */
     public WristSubsystem(DoubleSupplier armAngleSupplier) {
-        // CANcoderConfiguration encoder_config = new CANcoderConfiguration();
-        // encoder_config.MagnetSensor.AbsoluteSensorRange =
-        // AbsoluteSensorRangeValue.Unsigned_0To1;
-        // encoder_config.MagnetSensor.MagnetOffset =
-        // Calibrations.WristCalibrations.kEncoderOffset;
-        // encoder_config.MagnetSensor.SensorDirection =
-        // Constants.WristConstants.kInvertEncoder ?
-        // SensorDirectionValue.Clockwise_Positive :
-        // SensorDirectionValue.CounterClockwise_Positive;
-        // m_encoder = new CANcoder(Constants.WristConstants.kCANID);
-        // m_encoder.getConfigurator().apply(encoder_config);
+        CANcoderConfiguration encoder_config = new CANcoderConfiguration();
+        encoder_config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+        encoder_config.MagnetSensor.MagnetOffset = Calibrations.WristCalibrations.kEncoderOffset;
+        encoder_config.MagnetSensor.SensorDirection = Constants.WristConstants.kInvertEncoder
+                ? SensorDirectionValue.Clockwise_Positive
+                : SensorDirectionValue.CounterClockwise_Positive;
+        m_encoder = new CANcoder(Constants.WristConstants.kCANID);
+        m_encoder.getConfigurator().apply(encoder_config);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.ClosedLoopGeneral.ContinuousWrap = true;
-        // config.Feedback.FeedbackRemoteSensorID = Constants.WristConstants.kCANID;
-        // config.Feedback.FeedbackSensorSource =
-        // FeedbackSensorSourceValue.FusedCANcoder;
-        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        // config.Feedback.RotorToSensorRatio = Constants.WristConstants.kRotorToSensor;
-        // config.Feedback.SensorToMechanismRatio =
-        // Constants.WristConstants.kSensorToMechanism;
-        config.Feedback.SensorToMechanismRatio = Constants.WristConstants.kRotorToSensor;
+        config.Feedback.FeedbackRemoteSensorID = Constants.WristConstants.kCANID;
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        config.Feedback.RotorToSensorRatio = Constants.WristConstants.kRotorToSensor;
+        config.Feedback.SensorToMechanismRatio = Constants.WristConstants.kSensorToMechanism;
         config.MotorOutput.Inverted = Constants.WristConstants.kInverted ? InvertedValue.Clockwise_Positive
                 : InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -78,9 +75,7 @@ public class WristSubsystem extends SubsystemBase {
         m_motor = new TalonFX(Constants.WristConstants.kCANID);
         m_motor.getConfigurator().apply(config);
 
-        m_motor.setPosition(0.25);
-
-        m_setpoint = 90;
+        m_setpoint = 90.0;
         m_pid = new MotionMagicTorqueCurrentFOC(0.25);
 
         // m_position = m_encoder.getPosition();
@@ -88,7 +83,7 @@ public class WristSubsystem extends SubsystemBase {
 
         m_armSetpoint = m_motor.getClosedLoopReference();
         m_armSetpoint.setUpdateFrequency(50.0);
-        Robot.addSignals(m_armSetpoint);
+        Robot.addSignalsRio(m_armSetpoint);
 
         m_wristPowerCoefficient = 1.0;
 
@@ -99,9 +94,8 @@ public class WristSubsystem extends SubsystemBase {
         m_pid.Position = (m_setpoint - m_armAngleSupplier.getAsDouble()) / 360.0;
         m_motor.setControl(m_pid);
 
-        m_armGoalLog.append(m_pid.Position);
-        m_armSetpointLog.append(m_armSetpoint.getValueAsDouble(),
-                (long) (m_armSetpoint.getTimestamp().getTime() * 1e6));
+        m_wristGoalLog.append(m_pid.Position);
+        m_wristSetpointLog.append(m_armSetpoint.getValueAsDouble());
 
         SmartDashboard.putNumber("Wrist Angle", m_setpoint);
         SmartDashboard.putNumber("Arm Angle", m_armAngleSupplier.getAsDouble());

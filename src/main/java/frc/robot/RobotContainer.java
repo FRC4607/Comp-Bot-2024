@@ -76,18 +76,28 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 7.5, m_arm),
                 new MoveWristToPosition(30.0, 7.5, m_wrist)));
         joystick.rightBumper().onTrue(new SequentialCommandGroup(
-                new MoveArmToPosition(5.0, 7.5, m_arm),
-                new MoveWristToPosition(Preferences.getDouble("X Wrist", 110.0), 10, m_wrist),
-                new SetShooterSpeed(5200, 120, m_shooter)))
+                new MoveArmToPosition(0.0, 7.5, m_arm),
+                new InstantCommand(() -> {
+                    m_arm.setNeutral();
+                }, m_arm),
+                new MoveWristToPosition(Preferences.getDouble("Subwoofer Wrist", 110.0), 10, m_wrist),
+                new SetShooterSpeed(3500, 120, m_shooter)))
                 .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0)
-                        .andThen(new SetShooterSpeed(0, 120, m_shooter)));
-        joystick.povLeft().onTrue(new MoveArmToPosition(45.0, 5.0, m_arm));
-        joystick.povRight().onTrue(new MoveArmToPosition(5.0, 5.0, m_arm));
-        joystick.povDown().onTrue(new SetShooterSpeed(-1000, 120, m_shooter));
+                        .andThen(new SetShooterSpeed(0, 120, m_shooter)).andThen(new Retract(m_wrist, m_arm)));
+        joystick.povDown().onTrue(new SequentialCommandGroup(
+                new MoveArmToPosition(0.0, 7.5, m_arm),
+                new InstantCommand(() -> {
+                    m_arm.setNeutral();
+                }, m_arm),
+                new MoveWristToPosition(Preferences.getDouble("Podium Wrist", 110.0), 10, m_wrist),
+                new SetShooterSpeed(5000, 120, m_shooter)))
+                .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0)
+                        .andThen(new SetShooterSpeed(0, 120, m_shooter)).andThen(new Retract(m_wrist, m_arm)));
     }
 
     public RobotContainer() {
         Preferences.initDouble("Subwoofer Wrist", 110.0);
+        Preferences.initDouble("Podium Wrist", 110.0);
         configureBindings();
         // Register all of the commands for autos, then set up auto builder and the auto
         // chooser.

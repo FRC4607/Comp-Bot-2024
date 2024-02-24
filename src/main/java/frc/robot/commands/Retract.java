@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.WristSubsystem;
@@ -20,7 +21,10 @@ public class Retract extends SequentialCommandGroup {
      */
     public Retract(WristSubsystem wrist, ArmSubsystem arm) {
         super(
-                new MoveArmToPosition(5.0, 2.0, arm),
-                new MoveWristToPosition(90.0, 5.0, wrist));
+                new MoveWristToPosition(95.0, 5.0, wrist),
+                new MoveArmToPosition(0, 10.0, arm),
+                new InstantCommand(() -> {
+                    arm.setNeutral();
+                }, arm));
     }
 }

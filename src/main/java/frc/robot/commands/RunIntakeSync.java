@@ -70,12 +70,12 @@ public class RunIntakeSync extends Command {
             m_hadNote = true;
             i = 0;
         } else if (m_hadNote) {
-            // Wait 20 cycles before exiting for debouncing and delay.
+            // Wait 1 cycles before exiting for debouncing and delay.
             if (!m_intake.hasNote()) {
                 i++;
             }
 
-            if (i >= 20) {
+            if (i >= 1) {
                 return true;
             }
         }

@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
@@ -30,8 +31,11 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StructArrayLogEntry;
 import edu.wpi.first.util.datalog.StructLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Calibrations;
@@ -162,7 +166,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                 false,
                                 false),
                         1 / this.UpdateFrequency),
-                () -> false, // change
+                () -> {
+                    Optional<Alliance> alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == Alliance.Red;
+                    } else {
+                        return false;
+                    }
+                },
                 this);
     }
 

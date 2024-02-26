@@ -7,6 +7,10 @@ package frc.robot;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 
+import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -17,6 +21,13 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
+
+    private double[] m_currents = {};
+    private PowerDistribution m_pd;
+    private DoubleArrayLogEntry m_currentsLog = new DoubleArrayLogEntry(DataLogManager.getLog(), "/pdh/currents");
+    private DoubleLogEntry m_energyLog = new DoubleLogEntry(DataLogManager.getLog(), "/pdh/energy");
+    private DoubleLogEntry m_voltageLog = new DoubleLogEntry(DataLogManager.getLog(), "/pdh/voltage");
+    private DoubleLogEntry m_tempLog = new DoubleLogEntry(DataLogManager.getLog(), "/pdh/temp");
 
     /**
      * Adds signals to be refreshed before every loop. The signals provided should
@@ -47,11 +58,20 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         SignalLogger.stop();
+        m_pd = new PowerDistribution();
+        m_currents = new double[m_pd.getNumChannels()];
         m_robotContainer = new RobotContainer();
     }
 
     @Override
     public void robotPeriodic() {
+        for (int i = 0; i < m_currents.length; i++) {
+            m_currents[i] = m_pd.getCurrent(i);
+        }
+        m_currentsLog.append(m_currents);
+        m_energyLog.append(m_pd.getTotalEnergy());
+        m_voltageLog.append(m_pd.getVoltage());
+        m_tempLog.append(m_pd.getTemperature());
         // Refresh every signal before running loop
         BaseStatusSignal.refreshAll(m_signalsToRefreshRio);
         BaseStatusSignal.refreshAll(m_signalsToRefreshCaniv);

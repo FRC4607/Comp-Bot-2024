@@ -30,6 +30,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WristSubsystem;
+import frc.robot.util.swerve.SetCurrentRequest;
 
 public class RobotContainer {
     private static final double MaxSpeed = Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps;
@@ -43,6 +44,7 @@ public class RobotContainer {
             .withSteerRequestType(SteerRequestType.MotionMagic)
             .withDeadband(0.1 * MaxSpeed)
             .withRotationalDeadband(0.1 * MaxAngularRate);
+    //private final SetCurrentRequest current = new SetCurrentRequest();
 
     private final IntakeSubsystem m_intake = new IntakeSubsystem();
     private final ShooterSubsystem m_shooter = new ShooterSubsystem();
@@ -60,6 +62,8 @@ public class RobotContainer {
                 drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed)
                         .withRotationalRate(-joystick.getRightX() * MaxAngularRate)));
+        // drivetrain.setDefaultCommand(
+        //         drivetrain.applyRequest(() -> current));
         joystick.a().onTrue(new SetShooterSpeed(5200, 120, m_shooter)).onFalse(new SetShooterSpeed(0, 120, m_shooter));
         joystick.b().onTrue(new ParallelCommandGroup(
                 new SetShooterSpeed(0, 120, m_shooter),
@@ -74,7 +78,7 @@ public class RobotContainer {
             return 1;
         }, m_intake, m_kicker).withTimeout(4));
         joystick.leftBumper().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 7.5, m_arm),
-                new MoveWristToPosition(30.0, 7.5, m_wrist)));
+                new MoveWristToPosition(40.0, 7.5, m_wrist)));
         joystick.rightBumper().onTrue(new SequentialCommandGroup(
                 new MoveArmToPosition(0.0, 7.5, m_arm),
                 new InstantCommand(() -> {
@@ -96,6 +100,7 @@ public class RobotContainer {
     }
 
     public RobotContainer() {
+        SmartDashboard.putNumber("Set Current Request", 0.0);
         Preferences.initDouble("Subwoofer Wrist", 110.0);
         Preferences.initDouble("Podium Wrist", 110.0);
         configureBindings();
@@ -108,11 +113,13 @@ public class RobotContainer {
         NamedCommands.registerCommand("SetArmPosition 36", new MoveArmToPosition(36, 3, m_arm));
         NamedCommands.registerCommand("SetWristPosition 45",
                 new MoveWristToPosition(Preferences.getDouble("Subwoofer Wrist", 110.0), 5.0, m_wrist));
-        NamedCommands.registerCommand("SetWristPosition 81", new MoveWristToPosition(146, 3, m_wrist));
+        NamedCommands.registerCommand("SetWristPosition 81", new MoveWristToPosition(148.5, 3, m_wrist));
+        NamedCommands.registerCommand("SetWristPosition 76", new MoveWristToPosition(143, 3, m_wrist));
+        NamedCommands.registerCommand("SetWristPosition Four Piece Sides", new MoveWristToPosition(143.3, 3, m_wrist));
         NamedCommands.registerCommand("Shoot", new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5));
-        NamedCommands.registerCommand("RunIntake 1", new RunIntakeSync(() -> 1.0, m_intake, m_kicker));
+        NamedCommands.registerCommand("RunIntake 1", new RunIntakeSync(() -> 1.0, m_intake, m_kicker).withTimeout(3.0));
         NamedCommands.registerCommand("Retract", new Retract(m_wrist, m_arm));
-        NamedCommands.registerCommand("RunIntake 0", new RunIntakeSync(() -> 0.0, m_intake, m_kicker));
+        NamedCommands.registerCommand("RunIntake 0", new RunIntakeSync(() -> 0.0, m_intake, m_kicker, true));
         NamedCommands.registerCommand("ExtendToAmp", new InstantCommand());
         NamedCommands.registerCommand("DropGamePiece", new InstantCommand());
         NamedCommands.registerCommand("RunKicker -0.5", new RunKickerWheel(-1500.0, m_kicker));

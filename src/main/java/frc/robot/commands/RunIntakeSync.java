@@ -28,13 +28,15 @@ public class RunIntakeSync extends Command {
     /**
      * Creates a new RunIntakeSync.
      * 
-     * @param speed  The percentage of the max surface speed to run the kicker and
-     *               intake at in the range [-1, 1].
-     * @param intake A refernce to the {@link frc.robot.subsystems.IntakeSubsystem}
-     *               object.
-     * @param kicker A refernce to the {@link frc.robot.subsystems.KickerSubsystem}
-     *               object.
-     * @param ignoreBeam Whether or not to ignore the beam break sensor and end immidiately. Useful for stopping the intake.
+     * @param speed      The percentage of the max surface speed to run the kicker
+     *                   and intake at in the range [-1, 1].
+     * @param intake     A refernce to the
+     *                   {@link frc.robot.subsystems.IntakeSubsystem} object.
+     * @param kicker     A refernce to the
+     *                   {@link frc.robot.subsystems.KickerSubsystem} object.
+     * @param ignoreBeam Whether or not to ignore the beam break sensor and end
+     *                   immidiately. Useful for stopping the intake in an
+     *                   autonomous routine.
      */
     public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker, boolean ignoreBeam) {
         m_power = power;

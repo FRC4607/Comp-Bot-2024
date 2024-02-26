@@ -59,6 +59,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         SignalLogger.stop();
         m_pd = new PowerDistribution();
+        m_pd.resetTotalEnergy();
         m_currents = new double[m_pd.getNumChannels()];
         m_robotContainer = new RobotContainer();
     }

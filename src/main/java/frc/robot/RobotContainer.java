@@ -30,7 +30,6 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WristSubsystem;
-import frc.robot.util.swerve.SetCurrentRequest;
 
 public class RobotContainer {
     private static final double MaxSpeed = Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps;
@@ -44,7 +43,7 @@ public class RobotContainer {
             .withSteerRequestType(SteerRequestType.MotionMagic)
             .withDeadband(0.1 * MaxSpeed)
             .withRotationalDeadband(0.1 * MaxAngularRate);
-    //private final SetCurrentRequest current = new SetCurrentRequest();
+    // private final SetCurrentRequest current = new SetCurrentRequest();
 
     private final IntakeSubsystem m_intake = new IntakeSubsystem();
     private final ShooterSubsystem m_shooter = new ShooterSubsystem();
@@ -63,7 +62,7 @@ public class RobotContainer {
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed)
                         .withRotationalRate(-joystick.getRightX() * MaxAngularRate)));
         // drivetrain.setDefaultCommand(
-        //         drivetrain.applyRequest(() -> current));
+        // drivetrain.applyRequest(() -> current));
         joystick.a().onTrue(new SetShooterSpeed(5200, 120, m_shooter)).onFalse(new SetShooterSpeed(0, 120, m_shooter));
         joystick.b().onTrue(new ParallelCommandGroup(
                 new SetShooterSpeed(0, 120, m_shooter),

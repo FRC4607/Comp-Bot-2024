@@ -130,12 +130,17 @@ public final class Calibrations {
 
     /** Calibrations for the intake. */
     public static final class IntakeCalibrations {
-        /** The proportional constant for roller feedback in duty cycle / (mm/s). */
+        /** The proportional constant for roller feedback in Amps/rps. */
         public static final double kRollerP = 10;
         /** The proportional constant for agitator feedback in duty cycle / (mm/s). */
         public static final double kAgitatorP = 0.01;
+        /** The static constant for roller feedforward in Amps. */
         public static final double kRollerS = 16;
+        /**
+         * The derivative constant for roller feedback in Amps/(rotations per second^2).
+         */
         public static final double kRollerD = 0;
+        /** The maximum current the roller motor should output, in Amps. */
         public static final int kRollerMaxCurrent = 120;
     }
 

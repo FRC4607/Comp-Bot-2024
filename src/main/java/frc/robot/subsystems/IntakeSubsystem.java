@@ -4,27 +4,20 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.ControlType;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Calibrations;
 import frc.robot.Constants;
-import frc.robot.Calibrations.IntakeCalibrations;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.util.ctre.TalonFXStandardSignalLogger;
-import frc.robot.util.rev.CANSparkUtil;
 
 /**
  * Subsystem for the intake.
@@ -48,7 +41,8 @@ public class IntakeSubsystem extends SubsystemBase {
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         config.Feedback.RotorToSensorRatio = 1.0;
         config.Feedback.SensorToMechanismRatio = IntakeConstants.kRollerGearRatio;
-        config.MotorOutput.Inverted = IntakeConstants.kRollerInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        config.MotorOutput.Inverted = IntakeConstants.kRollerInverted ? InvertedValue.Clockwise_Positive
+                : InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.Slot0.kP = Calibrations.IntakeCalibrations.kRollerP;
         config.Slot0.kD = Calibrations.IntakeCalibrations.kRollerD;
@@ -95,7 +89,8 @@ public class IntakeSubsystem extends SubsystemBase {
      *                             one.
      */
     public void setIntakeSetpoint(double newIntakeSetpoint) {
-        m_motor.setControl(m_vel.withVelocity(newIntakeSetpoint / (Math.PI * Constants.IntakeConstants.kRollerDiameter)));
+        m_motor.setControl(
+                m_vel.withVelocity(newIntakeSetpoint / (Math.PI * Constants.IntakeConstants.kRollerDiameter)));
         // m_agitatorPid.setReference(newIntakeSetpoint, ControlType.kVelocity);
     }
 

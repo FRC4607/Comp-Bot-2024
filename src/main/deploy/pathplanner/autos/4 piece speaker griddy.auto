@@ -18,15 +18,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "SetShooterSpeed 5000"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetWristPosition 45"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetWristPosition 45"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetShooterSpeed 4000"
+                }
+              }
+            ]
           }
         },
         {
@@ -36,21 +43,21 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "SetShooterSpeed 1000"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Retract"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetShooterSpeed 0"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract"
+                }
+              },
               {
                 "type": "path",
                 "data": {
@@ -67,15 +74,28 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "RunIntake 0"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetWristPosition 45"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "RunIntake 0"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetWristPosition Four Piece Sides"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetShooterSpeed 5000"
+                }
+              }
+            ]
           }
         },
         {
@@ -85,15 +105,21 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Retract"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetShooterSpeed 0"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract"
+                }
+              },
               {
                 "type": "path",
                 "data": {
@@ -110,15 +136,28 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "RunIntake 0"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetWristPosition 45"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "RunIntake 0"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetWristPosition 76"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetShooterSpeed 5000"
+                }
+              }
+            ]
           }
         },
         {
@@ -128,15 +167,21 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Retract"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetShooterSpeed 0"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract"
+                }
+              },
               {
                 "type": "path",
                 "data": {
@@ -153,15 +198,28 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "RunIntake 0"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetWristPosition 45"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "RunIntake 0"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetWristPosition Four Piece Sides"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetShooterSpeed 5000"
+                }
+              }
+            ]
           }
         },
         {

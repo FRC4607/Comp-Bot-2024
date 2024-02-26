@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7641111612319946,
-      "y": 6.690825939178467
+      "x": 0.7042391300201416,
+      "y": 6.682346820831299
     },
-    "rotation": -118.80069654719412
+    "rotation": 60.10112373636236
   },
   "command": {
     "type": "sequential",
@@ -114,12 +114,6 @@
           "type": "named",
           "data": {
             "name": "Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetShooterSpeed 0"
           }
         },
         {

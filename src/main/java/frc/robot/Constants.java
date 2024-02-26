@@ -168,7 +168,7 @@ public final class Constants {
          * The gear ratio (x input rotations : 1 output rotation) of the roller motor to
          * the rollers.
          */
-        public static final double kRollerGearRatio = 3.0;
+        public static final double kRollerGearRatio = 4.0;
         /** The diameter of the rollers in mm. */
         public static final double kRollerDiameter = 40.5;
         /**

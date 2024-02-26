@@ -18,15 +18,15 @@ public final class Calibrations {
          * and rotations.
          */
         public static final Slot0Configs kSteerGains = new Slot0Configs()
-                .withKP(1200).withKI(0).withKD(25)
-                .withKS(17.5).withKV(0).withKA(0);
+                .withKP(2000).withKI(0).withKD(25)
+                .withKS(20).withKV(0).withKA(0);
 
         /**
          * The gains for the drive motors of each swerve module, with gains in amps and
          * rotations per second.
          */
         public static final Slot0Configs kDriveGains = new Slot0Configs()
-                .withKP(7).withKI(0).withKD(0)
+                .withKP(8).withKI(0).withKD(0)
                 .withKS(8.25).withKV(0).withKA(0);
 
         /**
@@ -96,7 +96,7 @@ public final class Calibrations {
          */
         public static final double kD = 32.0;
         /** The absolute encoder offset of the wrist in rotations. */
-        public static final double kEncoderOffset = -0.4931640625;
+        public static final double kEncoderOffset = -0.492919921875;
         /** The kS constant of the wrist in Amps. */
         public static final double kS = 0.25;
         /** The maximum velocity motion magic should use in rps. */
@@ -130,12 +130,18 @@ public final class Calibrations {
 
     /** Calibrations for the intake. */
     public static final class IntakeCalibrations {
-        /** The proportional constant for roller feedback in duty cycle / (mm/s). */
-        public static final double kRollerP = 0.0002;
-        /** The proportional constant for roller feedback in duty cycle / (mm/s). */
-        public static final double kRollerFF = 0.00024;
+        /** The proportional constant for roller feedback in Amps/rps. */
+        public static final double kRollerP = 10;
         /** The proportional constant for agitator feedback in duty cycle / (mm/s). */
         public static final double kAgitatorP = 0.01;
+        /** The static constant for roller feedforward in Amps. */
+        public static final double kRollerS = 16;
+        /**
+         * The derivative constant for roller feedback in Amps/(rotations per second^2).
+         */
+        public static final double kRollerD = 0;
+        /** The maximum current the roller motor should output, in Amps. */
+        public static final int kRollerMaxCurrent = 120;
     }
 
     /** Calibrations for the kicker. */

@@ -23,6 +23,30 @@ public class RunIntakeSync extends Command {
 
     private static final double MAX_SURFACE_SPEED = 3000.0;
 
+    private final boolean m_ignoreBeam;
+
+    /**
+     * Creates a new RunIntakeSync.
+     * 
+     * @param speed      The percentage of the max surface speed to run the kicker
+     *                   and intake at in the range [-1, 1].
+     * @param intake     A refernce to the
+     *                   {@link frc.robot.subsystems.IntakeSubsystem} object.
+     * @param kicker     A refernce to the
+     *                   {@link frc.robot.subsystems.KickerSubsystem} object.
+     * @param ignoreBeam Whether or not to ignore the beam break sensor and end
+     *                   immidiately. Useful for stopping the intake in an
+     *                   autonomous routine.
+     */
+    public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker, boolean ignoreBeam) {
+        m_power = power;
+        m_intake = intake;
+        m_kicker = kicker;
+        m_ignoreBeam = ignoreBeam;
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(m_intake, m_kicker);
+    }
+
     /**
      * Creates a new RunIntakeSync.
      * 
@@ -34,11 +58,7 @@ public class RunIntakeSync extends Command {
      *               object.
      */
     public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker) {
-        m_power = power;
-        m_intake = intake;
-        m_kicker = kicker;
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(m_intake, m_kicker);
+        this(power, intake, kicker, false);
     }
 
     // Called when the command is initially scheduled.
@@ -65,20 +85,24 @@ public class RunIntakeSync extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        // If we have a note, reset the counter.
-        if (m_intake.hasNote()) {
-            m_hadNote = true;
-            i = 0;
-        } else if (m_hadNote) {
-            // Wait 20 cycles before exiting for debouncing and delay.
-            if (!m_intake.hasNote()) {
-                i++;
-            }
+        if (m_ignoreBeam) {
+            return true;
+        } else {
+            // If we have a note, reset the counter.
+            if (m_intake.hasNote()) {
+                m_hadNote = true;
+                i = 0;
+            } else if (m_hadNote) {
+                // Wait 1 cycles before exiting for debouncing and delay.
+                if (!m_intake.hasNote()) {
+                    i++;
+                }
 
-            if (i >= 20) {
-                return true;
+                if (i >= 1) {
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
     }
 }

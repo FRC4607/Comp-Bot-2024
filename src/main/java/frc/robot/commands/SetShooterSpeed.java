@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -12,7 +14,7 @@ import frc.robot.subsystems.ShooterSubsystem;
  * tolerance before ending.
  */
 public class SetShooterSpeed extends Command {
-    private final double m_speed;
+    private final DoubleSupplier m_speed;
     private final double m_tol;
     private final ShooterSubsystem m_subsystem;
 
@@ -25,7 +27,7 @@ public class SetShooterSpeed extends Command {
      * @param subsystem A reference to the
      *                  {@link frc.robot.subsystems.ShooterSubsystem} object.
      */
-    public SetShooterSpeed(double speedRPM, double tol, ShooterSubsystem subsystem) {
+    public SetShooterSpeed(DoubleSupplier speedRPM, double tol, ShooterSubsystem subsystem) {
         m_speed = speedRPM;
         m_tol = tol;
         m_subsystem = subsystem;
@@ -48,6 +50,6 @@ public class SetShooterSpeed extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(m_subsystem.outerShooterRPM() - m_speed) < m_tol;
+        return Math.abs(m_subsystem.outerShooterRPM() - m_speed.getAsDouble()) < m_tol;
     }
 }

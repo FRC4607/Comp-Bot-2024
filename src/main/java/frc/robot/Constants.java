@@ -2,6 +2,8 @@ package frc.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.ClosedLoopOutputType;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -126,6 +128,13 @@ public final class Constants {
          * center of the robot.
          */
         public static final double kBackRightYPosInches = -9.75;
+        /**
+         * The pose of the blue alliance speaker to target, projected onto the floor.
+         * Uses a blue alliance origin.
+         */
+        public static final Translation2d kBlueAllianceSpeakerPosition = new Translation2d(0.0, 5.54775544);
+        public static final Translation2d kRedAllianceSpeakerPosition = new Translation2d(16.57997700, 5.54775544);
+        public static final double kSpeakerTargetHeight = Units.inchesToMeters(80);
     }
 
     /** Constants for the shooter. */
@@ -194,6 +203,8 @@ public final class Constants {
         public static final boolean kInverted = false;
         /** Whether or not to invert the wrist encoder. */
         public static final boolean kInvertEncoder = false;
+        /** Distance from pivot to the center of a note that is just touching the flywheels in meters. */
+        public static final double kWristEffectiveLength = Units.inchesToMeters(16);
     }
 
     /** Constants for the arm. */
@@ -215,5 +226,7 @@ public final class Constants {
         public static final double kRotorToSensor = 60.19 / kSensorToMechanism;
         /** Whether or not to invert the encoder on the arm. */
         public static final boolean kInvertEncoder = true;
+        /** Pivot to pivot length of the arm in meters. */
+        public static final double kArmLength = Units.inchesToMeters(24);
     }
 }

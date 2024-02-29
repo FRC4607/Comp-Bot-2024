@@ -6,10 +6,15 @@ package frc.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.ForwardReference;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,44 +35,75 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WristSubsystem;
+import frc.robot.util.IsRed;
 
 public class RobotContainer {
-    private static final double MaxSpeed = Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps;
-    private static final double MaxAngularRate = Math.PI;
+        private static final double MaxSpeed = Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps;
+        private static final double MaxAngularRate = Math.PI;
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
+        private static final Rotation2d HALF_ROTATION = Rotation2d.fromDegrees(180);
 
-    private final CommandSwerveDrivetrain drivetrain = CommandSwerveDrivetrain.getInstance();
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDriveRequestType(DriveRequestType.Velocity)
-            .withSteerRequestType(SteerRequestType.MotionMagic)
-            .withDeadband(0.1 * MaxSpeed)
-            .withRotationalDeadband(0.1 * MaxAngularRate);
-    // private final SetCurrentRequest current = new SetCurrentRequest();
+        private final CommandXboxController joystick = new CommandXboxController(0);
 
-    private final IntakeSubsystem m_intake = new IntakeSubsystem();
-    private final ShooterSubsystem m_shooter = new ShooterSubsystem();
-    private final ArmSubsystem m_arm = new ArmSubsystem();
-    private final WristSubsystem m_wrist = new WristSubsystem(m_arm::armPosition);
-    private final KickerSubsystem m_kicker = new KickerSubsystem();
+        private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+                        .withDriveRequestType(DriveRequestType.Velocity)
+                        .withSteerRequestType(SteerRequestType.MotionMagic)
+                        .withDeadband(0.1 * MaxSpeed)
+                        .withRotationalDeadband(0.1 * MaxAngularRate);
+        private final SwerveRequest.FieldCentricFacingAngle autoPoint = new SwerveRequest.FieldCentricFacingAngle()
+                        .withDriveRequestType(DriveRequestType.Velocity)
+                        .withSteerRequestType(SteerRequestType.MotionMagic)
+                        .withDeadband(0.1 * MaxSpeed)
+                        .withRotationalDeadband(0.1 * MaxAngularRate);
+        // private final SetCurrentRequest current = new SetCurrentRequest();
 
-    private final SendableChooser<Command> m_autoChooser;
+        private final IntakeSubsystem m_intake = new IntakeSubsystem();
+        private final ShooterSubsystem m_shooter = new ShooterSubsystem();
+        private final ArmSubsystem m_arm = new ArmSubsystem();
+        private final WristSubsystem m_wrist = new WristSubsystem(m_arm::armPosition);
+        private final CommandSwerveDrivetrain drivetrain = CommandSwerveDrivetrain.getInstance(m_arm::armPosition,
+                        m_wrist::getWristPosition);
+        private final KickerSubsystem m_kicker = new KickerSubsystem();
+
+        private final SendableChooser<Command> m_autoChooser;
 
     private void configureBindings() {
         m_kicker.setDefaultCommand(new RunIntakeSync(() -> {
             return joystick.getRightTriggerAxis() - joystick.getLeftTriggerAxis();
         }, m_intake, m_kicker));
+
+        autoPoint.HeadingController.setPID(
+                Calibrations.DrivetrainCalibrations.kHeadingPIDP, Calibrations.DrivetrainCalibrations.kHeadingPIDI,
+                Calibrations.DrivetrainCalibrations.kHeadingPIDD);
+        autoPoint.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
+        autoPoint.ForwardReference = ForwardReference.RedAlliance;
         drivetrain.setDefaultCommand(
-                drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                        .withVelocityY(-joystick.getLeftX() * MaxSpeed)
-                        .withRotationalRate(-joystick.getRightX() * MaxAngularRate)));
+                drivetrain.applyRequest(() -> {
+                    if (Math.abs(joystick.getRightX()) > 0.1) {
+                        return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
+                                .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                                .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
+                    } else {
+                        Translation2d targetPose = IsRed.isRed()
+                                ? Constants.DrivetrainConstants.kRedAllianceSpeakerPosition
+                                : Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition;
+                        // https://www.chiefdelphi.com/t/is-there-a-builtin-function-to-find-the-angle-needed-to-get-one-pose2d-to-face-another-pose2d/455972/3
+                        return autoPoint
+                                .withTargetDirection(
+                                        new Rotation2d(drivetrain.getShotInfo().phi).plus(HALF_ROTATION).minus(drivetrain.getSwerveOffset()))
+                                .withCenterOfRotation(drivetrain.getRotationPoint())
+                                .withVelocityX(-joystick.getLeftY() * MaxSpeed)
+                                .withVelocityY(-joystick.getLeftX() * MaxSpeed);
+                    }
+                }));
+
         // drivetrain.setDefaultCommand(
         // drivetrain.applyRequest(() -> current));
-        joystick.a().onTrue(new SetShooterSpeed(5200, 120, m_shooter)).onFalse(new SetShooterSpeed(0, 120, m_shooter));
+        joystick.a().onTrue(new SetShooterSpeed(() -> 5200, 120, m_shooter)).onFalse(new SetShooterSpeed(() -> 0, 120, m_shooter));
         joystick.b().onTrue(new ParallelCommandGroup(
-                new SetShooterSpeed(0, 120, m_shooter),
+                new SetShooterSpeed(() -> 0, 120, m_shooter),
                 new SequentialCommandGroup(
-                        new MoveWristToPosition(90.0, 5.0, m_wrist),
+                        new MoveWristToPosition(() -> 90.0, 5.0, m_wrist),
                         new MoveArmToPosition(0, 10.0, m_arm),
                         new InstantCommand(() -> {
                             m_arm.setNeutral();
@@ -77,58 +113,59 @@ public class RobotContainer {
             return 1;
         }, m_intake, m_kicker).withTimeout(4));
         joystick.leftBumper().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 7.5, m_arm),
-                new MoveWristToPosition(40.0, 7.5, m_wrist)));
+                new MoveWristToPosition(() -> 40.0, 7.5, m_wrist)));
         joystick.rightBumper().onTrue(new SequentialCommandGroup(
                 new MoveArmToPosition(0.0, 7.5, m_arm),
                 new InstantCommand(() -> {
                     m_arm.setNeutral();
                 }, m_arm),
-                new MoveWristToPosition(Preferences.getDouble("Subwoofer Wrist", 110.0), 10, m_wrist),
-                new SetShooterSpeed(3500, 120, m_shooter)))
+                new MoveWristToPosition(() -> Preferences.getDouble("Subwoofer Wrist", 110.0), 10, m_wrist),
+                new SetShooterSpeed(() -> 3500, 120, m_shooter)))
                 .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0)
-                        .andThen(new SetShooterSpeed(0, 120, m_shooter)).andThen(new Retract(m_wrist, m_arm)));
-        joystick.povDown().onTrue(new SequentialCommandGroup(
-                new MoveArmToPosition(0.0, 7.5, m_arm),
-                new InstantCommand(() -> {
+                        .andThen(new SetShooterSpeed(() -> 0, 120, m_shooter)).andThen(new Retract(m_wrist, m_arm)));
+        joystick.povDown().onTrue(new ParallelCommandGroup(
+                new MoveArmToPosition(0.0, 7.5, m_arm).andThen(new InstantCommand(() -> {
                     m_arm.setNeutral();
-                }, m_arm),
-                new MoveWristToPosition(Preferences.getDouble("Podium Wrist", 110.0), 10, m_wrist),
-                new SetShooterSpeed(5000, 120, m_shooter)))
+                }, m_arm)),
+                new MoveWristToPosition(() -> { return 90.0 + Math.toDegrees(drivetrain.getShotInfo().theta); }, 10, m_wrist),
+                new SetShooterSpeed(() -> { return 60 * 1.6 * drivetrain.getShotInfo().r / (Math.PI * Units.inchesToMeters(4.0)); }, 120, m_shooter)))
                 .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0)
-                        .andThen(new SetShooterSpeed(0, 120, m_shooter)).andThen(new Retract(m_wrist, m_arm)));
+                        .andThen(new SetShooterSpeed(() -> 0, 120, m_shooter)).andThen(new Retract(m_wrist, m_arm)));
     }
 
-    public RobotContainer() {
-        SmartDashboard.putNumber("Set Current Request", 0.0);
-        Preferences.initDouble("Subwoofer Wrist", 110.0);
-        Preferences.initDouble("Podium Wrist", 110.0);
-        configureBindings();
-        // Register all of the commands for autos, then set up auto builder and the auto
-        // chooser.
-        NamedCommands.registerCommand("SetShooterSpeed 5000", new SetShooterSpeed(5000, 120, m_shooter));
-        NamedCommands.registerCommand("SetShooterSpeed 4000", new SetShooterSpeed(4000, 120, m_shooter));
-        NamedCommands.registerCommand("SetShooterSpeed 1000", new SetShooterSpeed(1000, 120, m_shooter));
-        NamedCommands.registerCommand("SetShooterSpeed 0", new SetShooterSpeed(0, 120, m_shooter));
-        NamedCommands.registerCommand("SetArmPosition 36", new MoveArmToPosition(36, 3, m_arm));
-        NamedCommands.registerCommand("SetWristPosition 45",
-                new MoveWristToPosition(Preferences.getDouble("Subwoofer Wrist", 110.0), 5.0, m_wrist));
-        NamedCommands.registerCommand("SetWristPosition 81", new MoveWristToPosition(148.5, 3, m_wrist));
-        NamedCommands.registerCommand("SetWristPosition 76", new MoveWristToPosition(143, 3, m_wrist));
-        NamedCommands.registerCommand("SetWristPosition Four Piece Sides", new MoveWristToPosition(143.3, 3, m_wrist));
-        NamedCommands.registerCommand("Shoot", new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5));
-        NamedCommands.registerCommand("RunIntake 1", new RunIntakeSync(() -> 1.0, m_intake, m_kicker).withTimeout(3.0));
-        NamedCommands.registerCommand("Retract", new Retract(m_wrist, m_arm));
-        NamedCommands.registerCommand("RunIntake 0", new RunIntakeSync(() -> 0.0, m_intake, m_kicker, true));
-        NamedCommands.registerCommand("ExtendToAmp", new InstantCommand());
-        NamedCommands.registerCommand("DropGamePiece", new InstantCommand());
-        NamedCommands.registerCommand("RunKicker -0.5", new RunKickerWheel(-1500.0, m_kicker));
-        drivetrain.configPathPlanner();
-        m_autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData(m_autoChooser);
-    }
+        public RobotContainer() {
+                SmartDashboard.putNumber("Set Current Request", 0.0);
+                Preferences.initDouble("Subwoofer Wrist", 110.0);
+                Preferences.initDouble("Podium Wrist", 110.0);
+                configureBindings();
+                // Register all of the commands for autos, then set up auto builder and the auto
+                // chooser.
+                NamedCommands.registerCommand("SetShooterSpeed 5000", new SetShooterSpeed(() -> 5000, 120, m_shooter));
+                NamedCommands.registerCommand("SetShooterSpeed 4000", new SetShooterSpeed(() -> 4000, 120, m_shooter));
+                NamedCommands.registerCommand("SetShooterSpeed 1000", new SetShooterSpeed(() -> 1000, 120, m_shooter));
+                NamedCommands.registerCommand("SetShooterSpeed 0", new SetShooterSpeed(() -> 0, 120, m_shooter));
+                NamedCommands.registerCommand("SetArmPosition 36", new MoveArmToPosition(36, 3, m_arm));
+                NamedCommands.registerCommand("SetWristPosition 45",
+                                new MoveWristToPosition(() -> Preferences.getDouble("Subwoofer Wrist", 110.0), 5.0, m_wrist));
+                NamedCommands.registerCommand("SetWristPosition 81", new MoveWristToPosition(() -> 148.5, 3, m_wrist));
+                NamedCommands.registerCommand("SetWristPosition 76", new MoveWristToPosition(() -> 148, 3, m_wrist));
+                NamedCommands.registerCommand("SetWristPosition Four Piece Sides",
+                                new MoveWristToPosition(() -> 148.3, 3, m_wrist));
+                NamedCommands.registerCommand("Shoot", new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5));
+                NamedCommands.registerCommand("RunIntake 1",
+                                new RunIntakeSync(() -> 1.0, m_intake, m_kicker).withTimeout(3.0));
+                NamedCommands.registerCommand("Retract", new Retract(m_wrist, m_arm));
+                NamedCommands.registerCommand("RunIntake 0", new RunIntakeSync(() -> 0.0, m_intake, m_kicker, true));
+                NamedCommands.registerCommand("ExtendToAmp", new InstantCommand());
+                NamedCommands.registerCommand("DropGamePiece", new InstantCommand());
+                NamedCommands.registerCommand("RunKicker -0.5", new RunKickerWheel(-1500.0, m_kicker));
+                drivetrain.configPathPlanner();
+                m_autoChooser = AutoBuilder.buildAutoChooser();
+                SmartDashboard.putData(m_autoChooser);
+        }
 
-    public Command getAutonomousCommand() {
-        // return new InstantCommand();
-        return m_autoChooser.getSelected();
-    }
+        public Command getAutonomousCommand() {
+                // return new InstantCommand();
+                return m_autoChooser.getSelected();
+        }
 }

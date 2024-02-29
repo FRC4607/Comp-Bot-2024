@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.EnumSet;
 import java.util.Optional;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
@@ -18,8 +19,11 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -32,15 +36,17 @@ import edu.wpi.first.util.datalog.StructArrayLogEntry;
 import edu.wpi.first.util.datalog.StructLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Calibrations;
 import frc.robot.Constants;
+import frc.robot.util.IsRed;
 import frc.robot.util.ctre.TalonFXStandardSignalLogger;
+import frc.robot.util.som.ProjectileMotion;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -78,7 +84,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             "flywheelll",
             Pose2d.struct);
 
-    private CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
+    private ProjectileMotion.SphericalCoordinate m_shotInfo;
+    private Translation2d m_rotationPoint;
+    private final DoubleSupplier m_armAngle;
+    private final DoubleSupplier m_wristAngle;
+
+    private CommandSwerveDrivetrain(DoubleSupplier armAngle, DoubleSupplier wristAngle, SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
         if (Utils.isSimulation()) {
@@ -97,20 +108,26 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 EnumSet.of(Kind.kValueRemote),
                 (NetworkTable table, String topic, NetworkTableEvent event) -> {
                     double[] result = event.valueData.value.getDoubleArray();
-                    m_kickerLog.append(new Pose2d(result[0], result[1],
-                            Rotation2d.fromDegrees(result[5])));
+                    Pose2d pose = new Pose2d(result[0], result[1],
+                            Rotation2d.fromDegrees(result[5]));
+                    this.handleLLUpdate(pose, result[9], result[7], result[6]);
+                    m_kickerLog.append(pose);
                 });
         m_flywheelSubscriber = NetworkTableInstance.getDefault().getTable("limelight-fw").addListener(
                 "botpose_wpiblue",
                 EnumSet.of(Kind.kValueRemote),
                 (NetworkTable table, String topic, NetworkTableEvent event) -> {
                     double[] result = event.valueData.value.getDoubleArray();
-                    m_flywheelLog.append(new Pose2d(result[0], result[1],
-                            Rotation2d.fromDegrees(result[5])));
+                    Pose2d pose = new Pose2d(result[0], result[1],
+                            Rotation2d.fromDegrees(result[5]));
+                    this.handleLLUpdate(pose, result[9], result[7], result[6]);
+                    m_flywheelLog.append(pose);
                 });
+        m_armAngle = armAngle;
+        m_wristAngle = wristAngle;
     }
 
-    private CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants,
+    private CommandSwerveDrivetrain(DoubleSupplier armAngle, DoubleSupplier wristAngle, SwerveDrivetrainConstants driveTrainConstants,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
         if (Utils.isSimulation()) {
@@ -129,17 +146,23 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 EnumSet.of(Kind.kValueRemote),
                 (NetworkTable table, String topic, NetworkTableEvent event) -> {
                     double[] result = event.valueData.value.getDoubleArray();
-                    m_kickerLog.append(new Pose2d(result[0], result[1],
-                            Rotation2d.fromDegrees(result[5])));
+                    Pose2d pose = new Pose2d(result[0], result[1],
+                            Rotation2d.fromDegrees(result[5]));
+                    this.handleLLUpdate(pose, result[9], result[7], result[6]);
+                    m_kickerLog.append(pose);
                 });
         m_flywheelSubscriber = NetworkTableInstance.getDefault().getTable("limelight-fw").addListener(
                 "botpose_wpiblue",
                 EnumSet.of(Kind.kValueRemote),
                 (NetworkTable table, String topic, NetworkTableEvent event) -> {
                     double[] result = event.valueData.value.getDoubleArray();
-                    m_flywheelLog.append(new Pose2d(result[0], result[1],
-                            Rotation2d.fromDegrees(result[5])));
+                    Pose2d pose = new Pose2d(result[0], result[1],
+                            Rotation2d.fromDegrees(result[5]));
+                    this.handleLLUpdate(pose, result[9], result[7], result[6]);
+                    m_flywheelLog.append(pose);
                 });
+        m_armAngle = armAngle;
+        m_wristAngle = wristAngle;
     }
 
     /**
@@ -219,11 +242,69 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         m_logSpeeds.append(state.speeds);
     }
 
+    private void handleLLUpdate(Pose2d pose, double distance, double tags, double latency) {
+        // Make sure we are using good data.
+        Pose2d rel = pose.relativeTo(this.m_cachedState.Pose);
+        if (tags > 0 && (DriverStation.isDisabled() || (tags > 1 && distance < 5 && rel.getTranslation().getNorm() < 1
+                && Math.abs(rel.getRotation().getDegrees()) < 5))) {
+            // First, we compute estimated standard deviations for the X and Y measurements.
+            // The approach is borrowed from 6328, see here for more info:
+            // https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2023-build-thread/420691/292.
+            double stdDevXY = 0.07 + 0.05 * Math.pow(distance, 2);
+            double stdDevTheta = DriverStation.isDisabled() ? Math.PI * 2 : 999999999;
+            // Add the vision measurement. The standard deviation for the rotation is very
+            // high as general advice is to not trust it.
+            this.addVisionMeasurement(pose, Timer.getFPGATimestamp() - (latency / 1000.0),
+                    VecBuilder.fill(stdDevXY, stdDevXY, stdDevTheta));
+        }
+    }
+
+    /**
+     * Returns the current offset used for field-relative driving.
+     * 
+     * @return The robot's current field relative offset as an
+     *         {@link edu.wpi.first.math.geometry.Rotation2d}.
+     */
+    public Rotation2d getSwerveOffset() {
+        return m_fieldRelativeOffset;
+    }
+
+    public Translation2d getRotationPoint() {
+        return m_rotationPoint;
+    }
+
+    public ProjectileMotion.SphericalCoordinate getShotInfo() {
+        return m_shotInfo;
+    }
+
     @Override
     public void periodic() {
         for (TalonFXStandardSignalLogger log : m_logs) {
             log.log();
         }
+        double shooterOffset = -0.3 + Math.cos(Math.toRadians(m_armAngle.getAsDouble())) * Constants.ArmConstants.kArmLength
+                + Math.cos(Math.toRadians(m_wristAngle.getAsDouble())) * Constants.WristConstants.kWristEffectiveLength;
+        m_rotationPoint = new Translation2d(shooterOffset, 0.0);
+        double robotX = m_cachedState.Pose.getX() + m_cachedState.Pose.getRotation().getCos() * shooterOffset;
+        double robotY = m_cachedState.Pose.getY() + m_cachedState.Pose.getRotation().getSin() * shooterOffset;
+        double robotZ = 0.2 + Math.sin(Math.toRadians(m_armAngle.getAsDouble())) * Constants.ArmConstants.kArmLength
+                + Math.sin(Math.toRadians(m_wristAngle.getAsDouble())) * Constants.WristConstants.kWristEffectiveLength;
+        Translation3d fromChassis;
+        if (IsRed.isRed()) {
+            fromChassis = ProjectileMotion.velocityToAchive(
+                    Constants.DrivetrainConstants.kRedAllianceSpeakerPosition.getX() - robotX,
+                    Constants.DrivetrainConstants.kRedAllianceSpeakerPosition.getY() - robotY,
+                    Constants.DrivetrainConstants.kSpeakerTargetHeight - robotZ,
+                    3.0);
+        } else {
+            fromChassis = ProjectileMotion.velocityToAchive(
+                    Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition.getX() - robotX,
+                    Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition.getY() - robotY,
+                    Constants.DrivetrainConstants.kSpeakerTargetHeight - robotZ,
+                    3.0);
+        }
+        ChassisSpeeds frSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(m_cachedState.speeds, m_cachedState.Pose.getRotation());
+        m_shotInfo = new ProjectileMotion.SphericalCoordinate(fromChassis.minus(new Translation3d(frSpeeds.vxMetersPerSecond, frSpeeds.vyMetersPerSecond, 0.0)));
     }
 
     /**
@@ -231,7 +312,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      * 
      * @return An instance of this class that has been properly configured.
      */
-    public static CommandSwerveDrivetrain getInstance() {
+    public static CommandSwerveDrivetrain getInstance(DoubleSupplier armAngle, DoubleSupplier wristAngle) {
         SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
                 .withPigeon2Id(Constants.DrivetrainConstants.kPigeonID)
                 .withCANbusName(Constants.DrivetrainConstants.kCANbusName);
@@ -285,6 +366,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 Units.inchesToMeters(Constants.DrivetrainConstants.kBackRightYPosInches),
                 Constants.DrivetrainConstants.kInvertRightSide);
 
-        return new CommandSwerveDrivetrain(DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
+        return new CommandSwerveDrivetrain(armAngle, wristAngle, DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
     }
 }

@@ -60,6 +60,23 @@ public final class Calibrations {
         public static final double kSteerInertia = 0.00001;
         /** The simulated inertia of the drive motor of a swerve module(?). */
         public static final double kDriveInertia = 0.001;
+
+        public static final double kHeadingPIDP = 16.0;
+
+        public static final double kHeadingPIDI = 0;
+
+        public static final double kHeadingPIDD = 0;
+
+        /**
+         * The value A in the equation stddev = Ae^(Bx), where X is the average distance
+         * to the AprilTag(s) in meters as reported by the Limelight.
+         */
+        public static double kVisionStdDevA = 4.7e-3;
+        /**
+         * The value B in the equation stddev = Ae^(Bx), where X is the average distance
+         * to the AprilTag(s) in meters as reported by the Limelight.
+         */
+        public static double kVisionStdDevB = 0.798;
     }
 
     /**

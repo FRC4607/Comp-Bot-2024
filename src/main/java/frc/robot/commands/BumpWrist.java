@@ -25,7 +25,8 @@ public class BumpWrist extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_subsystem.setWristSetpoint(m_subsystem.getPIDSetpoint() + m_bump);
+        double bumpValue = m_subsystem.getPIDSetpoint() + m_bump;
+        m_subsystem.setWristSetpoint(() -> {return bumpValue ;});
     }
 
     // Called every time the scheduler runs while the command is scheduled.

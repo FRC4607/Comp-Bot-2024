@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.WristSubsystem;
 
@@ -12,7 +14,7 @@ import frc.robot.subsystems.WristSubsystem;
  * be within a given tolerance before finishing.
  */
 public class MoveWristToPosition extends Command {
-    private final double m_position;
+    private final DoubleSupplier m_position;
     private final double m_tol;
     private final WristSubsystem m_subsystem;
 
@@ -25,7 +27,7 @@ public class MoveWristToPosition extends Command {
      * @param subsystem A reference to the
      *                  {@link frc.robot.subsystems.WristSubsystem} object.
      */
-    public MoveWristToPosition(double position, double tol, WristSubsystem subsystem) {
+    public MoveWristToPosition(DoubleSupplier position, double tol, WristSubsystem subsystem) {
         m_position = position;
         m_tol = tol;
         m_subsystem = subsystem;
@@ -51,6 +53,6 @@ public class MoveWristToPosition extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(Math.IEEEremainder(m_subsystem.getWristPosition(), 360.0) - m_position) < m_tol;
+        return Math.abs(Math.IEEEremainder(m_subsystem.getWristPosition(), 360.0) - m_position.getAsDouble()) < m_tol;
     }
 }

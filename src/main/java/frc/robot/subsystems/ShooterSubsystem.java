@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
@@ -35,6 +37,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private final VelocityTorqueCurrentFOC m_req;
     private final Follower m_follow;
 
+    private DoubleSupplier m_speedSupplier;
+
     private double m_shooterPowerCoefficient;
 
     /** Creates a new ShooterSubsystem. */
@@ -63,18 +67,22 @@ public class ShooterSubsystem extends SubsystemBase {
         m_follow = new Follower(ShooterConstants.kOuterCANID, true);
 
         m_outerLog = new TalonFXStandardSignalLogger(m_outer, "/shooter/outer");
-        m_innerLog = new TalonFXStandardSignalLogger(m_outer, "/shooter/outer");
+        m_innerLog = new TalonFXStandardSignalLogger(m_inner, "/shooter/inner");
 
         m_req = new VelocityTorqueCurrentFOC(0);
+
+        m_speedSupplier = () -> 0.0;
 
         m_shooterPowerCoefficient = 1.0;
     }
 
     @Override
     public void periodic() {
-        m_inner.setControl(m_follow);
         m_outerLog.log();
         m_innerLog.log();
+        m_setpointLog.append(m_speedSupplier.getAsDouble());
+        m_outer.setControl(m_req.withVelocity(m_speedSupplier.getAsDouble() / 60.0));
+        m_inner.setControl(m_follow);
     }
 
     /**
@@ -83,9 +91,8 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param newShooterRPMsetpoint The new setpoint (RPM) which updates the old
      *                              one.
      */
-    public void setShooterRPMSetpoint(double newShooterRPMSetpoint) {
-        m_setpointLog.append(newShooterRPMSetpoint);
-        m_outer.setControl(m_req.withVelocity(newShooterRPMSetpoint / 60.0));
+    public void setShooterRPMSetpoint(DoubleSupplier newShooterRPMSetpoint) {
+        m_speedSupplier = newShooterRPMSetpoint;
     }
 
     /**

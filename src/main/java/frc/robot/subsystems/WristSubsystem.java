@@ -36,7 +36,7 @@ public class WristSubsystem extends SubsystemBase {
 
     private double m_wristPowerCoefficient;
 
-    private double m_setpoint;
+    private DoubleSupplier m_setpoint;
 
     private final TalonFXStandardSignalLogger m_log;
 
@@ -75,7 +75,7 @@ public class WristSubsystem extends SubsystemBase {
         m_motor = new TalonFX(Constants.WristConstants.kCANID);
         m_motor.getConfigurator().apply(config);
 
-        m_setpoint = 90.0;
+        m_setpoint = () -> 90.0;
         m_pid = new MotionMagicTorqueCurrentFOC(0.25);
 
         // m_position = m_encoder.getPosition();
@@ -91,15 +91,15 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
-        m_pid.Position = (m_setpoint - m_armAngleSupplier.getAsDouble()) / 360.0;
+        m_pid.Position = (m_setpoint.getAsDouble() - m_armAngleSupplier.getAsDouble()) / 360.0;
         m_motor.setControl(m_pid);
 
         m_wristGoalLog.append(m_pid.Position);
         m_wristSetpointLog.append(m_armSetpoint.getValueAsDouble());
 
-        SmartDashboard.putNumber("Wrist Angle", m_setpoint);
+        SmartDashboard.putNumber("Wrist Angle", m_setpoint.getAsDouble());
         SmartDashboard.putNumber("Arm Angle", m_armAngleSupplier.getAsDouble());
-        SmartDashboard.putNumber("Setpoint", m_setpoint - m_armAngleSupplier.getAsDouble());
+        SmartDashboard.putNumber("Setpoint", m_setpoint.getAsDouble() - m_armAngleSupplier.getAsDouble());
     }
 
     /**
@@ -108,7 +108,7 @@ public class WristSubsystem extends SubsystemBase {
      * @return The current setpoint of the wrist's PID controller in degrees.
      */
     public double getPIDSetpoint() {
-        return m_setpoint;
+        return m_setpoint.getAsDouble();
     }
 
     /**
@@ -117,7 +117,7 @@ public class WristSubsystem extends SubsystemBase {
      * @param newWristSetpoint The new setpoint for the wrist in degrees. 0deg
      *                         points along +X, 90deg points along +Z.
      */
-    public void setWristSetpoint(double newWristSetpoint) {
+    public void setWristSetpoint(DoubleSupplier newWristSetpoint) {
         m_setpoint = newWristSetpoint;
     }
 

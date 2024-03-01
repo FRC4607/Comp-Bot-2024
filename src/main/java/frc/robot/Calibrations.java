@@ -111,7 +111,7 @@ public final class Calibrations {
         /**
          * The kD constant of the wrist motor. In units of Amps/rps.
          */
-        public static final double kD = 32.0;
+        public static final double kD = 120.0;
         /** The absolute encoder offset of the wrist in rotations. */
         public static final double kEncoderOffset = -0.492919921875;
         /** The kS constant of the wrist in Amps. */
@@ -120,6 +120,7 @@ public final class Calibrations {
         public static final double kMotionMagicMaxVelocity = 1.0;
         /** The maximum acceleration motion magic should use in rps^2. */
         public static final double kMotionMagicMaxAcceleration = 5.0;
+        public static final double kG = 14;
     }
 
     /** Calibrations for the arm. */

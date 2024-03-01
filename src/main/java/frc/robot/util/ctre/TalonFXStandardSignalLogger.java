@@ -52,16 +52,12 @@ public class TalonFXStandardSignalLogger {
         DataLog managedLog = DataLogManager.getLog();
 
         m_pos = device.getPosition();
-        m_pos.setUpdateFrequency(50.0);
         m_posLog = new DoubleLogEntry(managedLog, prefix + "/pos");
         m_torque = device.getTorqueCurrent();
-        m_torque.setUpdateFrequency(50.0);
         m_torqueLog = new DoubleLogEntry(managedLog, prefix + "/torque");
         m_velocity = device.getVelocity();
-        m_velocity.setUpdateFrequency(50.0);
         m_velocityLog = new DoubleLogEntry(managedLog, prefix + "/vel");
         m_acceleration = device.getVelocity();
-        m_acceleration.setUpdateFrequency(50.0);
         m_accelerationLog = new DoubleLogEntry(managedLog, prefix + "/accel");
 
         m_deviceTempSecondary = device.getAncillaryDeviceTemp();
@@ -98,6 +94,10 @@ public class TalonFXStandardSignalLogger {
                     m_deviceTempFault,
                     m_procTempFault);
         } else {
+            m_pos.setUpdateFrequency(50.0);
+            m_torque.setUpdateFrequency(50.0);
+            m_velocity.setUpdateFrequency(50.0);
+            m_acceleration.setUpdateFrequency(50.0);
             Robot.addSignalsRio(
                     m_pos,
                     m_torque,

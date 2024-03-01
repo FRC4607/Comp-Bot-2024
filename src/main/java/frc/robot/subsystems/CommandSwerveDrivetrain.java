@@ -282,12 +282,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         for (TalonFXStandardSignalLogger log : m_logs) {
             log.log();
         }
-        double shooterOffset = -0.3 + Math.cos(Math.toRadians(m_armAngle.getAsDouble())) * Constants.ArmConstants.kArmLength
+        double shooterOffset = Constants.ArmConstants.kArmOffsetX + Math.cos(Math.toRadians(m_armAngle.getAsDouble())) * Constants.ArmConstants.kArmLength
                 + Math.cos(Math.toRadians(m_wristAngle.getAsDouble())) * Constants.WristConstants.kWristEffectiveLength;
         m_rotationPoint = new Translation2d(shooterOffset, 0.0);
         double robotX = m_cachedState.Pose.getX() + m_cachedState.Pose.getRotation().getCos() * shooterOffset;
         double robotY = m_cachedState.Pose.getY() + m_cachedState.Pose.getRotation().getSin() * shooterOffset;
-        double robotZ = 0.2 + Math.sin(Math.toRadians(m_armAngle.getAsDouble())) * Constants.ArmConstants.kArmLength
+        double robotZ = Constants.ArmConstants.kArmOffsetZ + Math.sin(Math.toRadians(m_armAngle.getAsDouble())) * Constants.ArmConstants.kArmLength
                 + Math.sin(Math.toRadians(m_wristAngle.getAsDouble())) * Constants.WristConstants.kWristEffectiveLength;
         Translation3d fromChassis;
         if (IsRed.isRed()) {

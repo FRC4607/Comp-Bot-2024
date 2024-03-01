@@ -92,6 +92,7 @@ public class WristSubsystem extends SubsystemBase {
 
     public void periodic() {
         m_pid.Position = (m_setpoint.getAsDouble() - m_armAngleSupplier.getAsDouble()) / 360.0;
+        //m_pid.FeedForward = Math.cos(Math.toRadians(getWristPosition())) * Calibrations.WristCalibrations.kG;
         m_motor.setControl(m_pid);
 
         m_wristGoalLog.append(m_pid.Position);

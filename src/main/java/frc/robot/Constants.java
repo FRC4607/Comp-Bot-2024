@@ -228,5 +228,7 @@ public final class Constants {
         public static final boolean kInvertEncoder = true;
         /** Pivot to pivot length of the arm in meters. */
         public static final double kArmLength = Units.inchesToMeters(24);
+        public static final double kArmOffsetX = -Units.inchesToMeters(9.625);
+        public static final double kArmOffsetZ = Units.inchesToMeters(10.245 + Calibrations.DrivetrainCalibrations.kWheelRadiusInches);
     }
 }

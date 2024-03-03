@@ -233,6 +233,12 @@
           "data": {
             "name": "Retract"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 5.0
+          }
         }
       ]
     }

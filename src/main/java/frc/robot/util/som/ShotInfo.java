@@ -1,5 +1,7 @@
 package frc.robot.util.som;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class ShotInfo {
     private final double speed;
     private final double wrist;
@@ -22,7 +24,7 @@ public class ShotInfo {
         return this.wrist;
     }
 
-    public ShotInfoWithDirection withDirection(double robot) {
+    public ShotInfoWithDirection withDirection(Rotation2d robot) {
         return new ShotInfoWithDirection(speed, wrist, robot);
     }
 }

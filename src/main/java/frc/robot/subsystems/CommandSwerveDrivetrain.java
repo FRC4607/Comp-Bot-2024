@@ -37,6 +37,7 @@ import edu.wpi.first.util.datalog.StructLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
@@ -46,7 +47,9 @@ import frc.robot.Calibrations;
 import frc.robot.Constants;
 import frc.robot.util.IsRed;
 import frc.robot.util.ctre.TalonFXStandardSignalLogger;
+import frc.robot.util.som.InterpolatingTreeMapShooter;
 import frc.robot.util.som.ProjectileMotion;
+import frc.robot.util.som.ShotInfoWithDirection;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements
@@ -84,12 +87,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             "flywheelll",
             Pose2d.struct);
 
-    private ProjectileMotion.SphericalCoordinate m_shotInfo;
+    private ShotInfoWithDirection m_shotInfo;
+    private final InterpolatingTreeMapShooter m_map = InterpolatingTreeMapShooter.getShotMap();
     private Translation2d m_rotationPoint;
     private final DoubleSupplier m_armAngle;
     private final DoubleSupplier m_wristAngle;
 
-    private CommandSwerveDrivetrain(DoubleSupplier armAngle, DoubleSupplier wristAngle, SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
+    private CommandSwerveDrivetrain(DoubleSupplier armAngle, DoubleSupplier wristAngle,
+            SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
         if (Utils.isSimulation()) {
@@ -127,7 +132,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         m_wristAngle = wristAngle;
     }
 
-    private CommandSwerveDrivetrain(DoubleSupplier armAngle, DoubleSupplier wristAngle, SwerveDrivetrainConstants driveTrainConstants,
+    private CommandSwerveDrivetrain(DoubleSupplier armAngle, DoubleSupplier wristAngle,
+            SwerveDrivetrainConstants driveTrainConstants,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
         if (Utils.isSimulation()) {
@@ -245,12 +251,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private void handleLLUpdate(Pose2d pose, double distance, double tags, double latency) {
         // Make sure we are using good data.
         Pose2d rel = pose.relativeTo(this.m_cachedState.Pose);
-        if (tags > 0 && (DriverStation.isDisabled() || (tags > 1 && distance < 5 && rel.getTranslation().getNorm() < 1
-                && Math.abs(rel.getRotation().getDegrees()) < 5))) {
+        if (tags > 0 && (DriverStation.isDisabled()
+                || (tags > 1 || (distance < 5 && rel.getTranslation().getNorm() < 1
+                        && Math.abs(rel.getRotation().getDegrees()) < 5)))) {
             // First, we compute estimated standard deviations for the X and Y measurements.
             // The approach is borrowed from 6328, see here for more info:
             // https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2023-build-thread/420691/292.
-            double stdDevXY = 0.07 + 0.05 * Math.pow(distance, 2);
+            double stdDevXY = (0.7 + 0.05 * Math.pow(distance, 2)) / Math.pow(tags, 2);
             double stdDevTheta = DriverStation.isDisabled() ? Math.PI * 2 : 999999999;
             // Add the vision measurement. The standard deviation for the rotation is very
             // high as general advice is to not trust it.
@@ -273,7 +280,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return m_rotationPoint;
     }
 
-    public ProjectileMotion.SphericalCoordinate getShotInfo() {
+    public ShotInfoWithDirection getShotInfo() {
         return m_shotInfo;
     }
 
@@ -282,29 +289,36 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         for (TalonFXStandardSignalLogger log : m_logs) {
             log.log();
         }
-        double shooterOffset = Constants.ArmConstants.kArmOffsetX + Math.cos(Math.toRadians(m_armAngle.getAsDouble())) * Constants.ArmConstants.kArmLength
-                + Math.cos(Math.toRadians(m_wristAngle.getAsDouble())) * Constants.WristConstants.kWristEffectiveLength;
+        double shooterOffset = Constants.ArmConstants.kArmOffsetX
+                + Math.cos(Math.toRadians(m_armAngle.getAsDouble())) * Constants.ArmConstants.kArmLength
+                + Math.cos(Math.toRadians(m_wristAngle.getAsDouble()))
+                        * Constants.WristConstants.kWristEffectiveLength;
         m_rotationPoint = new Translation2d(shooterOffset, 0.0);
         double robotX = m_cachedState.Pose.getX() + m_cachedState.Pose.getRotation().getCos() * shooterOffset;
         double robotY = m_cachedState.Pose.getY() + m_cachedState.Pose.getRotation().getSin() * shooterOffset;
-        double robotZ = Constants.ArmConstants.kArmOffsetZ + Math.sin(Math.toRadians(m_armAngle.getAsDouble())) * Constants.ArmConstants.kArmLength
-                + Math.sin(Math.toRadians(m_wristAngle.getAsDouble())) * Constants.WristConstants.kWristEffectiveLength;
+        double robotZ = Constants.ArmConstants.kArmOffsetZ
+                + Math.sin(Math.toRadians(m_armAngle.getAsDouble())) * Constants.ArmConstants.kArmLength
+                + Math.sin(Math.toRadians(m_wristAngle.getAsDouble()))
+                        * Constants.WristConstants.kWristEffectiveLength;
         Translation3d fromChassis;
+        double dist;
+        Rotation2d robotAngle;
         if (IsRed.isRed()) {
-            fromChassis = ProjectileMotion.velocityToAchive(
-                    Constants.DrivetrainConstants.kRedAllianceSpeakerPosition.getX() - robotX,
-                    Constants.DrivetrainConstants.kRedAllianceSpeakerPosition.getY() - robotY,
-                    Constants.DrivetrainConstants.kSpeakerTargetHeight - robotZ,
-                    3.0);
+            dist = Math.hypot(Constants.DrivetrainConstants.kRedAllianceSpeakerPosition.getX() - robotX,
+                    Constants.DrivetrainConstants.kRedAllianceSpeakerPosition.getY() - robotY);
+            robotAngle = Constants.DrivetrainConstants.kRedAllianceSpeakerPosition
+                    .minus(this.m_cachedState.Pose.getTranslation()).getAngle();
+
         } else {
-            fromChassis = ProjectileMotion.velocityToAchive(
-                    Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition.getX() - robotX,
-                    Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition.getY() - robotY,
-                    Constants.DrivetrainConstants.kSpeakerTargetHeight - robotZ,
-                    3.0);
+            dist = Math.hypot(Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition.getX() - robotX,
+                    Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition.getY() - robotY);
+            robotAngle = Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition
+                    .minus(this.m_cachedState.Pose.getTranslation()).getAngle();
         }
-        ChassisSpeeds frSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(m_cachedState.speeds, m_cachedState.Pose.getRotation());
-        m_shotInfo = new ProjectileMotion.SphericalCoordinate(fromChassis.minus(new Translation3d(frSpeeds.vxMetersPerSecond, frSpeeds.vyMetersPerSecond, 0.0)));
+        SmartDashboard.putNumber("Robot Distance", dist);
+        ShotInfoWithDirection reg = m_map.get(Math.max(1.6, dist)).withDirection(robotAngle);
+        ChassisSpeeds fr = ChassisSpeeds.fromRobotRelativeSpeeds(this.m_cachedState.speeds, this.m_cachedState.Pose.getRotation());
+        m_shotInfo = reg.compensateRobotSpeed(SmartDashboard.getNumber("SoM Compensation Value", 0.0) * fr.vxMetersPerSecond, SmartDashboard.getNumber("SoM Compensation Value", 0.0) * fr.vyMetersPerSecond);
     }
 
     /**
@@ -366,6 +380,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 Units.inchesToMeters(Constants.DrivetrainConstants.kBackRightYPosInches),
                 Constants.DrivetrainConstants.kInvertRightSide);
 
-        return new CommandSwerveDrivetrain(armAngle, wristAngle, DrivetrainConstants, FrontLeft, FrontRight, BackLeft, BackRight);
+        return new CommandSwerveDrivetrain(armAngle, wristAngle, DrivetrainConstants, FrontLeft, FrontRight,
+                BackLeft,
+                BackRight);
     }
 }

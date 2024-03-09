@@ -37,9 +37,9 @@ public final class Constants {
 
         // Front Left
         /** The CAN Id of the front left drive motor. */
-        public static final int kFrontLeftDriveMotorId = 19;
+        public static final int kFrontLeftDriveMotorId = 0;
         /** The CAN Id of the front left steer motor. */
-        public static final int kFrontLeftSteerMotorId = 18;
+        public static final int kFrontLeftSteerMotorId = 2;
         /** The CAN Id of the front left turn encoder. */
         public static final int kFrontLeftEncoderId = 18;
 
@@ -50,9 +50,9 @@ public final class Constants {
 
         // Front Right
         /** The CAN Id of the front right drive motor. */
-        public static final int kFrontRightDriveMotorId = 17;
+        public static final int kFrontRightDriveMotorId = 1;
         /** The CAN Id of the front right steer motor. */
-        public static final int kFrontRightSteerMotorId = 16;
+        public static final int kFrontRightSteerMotorId = 3;
         /** The CAN Id of the front right turn encoder. */
         public static final int kFrontRightEncoderId = 16;
 
@@ -63,9 +63,9 @@ public final class Constants {
 
         // Back Left
         /** The CAN Id of the back left drive motor. */
-        public static final int kBackLeftDriveMotorId = 2;
+        public static final int kBackLeftDriveMotorId = 19;
         /** The CAN Id of the back left steer motor. */
-        public static final int kBackLeftSteerMotorId = 3;
+        public static final int kBackLeftSteerMotorId = 17;
         /** The CAN Id of the back left turn encoder. */
         public static final int kBackLeftEncoderId = 3;
 
@@ -76,9 +76,9 @@ public final class Constants {
 
         // Back Right
         /** The CAN Id of the back right drive motor. */
-        public static final int kBackRightDriveMotorId = 0;
+        public static final int kBackRightDriveMotorId = 18;
         /** The CAN Id of the back right steer motor. */
-        public static final int kBackRightSteerMotorId = 1;
+        public static final int kBackRightSteerMotorId = 16;
         /** The CAN Id of the back right turn encoder. */
         public static final int kBackRightEncoderId = 1;
 
@@ -164,9 +164,9 @@ public final class Constants {
     /** Constants for the climber. */
     public static final class ClimberConstants {
         /** the CAN Id of the left side climber motor */
-        public static final int kLeftCANId = 0;
+        public static final int kLeftCANId = 11;
         /** the can Id of the right side climber motor */
-        public static final int kRightCANId = 0;
+        public static final int kRightCANId = 14;
         /** the amp limit for each motor */
         public static final int kSupplyAmpLimit = 120;
     

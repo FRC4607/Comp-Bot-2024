@@ -26,9 +26,9 @@ public class ClimberSubsystem extends SubsystemBase {
         config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.kSupplyAmpLimit;
         
         
-        m_leftMotor = new TalonFX(ClimberConstants.kLeftCANId);
+        m_leftMotor = new TalonFX(ClimberConstants.kLeftCANId, "Kachow");
         m_leftMotor.getConfigurator().apply(config);
-        m_rightMotor = new TalonFX(ClimberConstants.kRightCANId);
+        m_rightMotor = new TalonFX(ClimberConstants.kRightCANId, "Kachow");
         m_rightMotor.getConfigurator().apply(config);
 
         m_leftMotor.setNeutralMode(NeutralModeValue.Brake);

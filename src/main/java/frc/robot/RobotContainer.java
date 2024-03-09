@@ -180,6 +180,9 @@ public class RobotContainer {
                 .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0)
                         .andThen(new SetShooterSpeed(() -> 0.0, 120, m_shooter))
                         .andThen(new Retract(m_wrist, m_arm)));
+
+        operatorJoystick.leftBumper().whileTrue(new Climb(0.5, m_climber));
+        operatorJoystick.rightBumper().whileTrue(new Climb(-0.5, m_climber));
     }
 
     public RobotContainer() {

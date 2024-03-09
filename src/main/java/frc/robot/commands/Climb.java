@@ -14,10 +14,11 @@ public class Climb extends Command {
   private double m_speed;
 
   /** Creates a new Climb. */
-  public Climb(double speed) {
+  public Climb(double speed, ClimberSubsystem climber) {
     m_speed = speed;
+    m_climber = climber;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(m_climber);
+    addRequirements(climber);
   }
 
   // Called when the command is initially scheduled.
@@ -38,6 +39,6 @@ public class Climb extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

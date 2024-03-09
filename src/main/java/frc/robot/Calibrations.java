@@ -36,7 +36,7 @@ public final class Calibrations {
         public static final double kSlipCurrentA = 123.5;
 
         /** The effective radius of the wheel attached to each swerve module. */
-        public static final double kWheelRadiusInches = 1.878;
+        public static final double kWheelRadiusInches = 1.841628924138377;
 
         /**
          * The speed the robot would attain in meters per second if each of its drive
@@ -113,7 +113,7 @@ public final class Calibrations {
          */
         public static final double kD = 120.0;
         /** The absolute encoder offset of the wrist in rotations. */
-        public static final double kEncoderOffset = -0.492919921875;
+        public static final double kEncoderOffset = -0.504150390625;
         /** The kS constant of the wrist in Amps. */
         public static final double kS = 0.25;
         /** The maximum velocity motion magic should use in rps. */

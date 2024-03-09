@@ -18,6 +18,8 @@ public class MoveWristToPosition extends Command {
     private final double m_tol;
     private final WristSubsystem m_subsystem;
 
+    private int m_debounce;
+
     /**
      * Creates a new MoveWristToPosition command.
      * 
@@ -38,6 +40,7 @@ public class MoveWristToPosition extends Command {
     @Override
     public void initialize() {
         m_subsystem.setWristSetpoint(m_position);
+        m_debounce = 0;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -53,6 +56,11 @@ public class MoveWristToPosition extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(Math.IEEEremainder(m_subsystem.getWristPosition(), 360.0) - m_position.getAsDouble()) < m_tol;
+        if (Math.abs(Math.IEEEremainder(m_subsystem.getWristPosition(), 360.0) - m_position.getAsDouble()) < m_tol) {
+            m_debounce++;
+        } else {
+            m_debounce = 0;
+        }
+        return m_debounce >= 4;
     }
 }

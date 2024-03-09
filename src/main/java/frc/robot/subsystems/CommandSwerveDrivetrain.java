@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
@@ -252,13 +253,13 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         // Make sure we are using good data.
         Pose2d rel = pose.relativeTo(this.m_cachedState.Pose);
         if (tags > 0 && (DriverStation.isDisabled()
-                || (tags > 1 || (distance < 5 && rel.getTranslation().getNorm() < 1
-                        && Math.abs(rel.getRotation().getDegrees()) < 5)))) {
+                || ((tags > 1 || distance < 5) && rel.getTranslation().getNorm() < 1
+                        && Math.abs(rel.getRotation().getDegrees()) < 5))) {
             // First, we compute estimated standard deviations for the X and Y measurements.
             // The approach is borrowed from 6328, see here for more info:
             // https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2023-build-thread/420691/292.
             double stdDevXY = (0.7 + 0.05 * Math.pow(distance, 2)) / Math.pow(tags, 2);
-            double stdDevTheta = DriverStation.isDisabled() ? Math.PI * 2 : 999999999;
+            double stdDevTheta = DriverStation.isDisabled() || tags > 1 ? Math.PI * 2 : 999999999;
             // Add the vision measurement. The standard deviation for the rotation is very
             // high as general advice is to not trust it.
             this.addVisionMeasurement(pose, Timer.getFPGATimestamp() - (latency / 1000.0),
@@ -317,8 +318,19 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
         SmartDashboard.putNumber("Robot Distance", dist);
         ShotInfoWithDirection reg = m_map.get(Math.max(1.6, dist)).withDirection(robotAngle);
-        ChassisSpeeds fr = ChassisSpeeds.fromRobotRelativeSpeeds(this.m_cachedState.speeds, this.m_cachedState.Pose.getRotation());
-        m_shotInfo = reg.compensateRobotSpeed(SmartDashboard.getNumber("SoM Compensation Value", 0.0) * fr.vxMetersPerSecond, SmartDashboard.getNumber("SoM Compensation Value", 0.0) * fr.vyMetersPerSecond);
+        ChassisSpeeds fr = ChassisSpeeds.fromRobotRelativeSpeeds(this.m_cachedState.speeds,
+                this.m_cachedState.Pose.getRotation());
+        m_shotInfo = reg.compensateRobotSpeed(
+                SmartDashboard.getNumber("SoM Compensation Value", 0.0) * fr.vxMetersPerSecond,
+                SmartDashboard.getNumber("SoM Compensation Value", 0.0) * fr.vyMetersPerSecond);
+    }
+
+    public double[] getWheelRadiusCharacterizationPosition() {
+        double[] results = new double[4];
+        for (int i = 0; i < 4; i ++) {
+            results[i] = this.m_logs[1 + 2 * i].m_pos.getValueAsDouble() * 2 * Math.PI / Constants.DrivetrainConstants.kDriveGearRatio;
+        }
+        return results;
     }
 
     /**

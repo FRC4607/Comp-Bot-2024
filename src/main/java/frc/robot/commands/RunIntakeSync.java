@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
-import frc.robot.subsystems.LEDs;
+import frc.robot.subsystems.LEDSubsystem;
 
 /**
  * Controls the intake and kicker so they run at the same linear speed.
@@ -19,7 +19,7 @@ public class RunIntakeSync extends Command {
     private final IntakeSubsystem m_intake;
     private final KickerSubsystem m_kicker;
     private final DoubleSupplier m_power;
-    private final int m_LEDcount = Constants.LEDConstants.LedCount;
+    private final LEDSubsystem m_leds;
     private boolean m_hadNote;
     private int i;
 
@@ -40,11 +40,12 @@ public class RunIntakeSync extends Command {
      *                   immidiately. Useful for stopping the intake in an
      *                   autonomous routine.
      */
-    public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker, boolean ignoreBeam) {
+    public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker, LEDSubsystem leds, boolean ignoreBeam) {
         m_power = power;
         m_intake = intake;
         m_kicker = kicker;
         m_ignoreBeam = ignoreBeam;
+        m_leds = leds;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(m_intake, m_kicker);
     }
@@ -59,8 +60,8 @@ public class RunIntakeSync extends Command {
      * @param kicker A refernce to the {@link frc.robot.subsystems.KickerSubsystem}
      *               object.
      */
-    public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker) {
-        this(power, intake, kicker, false);
+    public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker, LEDSubsystem leds) {
+        this(power, intake, kicker, leds, false);
     }
 
     // Called when the command is initially scheduled.
@@ -101,7 +102,7 @@ public class RunIntakeSync extends Command {
                 }
 
                 if (i >= 1) {
-                    LEDs.setLED(0,255,0,0);
+                    m_leds.setLED(0, 255, 0, 0);
                     return true;
                 }
             }

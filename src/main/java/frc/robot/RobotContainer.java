@@ -28,6 +28,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 
@@ -50,13 +51,14 @@ public class RobotContainer {
     private final ArmSubsystem m_arm = new ArmSubsystem();
     private final WristSubsystem m_wrist = new WristSubsystem(m_arm::armPosition);
     private final KickerSubsystem m_kicker = new KickerSubsystem();
+    private final LEDSubsystem m_leds = new LEDSubsystem();
 
     private final SendableChooser<Command> m_autoChooser;
 
     private void configureBindings() {
         m_kicker.setDefaultCommand(new RunIntakeSync(() -> {
             return joystick.getRightTriggerAxis() - joystick.getLeftTriggerAxis();
-        }, m_intake, m_kicker));
+        }, m_intake, m_kicker, m_leds));
         drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed)
@@ -75,7 +77,7 @@ public class RobotContainer {
         joystick.y().onTrue(new InstantCommand(drivetrain::seedFieldRelative, drivetrain));
         joystick.x().onTrue(new RunIntakeSync(() -> {
             return 1;
-        }, m_intake, m_kicker).withTimeout(4));
+        }, m_intake, m_kicker, m_leds).withTimeout(4));
         joystick.leftBumper().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 7.5, m_arm),
                 new MoveWristToPosition(40.0, 7.5, m_wrist)));
         joystick.rightBumper().onTrue(new SequentialCommandGroup(
@@ -116,9 +118,9 @@ public class RobotContainer {
         NamedCommands.registerCommand("SetWristPosition 76", new MoveWristToPosition(143, 3, m_wrist));
         NamedCommands.registerCommand("SetWristPosition Four Piece Sides", new MoveWristToPosition(143.3, 3, m_wrist));
         NamedCommands.registerCommand("Shoot", new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5));
-        NamedCommands.registerCommand("RunIntake 1", new RunIntakeSync(() -> 1.0, m_intake, m_kicker).withTimeout(3.0));
+        NamedCommands.registerCommand("RunIntake 1", new RunIntakeSync(() -> 1.0, m_intake, m_kicker, m_leds).withTimeout(3.0));
         NamedCommands.registerCommand("Retract", new Retract(m_wrist, m_arm));
-        NamedCommands.registerCommand("RunIntake 0", new RunIntakeSync(() -> 0.0, m_intake, m_kicker, true));
+        NamedCommands.registerCommand("RunIntake 0", new RunIntakeSync(() -> 0.0, m_intake, m_kicker, m_leds, true));
         NamedCommands.registerCommand("ExtendToAmp", new InstantCommand());
         NamedCommands.registerCommand("DropGamePiece", new InstantCommand());
         NamedCommands.registerCommand("RunKicker -0.5", new RunKickerWheel(-1500.0, m_kicker));

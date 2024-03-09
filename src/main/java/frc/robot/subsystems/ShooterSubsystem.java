@@ -36,9 +36,11 @@ public class ShooterSubsystem extends SubsystemBase {
     private final Follower m_follow;
 
     private double m_shooterPowerCoefficient;
+    private double m_pastVelocity;
 
     /** Creates a new ShooterSubsystem. */
     public ShooterSubsystem() {
+
         m_outer = new TalonFX(ShooterConstants.kOuterCANID);
         m_inner = new TalonFX(ShooterConstants.kInnerCANID);
 
@@ -72,6 +74,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        
+        if (m_pastVelocity - m_innerLog.m_velocity.getValueAsDouble() > 100) {
+            
+        }
+
+        m_pastVelocity = m_innerLog.m_velocity.getValueAsDouble();
+
         m_inner.setControl(m_follow);
         m_outerLog.log();
         m_innerLog.log();
@@ -115,4 +124,6 @@ public class ShooterSubsystem extends SubsystemBase {
     public double innerShooterRPM() {
         return m_innerLog.m_velocity.getValueAsDouble() * 60.0;
     }
+    
+
 }

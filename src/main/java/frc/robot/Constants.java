@@ -216,4 +216,9 @@ public final class Constants {
         /** Whether or not to invert the encoder on the arm. */
         public static final boolean kInvertEncoder = true;
     }
+    public static final class LEDConstants {
+        public static final int CANdleID = 12;
+        public static final int LedCount = 100;
+
+    }
 }

@@ -7,8 +7,10 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
+import frc.robot.subsystems.LEDs;
 
 /**
  * Controls the intake and kicker so they run at the same linear speed.
@@ -17,7 +19,7 @@ public class RunIntakeSync extends Command {
     private final IntakeSubsystem m_intake;
     private final KickerSubsystem m_kicker;
     private final DoubleSupplier m_power;
-
+    private final int m_LEDcount = Constants.LEDConstants.LedCount;
     private boolean m_hadNote;
     private int i;
 
@@ -99,6 +101,7 @@ public class RunIntakeSync extends Command {
                 }
 
                 if (i >= 1) {
+                    LEDs.setLED(0,255,0,0);
                     return true;
                 }
             }

@@ -1,0 +1,116 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.33647620677948,
+      "y": 5.551538944244385
+    },
+    "rotation": 1.91787074511359e-40
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetWristPosition 45"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetShooterSpeed 4000"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetShooterSpeed 0"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "2 piece speaker.1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RunIntake 1"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetArmPosition 36"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetWristPosition 81"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetShooterSpeed 4000"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetShooterSpeed 0"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}

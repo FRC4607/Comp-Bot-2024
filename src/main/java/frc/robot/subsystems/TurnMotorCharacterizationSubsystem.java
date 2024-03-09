@@ -58,7 +58,7 @@ public class TurnMotorCharacterizationSubsystem extends SubsystemBase {
     }
 
     /**
-     * Sets the turn motor to its neutral state (different than 0 amps).
+     * Sets the turn motor to its neutral state.
      */
     public void setNeutral() {
         m_motor.setControl(m_neutral);

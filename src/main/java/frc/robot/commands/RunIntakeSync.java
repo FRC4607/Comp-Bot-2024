@@ -11,29 +11,63 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 
 /**
- * Controls the intake and kicker so they are at the same linear speed.
+ * Controls the intake and kicker so they run at the same linear speed.
  */
 public class RunIntakeSync extends Command {
     private final IntakeSubsystem m_intake;
     private final KickerSubsystem m_kicker;
     private final DoubleSupplier m_power;
 
-    private static final double MAX_SURFACE_SPEED = 1500.0;
+    private boolean m_hadNote;
+    private int i;
+
+    private static final double MAX_SURFACE_SPEED = 3000.0;
+
+    private final boolean m_ignoreBeam;
 
     /**
-     * Creates a new SetIntakeOpenLoop.
+     * Creates a new RunIntakeSync.
      * 
-     * @param speed The open loop speed to run the kicker at in the range [-1, 1].
+     * @param speed      The percentage of the max surface speed to run the kicker
+     *                   and intake at in the range [-1, 1].
+     * @param intake     A refernce to the
+     *                   {@link frc.robot.subsystems.IntakeSubsystem} object.
+     * @param kicker     A refernce to the
+     *                   {@link frc.robot.subsystems.KickerSubsystem} object.
+     * @param ignoreBeam Whether or not to ignore the beam break sensor and end
+     *                   immidiately. Useful for stopping the intake in an
+     *                   autonomous routine.
      */
-    public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker) {
+    public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker, boolean ignoreBeam) {
         m_power = power;
         m_intake = intake;
         m_kicker = kicker;
+        m_ignoreBeam = ignoreBeam;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(m_intake, m_kicker);
     }
 
+    /**
+     * Creates a new RunIntakeSync.
+     * 
+     * @param speed  The percentage of the max surface speed to run the kicker and
+     *               intake at in the range [-1, 1].
+     * @param intake A refernce to the {@link frc.robot.subsystems.IntakeSubsystem}
+     *               object.
+     * @param kicker A refernce to the {@link frc.robot.subsystems.KickerSubsystem}
+     *               object.
+     */
+    public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker) {
+        this(power, intake, kicker, false);
+    }
+
     // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        m_hadNote = false;
+    }
+
+    // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
         double surfaceSpeed = m_power.getAsDouble() * MAX_SURFACE_SPEED;
@@ -51,6 +85,24 @@ public class RunIntakeSync extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        if (m_ignoreBeam) {
+            return true;
+        } else {
+            // If we have a note, reset the counter.
+            if (m_intake.hasNote()) {
+                m_hadNote = true;
+                i = 0;
+            } else if (m_hadNote) {
+                // Wait 1 cycles before exiting for debouncing and delay.
+                if (!m_intake.hasNote()) {
+                    i++;
+                }
+
+                if (i >= 1) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

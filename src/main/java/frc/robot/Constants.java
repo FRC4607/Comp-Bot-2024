@@ -25,10 +25,10 @@ public final class Constants {
         public static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.TorqueCurrentFOC;
 
         /** The ratio of drive motor rotations per azimuth rotation. */
-        public static final double kCoupleRatio = 3.5714285714285716;
+        public static final double kCoupleRatio = 3.0;
 
         /** The ratio of drive motor turns to one wheel rotation. */
-        public static final double kDriveGearRatio = 6.122448979591837;
+        public static final double kDriveGearRatio = (48.0 / 16.0) * (16.0 / 28.0) * (45.0 / 15.0);
         /** The ratio of steer motor turns to one azimuth rotation. */
         public static final double kSteerGearRatio = 12.8;
 
@@ -55,11 +55,11 @@ public final class Constants {
 
         // Front Left
         /** The CAN ID of the front left drive motor. */
-        public static final int kFrontLeftDriveMotorID = 19;
+        public static final int kFrontLeftDriveMotorID = 0;
         /** The CAN ID of the front left steer motor. */
-        public static final int kFrontLeftSteerMotorID = 18;
+        public static final int kFrontLeftSteerMotorID = 2;
         /** The CAN ID of the front left turn encoder. */
-        public static final int kFrontLeftEncoderID = 18;
+        public static final int kFrontLeftEncoderID = 2;
 
         /**
          * The X position of the axis of the azimuth of the front left module from the
@@ -74,11 +74,11 @@ public final class Constants {
 
         // Front Right
         /** The CAN ID of the front right drive motor. */
-        public static final int kFrontRightDriveMotorID = 17;
+        public static final int kFrontRightDriveMotorID = 1;
         /** The CAN ID of the front right steer motor. */
-        public static final int kFrontRightSteerMotorID = 16;
+        public static final int kFrontRightSteerMotorID = 3;
         /** The CAN ID of the front right turn encoder. */
-        public static final int kFrontRightEncoderID = 16;
+        public static final int kFrontRightEncoderID = 3;
 
         /**
          * The X position of the axis of the azimuth of the front right module from the
@@ -93,11 +93,11 @@ public final class Constants {
 
         // Back Left
         /** The CAN ID of the back left drive motor. */
-        public static final int kBackLeftDriveMotorID = 2;
+        public static final int kBackLeftDriveMotorID = 19;
         /** The CAN ID of the back left steer motor. */
-        public static final int kBackLeftSteerMotorID = 3;
+        public static final int kBackLeftSteerMotorID = 17;
         /** The CAN ID of the back left turn encoder. */
-        public static final int kBackLeftEncoderID = 3;
+        public static final int kBackLeftEncoderID = 17;
 
         /**
          * The X position of the axis of the azimuth of the back left module from the
@@ -112,11 +112,11 @@ public final class Constants {
 
         // Back Right
         /** The CAN ID of the back right drive motor. */
-        public static final int kBackRightDriveMotorID = 0;
+        public static final int kBackRightDriveMotorID = 18;
         /** The CAN ID of the back right steer motor. */
-        public static final int kBackRightSteerMotorID = 1;
+        public static final int kBackRightSteerMotorID = 16;
         /** The CAN ID of the back right turn encoder. */
-        public static final int kBackRightEncoderID = 1;
+        public static final int kBackRightEncoderID = 16;
 
         /**
          * The X position of the axis of the azimuth of the back right module from the
@@ -140,9 +140,9 @@ public final class Constants {
     /** Constants for the shooter. */
     public static final class ShooterConstants {
         /** The CAN ID of the outer shooter motor. */
-        public static final int kOuterCANID = 44;
+        public static final int kOuterCANID = 7;
         /** The CAN ID of the outer shooter motor. */
-        public static final int kInnerCANID = 46;
+        public static final int kInnerCANID = 8;
 
         /** Whether or not to invert the outer shooter motor. */
         public static final boolean kInvertOuter = false;
@@ -151,12 +151,12 @@ public final class Constants {
     /** Constants for the kicker. */
     public static final class KickerConstants {
         /** The CAN ID of the kicker wheel motor controller. */
-        public static final int kCANID = 14;
+        public static final int kCANID = 9;
         /**
          * The gear ratio (x input rotations : 1 output rotation) of the kicker motor to
          * the kicker.
          */
-        public static final double kKickerGearRatio = 3.0 * (17.0 / 20.0);
+        public static final double kKickerGearRatio = 3.0;
         /** The diameter of the kickers in mm. */
         public static final double kKickerDiameter = Units.inchesToMeters(1.0) * 1000;
         /** Whether or not to invert the kicker motor. */
@@ -166,7 +166,7 @@ public final class Constants {
     /** Constants for the intake. */
     public static final class IntakeConstants {
         /** The CAN ID of the roller motor controller. */
-        public static final int kRollerCANID = 12;
+        public static final int kRollerCANID = 15;
         /** The CAN ID of the agitator motor controller. */
         public static final int kAgitatorCANID = 9;
         /** Whether or not to invert the roller motor. */
@@ -179,7 +179,7 @@ public final class Constants {
          */
         public static final double kRollerGearRatio = 4.0;
         /** The diameter of the rollers in mm. */
-        public static final double kRollerDiameter = 40.5;
+        public static final double kRollerDiameter = 40.95;
         /**
          * The gear ratio (x input rotations : 1 output rotation) of the agitator motor
          * to the agitators.
@@ -192,7 +192,7 @@ public final class Constants {
     /** Constants for the wrist. */
     public static final class WristConstants {
         /** The CAN ID of the wrist motor controller. */
-        public static final int kCANID = 15;
+        public static final int kCANID = 6;
         /** The number of rotor rotations to produce one sensor rotation. */
         public static final double kRotorToSensor = 28.0;
         /** The number of sensor rotations to produce one mechanism rotation. */
@@ -204,22 +204,22 @@ public final class Constants {
         /** Whether or not to invert the wrist encoder. */
         public static final boolean kInvertEncoder = false;
         /** Distance from pivot to the center of a note that is just touching the flywheels in meters. */
-        public static final double kWristEffectiveLength = Units.inchesToMeters(16);
+        public static final double kWristEffectiveLength = Units.inchesToMeters(17);
     }
 
     /** Constants for the arm. */
     public static final class ArmConstants {
         /** The CAN ID of the front (closest to intake) motor in the arm gearbox. */
-        public static final int kFrontCANID = 8;
+        public static final int kFrontCANID = 4;
         /** The CAN ID of the rear (closest to battery) motor in the arm gearbox. */
-        public static final int kRearCANID = 7;
+        public static final int kRearCANID = 5;
         /** Whether or not to invert both motors. */
         public static final boolean kInvertMotors = true;
         /**
          * The minimum angle (in rotations) the arm is allowed to go in reverse. SW
          * limit only.
          */
-        public static final double kReverseSoftLimit = 0.0;
+        public static final double kReverseSoftLimit = 0.003; // 0.9deg is 0.0025
         /** The ratio of encoder rotations to wrist rotations. */
         public static final double kSensorToMechanism = 60.0 / 37.0;
         /** The ratio of motor rotations to encoder rotations. */
@@ -227,7 +227,7 @@ public final class Constants {
         /** Whether or not to invert the encoder on the arm. */
         public static final boolean kInvertEncoder = true;
         /** Pivot to pivot length of the arm in meters. */
-        public static final double kArmLength = Units.inchesToMeters(24);
+        public static final double kArmLength = Units.inchesToMeters(23.5);
         public static final double kArmOffsetX = -Units.inchesToMeters(9.625);
         public static final double kArmOffsetZ = Units.inchesToMeters(10.245 + Calibrations.DrivetrainCalibrations.kWheelRadiusInches);
     }

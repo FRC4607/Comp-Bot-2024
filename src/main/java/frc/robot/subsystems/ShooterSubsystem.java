@@ -43,8 +43,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** Creates a new ShooterSubsystem. */
     public ShooterSubsystem() {
-        m_outer = new TalonFX(ShooterConstants.kOuterCANID);
-        m_inner = new TalonFX(ShooterConstants.kInnerCANID);
+        m_outer = new TalonFX(ShooterConstants.kOuterCANID, "kachow");
+        m_inner = new TalonFX(ShooterConstants.kInnerCANID, "kachow");
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 

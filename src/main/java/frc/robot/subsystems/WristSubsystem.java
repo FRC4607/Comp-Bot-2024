@@ -55,7 +55,7 @@ public class WristSubsystem extends SubsystemBase {
         encoder_config.MagnetSensor.SensorDirection = Constants.WristConstants.kInvertEncoder
                 ? SensorDirectionValue.Clockwise_Positive
                 : SensorDirectionValue.CounterClockwise_Positive;
-        m_encoder = new CANcoder(Constants.WristConstants.kCANID);
+        m_encoder = new CANcoder(Constants.WristConstants.kCANID, "kachow");
         m_encoder.getConfigurator().apply(encoder_config);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -72,7 +72,7 @@ public class WristSubsystem extends SubsystemBase {
         config.Slot0.kS = Calibrations.WristCalibrations.kS;
         config.MotionMagic.MotionMagicAcceleration = Calibrations.WristCalibrations.kMotionMagicMaxAcceleration;
         config.MotionMagic.MotionMagicCruiseVelocity = Calibrations.WristCalibrations.kMotionMagicMaxVelocity;
-        m_motor = new TalonFX(Constants.WristConstants.kCANID);
+        m_motor = new TalonFX(Constants.WristConstants.kCANID, "kachow");
         m_motor.getConfigurator().apply(config);
 
         m_setpoint = () -> 90.0;
@@ -83,7 +83,7 @@ public class WristSubsystem extends SubsystemBase {
 
         m_armSetpoint = m_motor.getClosedLoopReference();
         m_armSetpoint.setUpdateFrequency(50.0);
-        Robot.addSignalsRio(m_armSetpoint);
+        Robot.addSignalsCaniv(m_armSetpoint);
 
         m_wristPowerCoefficient = 1.0;
 

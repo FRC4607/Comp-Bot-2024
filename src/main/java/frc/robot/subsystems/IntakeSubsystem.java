@@ -49,7 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
         config.Slot0.kS = Calibrations.IntakeCalibrations.kRollerS;
         config.TorqueCurrent.PeakForwardTorqueCurrent = Calibrations.IntakeCalibrations.kRollerMaxCurrent;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -Calibrations.IntakeCalibrations.kRollerMaxCurrent;
-        m_motor = new TalonFX(Constants.IntakeConstants.kRollerCANID);
+        m_motor = new TalonFX(Constants.IntakeConstants.kRollerCANID, "kachow");
         m_motor.getConfigurator().apply(config);
         m_log = new TalonFXStandardSignalLogger(m_motor, "/intake");
         // m_agitatorMotor = new CANSparkFlex(IntakeConstants.kAgitatorCANID,

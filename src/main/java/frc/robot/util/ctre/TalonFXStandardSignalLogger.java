@@ -40,13 +40,16 @@ public class TalonFXStandardSignalLogger {
     /**
      * Creates a new TalonFXStandardSignalLogger.
      * 
-     * @param device The {@link com.ctre.phoenix6.hardware.CoreTalonFX} to use.
-     * @param prefix A string that will be prefixed to the various log entries.
-     *               Should not end with a trailing slash.
-     * @param caniv  Whether or not the signals of this object should be refreshed
-     *               with the CANivore signals.
+     * @param device         The {@link com.ctre.phoenix6.hardware.CoreTalonFX} to
+     *                       use.
+     * @param prefix         A string that will be prefixed to the various log
+     *                       entries.
+     *                       Should not end with a trailing slash.
+     * @param setUpdaterates Whether or not to skip modifiying the update rates of
+     *                       the newly created signals. Useful for when the signals
+     *                       are in use by other code (eg. CTRE swerve);
      */
-    public TalonFXStandardSignalLogger(CoreTalonFX device, String prefix, boolean caniv) {
+    public TalonFXStandardSignalLogger(CoreTalonFX device, String prefix, boolean skipUpdateRates) {
         m_device = device;
 
         DataLog managedLog = DataLogManager.getLog();
@@ -82,40 +85,27 @@ public class TalonFXStandardSignalLogger {
         m_procTempFault.setUpdateFrequency(4.0);
         m_procTempFaultLog = new BooleanLogEntry(managedLog, prefix + "/faults/proctemp");
 
-        if (caniv) {
-            Robot.addSignalsCaniv(
-                    m_pos,
-                    m_torque,
-                    m_velocity,
-                    m_acceleration,
-                    m_deviceTempSecondary,
-                    m_deviceTemp,
-                    m_processorTemp,
-                    m_deviceTempFault,
-                    m_procTempFault);
-        } else {
+        Robot.addSignalsCaniv(
+                m_pos,
+                m_torque,
+                m_velocity,
+                m_acceleration,
+                m_deviceTempSecondary,
+                m_deviceTemp,
+                m_processorTemp,
+                m_deviceTempFault,
+                m_procTempFault);
+        if (!skipUpdateRates) {
             m_pos.setUpdateFrequency(50.0);
             m_torque.setUpdateFrequency(50.0);
             m_velocity.setUpdateFrequency(50.0);
             m_acceleration.setUpdateFrequency(50.0);
-            Robot.addSignalsRio(
-                    m_pos,
-                    m_torque,
-                    m_velocity,
-                    m_acceleration,
-                    m_deviceTempSecondary,
-                    m_deviceTemp,
-                    m_processorTemp,
-                    m_deviceTempFault,
-                    m_procTempFault);
         }
-
         m_device.clearStickyFaults();
     }
 
     /**
-     * Creates a new TalonFXStandardSignalLogger. The device provided must be on the
-     * RIO CAN bus for correct functionality.
+     * Creates a new TalonFXStandardSignalLogger and updates the rates of its signals.
      * 
      * @param device The {@link com.ctre.phoenix6.hardware.CoreTalonFX} to use.
      * @param prefix A string that will be prefixed to the various log entries.

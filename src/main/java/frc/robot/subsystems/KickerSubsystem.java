@@ -41,6 +41,7 @@ public class KickerSubsystem extends SubsystemBase {
         config.Slot0.kP = KickerCalibrations.kP;
         config.Slot0.kD = KickerCalibrations.kD;
         config.Slot0.kS = KickerCalibrations.kS;
+        config.Slot0.kV = KickerCalibrations.kV;
         m_kicker = new TalonFX(KickerConstants.kCANID, "kachow");
         m_kicker.getConfigurator().apply(config);
 

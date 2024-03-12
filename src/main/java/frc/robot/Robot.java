@@ -11,6 +11,7 @@ import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -43,7 +44,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-        SignalLogger.stop();
+        // SignalLogger.setPath("/media/sda1/");
+        RobotController.setBrownoutVoltage(6.3);
+        SignalLogger.start();
         m_pd = new PowerDistribution();
         m_pd.resetTotalEnergy();
         m_currents = new double[m_pd.getNumChannels()];

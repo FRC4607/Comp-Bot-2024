@@ -8,6 +8,7 @@ import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -35,6 +36,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private final DoubleLogEntry m_setpointLog = new DoubleLogEntry(DataLogManager.getLog(), "/shooter/setpoint");
 
     private final VelocityTorqueCurrentFOC m_req;
+    private final NeutralOut m_neutral = new NeutralOut();
+    private boolean m_useNeutral = false;
     private final Follower m_follow;
 
     private DoubleSupplier m_speedSupplier;
@@ -81,7 +84,11 @@ public class ShooterSubsystem extends SubsystemBase {
         m_outerLog.log();
         m_innerLog.log();
         m_setpointLog.append(m_speedSupplier.getAsDouble());
-        m_outer.setControl(m_req.withVelocity(m_speedSupplier.getAsDouble() / 60.0));
+        if (m_useNeutral) {
+            m_outer.setControl(m_neutral);
+        } else {
+            m_outer.setControl(m_req.withVelocity(m_speedSupplier.getAsDouble() / 60.0));
+        }
         m_inner.setControl(m_follow);
     }
 
@@ -92,7 +99,13 @@ public class ShooterSubsystem extends SubsystemBase {
      *                              one.
      */
     public void setShooterRPMSetpoint(DoubleSupplier newShooterRPMSetpoint) {
+        m_useNeutral = false;
         m_speedSupplier = newShooterRPMSetpoint;
+    }
+
+    public void setNetural() {
+        m_useNeutral = true;
+        m_speedSupplier = () -> 0.0;
     }
 
     /**

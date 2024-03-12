@@ -47,6 +47,7 @@ public class IntakeSubsystem extends SubsystemBase {
         config.Slot0.kP = Calibrations.IntakeCalibrations.kRollerP;
         config.Slot0.kD = Calibrations.IntakeCalibrations.kRollerD;
         config.Slot0.kS = Calibrations.IntakeCalibrations.kRollerS;
+        config.Slot0.kV = Calibrations.IntakeCalibrations.kRollerV;
         config.TorqueCurrent.PeakForwardTorqueCurrent = Calibrations.IntakeCalibrations.kRollerMaxCurrent;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -Calibrations.IntakeCalibrations.kRollerMaxCurrent;
         m_motor = new TalonFX(Constants.IntakeConstants.kRollerCANID, "kachow");
@@ -67,7 +68,7 @@ public class IntakeSubsystem extends SubsystemBase {
         // m_agitatorMotor);
         // m_agitatorPid = m_agitatorMotor.getPIDController();
 
-        m_input = new DigitalInput(0);
+        m_input = new DigitalInput(9);
 
         m_intakePowerCoefficient = 1.0;
     }

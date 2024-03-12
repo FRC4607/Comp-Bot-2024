@@ -67,9 +67,16 @@ public class WristSubsystem extends SubsystemBase {
         config.MotorOutput.Inverted = Constants.WristConstants.kInverted ? InvertedValue.Clockwise_Positive
                 : InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        
         config.Slot0.kD = Calibrations.WristCalibrations.kD;
         config.Slot0.kP = Calibrations.WristCalibrations.kP;
         config.Slot0.kS = Calibrations.WristCalibrations.kS;
+        config.Slot0.kG = Calibrations.WristCalibrations.kG;
+
+        config.Slot1.kD = Calibrations.WristCalibrations.kD;
+        config.Slot1.kP = Calibrations.WristCalibrations.kP;
+        config.Slot1.kS = Calibrations.WristCalibrations.kS;
+
         config.MotionMagic.MotionMagicAcceleration = Calibrations.WristCalibrations.kMotionMagicMaxAcceleration;
         config.MotionMagic.MotionMagicCruiseVelocity = Calibrations.WristCalibrations.kMotionMagicMaxVelocity;
         m_motor = new TalonFX(Constants.WristConstants.kCANID, "kachow");
@@ -92,7 +99,7 @@ public class WristSubsystem extends SubsystemBase {
 
     public void periodic() {
         m_pid.Position = (m_setpoint.getAsDouble() - m_armAngleSupplier.getAsDouble()) / 360.0;
-        //m_pid.FeedForward = Math.cos(Math.toRadians(getWristPosition())) * Calibrations.WristCalibrations.kG;
+        // m_pid.FeedForward = Math.cos(Math.toRadians(getWristPosition())) * Calibrations.WristCalibrations.kG;
         m_motor.setControl(m_pid);
 
         m_wristGoalLog.append(m_pid.Position);

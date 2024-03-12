@@ -24,13 +24,16 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.MoveArmToPosition;
 import frc.robot.commands.MoveWristToPosition;
 import frc.robot.commands.Retract;
 import frc.robot.commands.RunIntakeSync;
 import frc.robot.commands.RunKickerWheel;
 import frc.robot.commands.SetShooterSpeed;
+import frc.robot.commands.ShootOverDefense;
 import frc.robot.commands.ShootUsingInterpolation;
+import frc.robot.commands.SourcePickup;
 import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -39,6 +42,7 @@ import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.util.IsRed;
+import frc.robot.util.swerve.SetCurrentRequest;
 
 public class RobotContainer {
     private static final double MaxSpeed = Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps;
@@ -58,7 +62,7 @@ public class RobotContainer {
             .withSteerRequestType(SteerRequestType.MotionMagic)
             .withDeadband(0.1 * MaxSpeed)
             .withRotationalDeadband(0.1 * MaxAngularRate);
-    // private final SetCurrentRequest current = new SetCurrentRequest();
+    private final SetCurrentRequest current = new SetCurrentRequest();
 
     private final IntakeSubsystem m_intake = new IntakeSubsystem();
     private final ShooterSubsystem m_shooter = new ShooterSubsystem();
@@ -80,16 +84,19 @@ public class RobotContainer {
                     return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
                             .withVelocityY(-joystick.getLeftX() * MaxSpeed)
                             .withRotationalRate(
-                                    -joystick.getRightX() * MaxAngularRate);
+                                    -joystick.getRightX() * MaxAngularRate)
+                            .withDeadband(0.1 * MaxSpeed)
+                            .withRotationalDeadband(0.1 * MaxAngularRate);
                 }));
 
         // m_shooter.setDefaultCommand(
-        //         new SetShooterSpeed(() -> SmartDashboard.getNumber("Shooter RPM", 0.0), 120, m_shooter));
+        // new SetShooterSpeed(() -> SmartDashboard.getNumber("Shooter RPM", 0.0), 120,
+        // m_shooter));
         // m_wrist.setDefaultCommand(
-        //         new MoveWristToPosition(() -> SmartDashboard.getNumber("Wrist Angle Setter", 0.0), 5.0, m_wrist));
+        // new MoveWristToPosition(() -> SmartDashboard.getNumber("Wrist Angle Setter",
+        // 0.0), 5.0, m_wrist));
 
-        // drivetrain.setDefaultCommand(
-        // drivetrain.applyRequest(() -> current));
+        // drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> current));
         joystick.a().onTrue(new SetShooterSpeed(() -> 5200, 120, m_shooter))
                 .onFalse(new SetShooterSpeed(() -> 0, 120, m_shooter));
         joystick.b().onTrue(new ParallelCommandGroup(
@@ -153,8 +160,10 @@ public class RobotContainer {
                 }, 120, m_shooter),
                 drivetrain.applyRequest(() -> {
                     if (Math.abs(joystick.getRightX()) > 0.1) {
-                        return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                                .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                        return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
+                                .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)
+                                .withDeadband(0.1 * MaxSpeed * 0.25)
+                                .withRotationalDeadband(0.1 * MaxAngularRate * 0.25)
                                 .withRotationalRate(
                                         -joystick.getRightX() * MaxAngularRate);
                     } else {
@@ -169,21 +178,56 @@ public class RobotContainer {
                                                 .minus(drivetrain
                                                         .getSwerveOffset()))
                                 .withCenterOfRotation(drivetrain.getRotationPoint())
-                                .withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                                .withVelocityY(-joystick.getLeftX() * MaxSpeed);
+                                .withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
+                                .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)
+                                .withDeadband(0.1 * MaxSpeed * 0.25)
+                                .withRotationalDeadband(0.1 * MaxAngularRate * 0.25);
                     }
                 })))
-                .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0)
-                        .andThen(new SetShooterSpeed(() -> 0.0, 120, m_shooter))
-                        .andThen(new Retract(m_wrist, m_arm)));
+                .onFalse(new ParallelDeadlineGroup(
+                        new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0),
+                        drivetrain.applyRequest(() -> autoPoint
+                                .withTargetDirection(
+                                        drivetrain.getShotInfo().getRobot()
+                                                .plus(HALF_ROTATION)
+                                                .minus(drivetrain
+                                                        .getSwerveOffset()))
+                                .withCenterOfRotation(drivetrain.getRotationPoint())
+                                .withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
+                                .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)))
+                        .andThen(new ParallelDeadlineGroup(
+                                new ParallelCommandGroup(new SetShooterSpeed(() -> 0.0, 120, m_shooter),
+                                        new Retract(m_wrist, m_arm)),
+                                drivetrain.applyRequest(() -> {
+                                    return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
+                                            .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                                            .withRotationalRate(
+                                                    -joystick.getRightX() * MaxAngularRate)
+                                            .withDeadband(0.1 * MaxSpeed)
+                                            .withRotationalDeadband(0.1 * MaxAngularRate);
+                                }))));
+        joystick.povUp().onTrue(new ShootOverDefense(m_arm, m_wrist, m_kicker, m_shooter));
+        joystick.povLeft().onTrue(new SourcePickup(m_arm, m_wrist));
     }
 
     public RobotContainer() {
         SmartDashboard.putNumber("Set Current Request", 0.0);
         SmartDashboard.putNumber("Shooter RPM", 0.0);
         SmartDashboard.putNumber("Wrist Angle Setter", 90.0);
-        SmartDashboard.putNumber("SoM Compensation Value", 0.0);
+        SmartDashboard.putNumber("X SoM Compensation Value", 400.0);
+        SmartDashboard.putNumber("Y SoM Compensation Value", 400.0);
         SmartDashboard.putData("Run Wheel Radius Test", new WheelRadiusCharacterization(drivetrain));
+
+        SmartDashboard.putData("Turn QF", drivetrain.getTurnQuasistaic(Direction.kForward));
+        SmartDashboard.putData("Turn QR", drivetrain.getTurnQuasistaic(Direction.kReverse));
+        SmartDashboard.putData("Turn DF", drivetrain.getTurnDynamic(Direction.kForward));
+        SmartDashboard.putData("Turn DR", drivetrain.getTurnDynamic(Direction.kReverse));
+
+        SmartDashboard.putData("Drive QF", drivetrain.getDriveQuasistatic(Direction.kForward));
+        SmartDashboard.putData("Drive QR", drivetrain.getDriveQuasistatic(Direction.kReverse));
+        SmartDashboard.putData("Drive DF", drivetrain.getDriveDynamic(Direction.kForward));
+        SmartDashboard.putData("Drive DR", drivetrain.getDriveDynamic(Direction.kReverse));
+
         Preferences.initDouble("Subwoofer Wrist", 110.0);
         Preferences.initDouble("Podium Wrist", 110.0);
         autoPoint.HeadingController.setPID(
@@ -208,9 +252,14 @@ public class RobotContainer {
         NamedCommands.registerCommand("SetWristPosition Four Piece Sides",
                 new MoveWristToPosition(() -> 148.3, 3, m_wrist));
         NamedCommands.registerCommand("Shoot", new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5));
-        NamedCommands.registerCommand("Smart Shoot", new ShootUsingInterpolation(drivetrain, m_wrist, m_shooter, m_kicker));
-        NamedCommands.registerCommand("Prepare Smart Shot", new SetShooterSpeed(() -> { return drivetrain.getShotInfo().getSpeed(); }, 60.0, m_shooter));
-        NamedCommands.registerCommand("Prepare Smart Shot Wrist", new MoveWristToPosition(() -> { return drivetrain.getShotInfo().getWrist(); }, 3.0, m_wrist));
+        NamedCommands.registerCommand("Smart Shoot",
+                new ShootUsingInterpolation(drivetrain, m_wrist, m_shooter, m_kicker));
+        NamedCommands.registerCommand("Prepare Smart Shot", new SetShooterSpeed(() -> {
+            return drivetrain.getShotInfo().getSpeed();
+        }, 60.0, m_shooter));
+        NamedCommands.registerCommand("Prepare Smart Shot Wrist", new MoveWristToPosition(() -> {
+            return drivetrain.getShotInfo().getWrist();
+        }, 3.0, m_wrist));
         NamedCommands.registerCommand("RunIntake 1",
                 new RunIntakeSync(() -> 1.0, m_intake, m_kicker).withTimeout(3.0));
         NamedCommands.registerCommand("Retract", new Retract(m_wrist, m_arm));

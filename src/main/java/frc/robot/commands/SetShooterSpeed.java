@@ -38,7 +38,12 @@ public class SetShooterSpeed extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void execute() {
-        m_subsystem.setShooterRPMSetpoint(m_speed);
+        if (Math.abs(m_speed.getAsDouble()) > 1.0) {
+            m_subsystem.setShooterRPMSetpoint(m_speed);
+        }
+        else {
+            m_subsystem.setNetural();
+        }
     }
 
     // Called once the command ends or is interrupted.

@@ -1,11 +1,21 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
+
+import java.lang.reflect.Field;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
@@ -31,6 +41,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableEvent.Kind;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StructArrayLogEntry;
@@ -44,12 +56,14 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Calibrations;
 import frc.robot.Constants;
 import frc.robot.util.IsRed;
 import frc.robot.util.ctre.TalonFXStandardSignalLogger;
 import frc.robot.util.som.InterpolatingTreeMapShooter;
 import frc.robot.util.som.ProjectileMotion;
+import frc.robot.util.som.ShotInfo;
 import frc.robot.util.som.ShotInfoWithDirection;
 
 /**
@@ -94,12 +108,70 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final DoubleSupplier m_armAngle;
     private final DoubleSupplier m_wristAngle;
 
+    private final TorqueCurrentFOC m_sysidReq = new TorqueCurrentFOC(0);
+
+    private final SysIdRoutine m_turnRoutine = new SysIdRoutine(new SysIdRoutine.Config(
+            Volts.of(0.25).per(Seconds.of(1)), // 0.25 "volts" (Amps) per second
+            Volts.of(100), // 100 "volts" amps
+            Seconds.of(3600), // Long timeout
+            (state) -> {
+                SignalLogger.writeString("sysid-state", state.toString());
+            }),
+            new SysIdRoutine.Mechanism((volts) -> {
+                try {
+                    Field theFunny = this.getModule(0).getClass().getDeclaredField("m_angleTorqueSetter");
+                    theFunny.setAccessible(true);
+                    MotionMagicTorqueCurrentFOC req = (MotionMagicTorqueCurrentFOC) theFunny.get(this.getModule(0));
+                    req.FeedForward = volts.magnitude();
+                    this.getModule(0).apply(new SwerveModuleState(), DriveRequestType.Velocity);
+                    SignalLogger.writeDouble("sysid-current", volts.magnitude());
+                } catch (NoSuchFieldException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (SecurityException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IllegalArgumentException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }, null, this, "swerve-steer"));
+    private final SysIdRoutine m_driveRoutine = new SysIdRoutine(new SysIdRoutine.Config(
+            Volts.of(1).per(Seconds.of(1)), // 0.25 "volts" (Amps) per second
+            Volts.of(100), // 100 "volts" amps
+            Seconds.of(3600), // Long timeout
+            (state) -> {
+                SignalLogger.writeString("sysid-state", state.toString());
+            }),
+            new SysIdRoutine.Mechanism((volts) -> {
+                for (SwerveModule m : this.Modules) {
+                    VelocityTorqueCurrentFOC request;
+                    try {
+                        Field requestField = m.getClass().getDeclaredField("m_velocityTorqueSetter");
+                        requestField.setAccessible(true);
+                        request = (VelocityTorqueCurrentFOC) requestField.get(m);
+                        request.FeedForward = volts.magnitude();
+                        m.apply(new SwerveModuleState(), DriveRequestType.Velocity);
+                    } catch (NoSuchFieldException e) {
+                        // uh oh
+                        System.err.println(e.toString());
+                    } catch (IllegalAccessException e) {
+                        // uh oh
+                        System.err.println(e.toString());
+                    }
+                }
+            }, null, this, "swerve-drive"));
+
     private CommandSwerveDrivetrain(DoubleSupplier armAngle, DoubleSupplier wristAngle,
             SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
             SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
         if (Utils.isSimulation()) {
             startSimThread();
+
         }
         this.registerTelemetry(this::telemetry);
         for (int i = 0; i < 4; i++) {
@@ -290,47 +362,61 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         for (TalonFXStandardSignalLogger log : m_logs) {
             log.log();
         }
+
+        // Parts of this shoot on the move code be plundered from 7028
+        // https://github.com/STMARobotics/frc-7028-2024/blob/d9b8a288764409806fc8b7e71752e7c628bdd833/src/main/java/frc/robot/commands/ScoreSpeakerTeleopCommand.java
+
+        // Get stationary position
         double shooterOffset = Constants.ArmConstants.kArmOffsetX
                 + Math.cos(Math.toRadians(m_armAngle.getAsDouble())) * Constants.ArmConstants.kArmLength
                 + Math.cos(Math.toRadians(m_wristAngle.getAsDouble()))
                         * Constants.WristConstants.kWristEffectiveLength;
         m_rotationPoint = new Translation2d(shooterOffset, 0.0);
-        double robotX = m_cachedState.Pose.getX() + m_cachedState.Pose.getRotation().getCos() * shooterOffset;
-        double robotY = m_cachedState.Pose.getY() + m_cachedState.Pose.getRotation().getSin() * shooterOffset;
-        double robotZ = Constants.ArmConstants.kArmOffsetZ
-                + Math.sin(Math.toRadians(m_armAngle.getAsDouble())) * Constants.ArmConstants.kArmLength
-                + Math.sin(Math.toRadians(m_wristAngle.getAsDouble()))
-                        * Constants.WristConstants.kWristEffectiveLength;
-        Translation3d fromChassis;
-        double dist;
-        Rotation2d robotAngle;
-        if (IsRed.isRed()) {
-            dist = Math.hypot(Constants.DrivetrainConstants.kRedAllianceSpeakerPosition.getX() - robotX,
-                    Constants.DrivetrainConstants.kRedAllianceSpeakerPosition.getY() - robotY);
-            robotAngle = Constants.DrivetrainConstants.kRedAllianceSpeakerPosition
-                    .minus(this.m_cachedState.Pose.getTranslation()).getAngle();
+        Pose2d compensatedRobotPose = new Pose2d(this.m_cachedState.Pose.getTranslation().plus(
+                m_rotationPoint.rotateBy(m_cachedState.Pose.getRotation())), this.m_cachedState.Pose.getRotation());
+        Translation2d speakerPos = IsRed.isRed() ? Constants.DrivetrainConstants.kRedAllianceSpeakerPosition
+                : Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition;
+        // robotAngle = Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition
+        // .minus(this.m_cachedState.Pose.getTranslation()).getAngle();
+        double dist1 = speakerPos.getDistance(compensatedRobotPose.getTranslation());
+        SmartDashboard.putNumber("Robot Distance", dist1);
+        ShotInfo step1 = m_map.get(Math.min(6.0, Math.max(1.6, dist1)));
 
-        } else {
-            dist = Math.hypot(Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition.getX() - robotX,
-                    Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition.getY() - robotY);
-            robotAngle = Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition
-                    .minus(this.m_cachedState.Pose.getTranslation()).getAngle();
-        }
-        SmartDashboard.putNumber("Robot Distance", dist);
-        ShotInfoWithDirection reg = m_map.get(Math.max(1.6, dist)).withDirection(robotAngle);
+        // Find second compensated position
+        double scoreTime = Calibrations.DrivetrainCalibrations.kShootOnMoveConstant
+                * (dist1 / step1.getSpeed()); // 7028's code multiplies these last two values, but that doesn't make
+                                             // sense to me. We will see...
         ChassisSpeeds fr = ChassisSpeeds.fromRobotRelativeSpeeds(this.m_cachedState.speeds,
-                this.m_cachedState.Pose.getRotation());
-        m_shotInfo = reg.compensateRobotSpeed(
-                SmartDashboard.getNumber("SoM Compensation Value", 0.0) * fr.vxMetersPerSecond,
-                SmartDashboard.getNumber("SoM Compensation Value", 0.0) * fr.vyMetersPerSecond);
+                compensatedRobotPose.getRotation());
+        Translation2d movementOffset = new Translation2d(fr.vxMetersPerSecond * scoreTime,
+                fr.vyMetersPerSecond * scoreTime);
+        Translation2d offsetSpeaker = speakerPos.minus(movementOffset);
+        ShotInfo step2 = m_map.get(Math.min(6.0, Math.max(1.6, dist1)));
     }
 
     public double[] getWheelRadiusCharacterizationPosition() {
         double[] results = new double[4];
-        for (int i = 0; i < 4; i ++) {
-            results[i] = this.m_logs[1 + 2 * i].m_pos.getValueAsDouble() * 2 * Math.PI / Constants.DrivetrainConstants.kDriveGearRatio;
+        for (int i = 0; i < 4; i++) {
+            results[i] = this.m_logs[1 + 2 * i].m_pos.getValueAsDouble() * 2 * Math.PI
+                    / Constants.DrivetrainConstants.kDriveGearRatio;
         }
         return results;
+    }
+
+    public Command getTurnQuasistaic(SysIdRoutine.Direction d) {
+        return m_turnRoutine.quasistatic(d).onlyWhile(() -> Math.abs(m_logs[0].m_velocity.getValueAsDouble()) <= 7.0);
+    }
+
+    public Command getTurnDynamic(SysIdRoutine.Direction d) {
+        return m_turnRoutine.dynamic(d).onlyWhile(() -> Math.abs(m_logs[0].m_velocity.getValueAsDouble()) <= 7.0);
+    }
+
+    public Command getDriveQuasistatic(SysIdRoutine.Direction d) {
+        return m_driveRoutine.quasistatic(d).onlyWhile(() -> Math.abs(m_logs[1].m_velocity.getValueAsDouble()) <= 80.0);
+    }
+
+    public Command getDriveDynamic(SysIdRoutine.Direction d) {
+        return m_driveRoutine.dynamic(d).onlyWhile(() -> Math.abs(m_logs[1].m_velocity.getValueAsDouble()) <= 80.0);
     }
 
     /**

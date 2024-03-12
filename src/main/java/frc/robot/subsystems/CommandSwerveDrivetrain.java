@@ -376,8 +376,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 m_rotationPoint.rotateBy(m_cachedState.Pose.getRotation())), this.m_cachedState.Pose.getRotation());
         Translation2d speakerPos = IsRed.isRed() ? Constants.DrivetrainConstants.kRedAllianceSpeakerPosition
                 : Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition;
-        // robotAngle = Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition
-        // .minus(this.m_cachedState.Pose.getTranslation()).getAngle();
         double dist1 = speakerPos.getDistance(compensatedRobotPose.getTranslation());
         SmartDashboard.putNumber("Robot Distance", dist1);
         ShotInfo step1 = m_map.get(Math.min(6.0, Math.max(1.6, dist1)));
@@ -385,13 +383,16 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         // Find second compensated position
         double scoreTime = Calibrations.DrivetrainCalibrations.kShootOnMoveConstant
                 * (dist1 / step1.getSpeed()); // 7028's code multiplies these last two values, but that doesn't make
-                                             // sense to me. We will see...
+                                              // sense to me. We will see...
         ChassisSpeeds fr = ChassisSpeeds.fromRobotRelativeSpeeds(this.m_cachedState.speeds,
                 compensatedRobotPose.getRotation());
         Translation2d movementOffset = new Translation2d(fr.vxMetersPerSecond * scoreTime,
                 fr.vyMetersPerSecond * scoreTime);
         Translation2d offsetSpeaker = speakerPos.minus(movementOffset);
-        ShotInfo step2 = m_map.get(Math.min(6.0, Math.max(1.6, dist1)));
+        m_shotInfo = m_map
+                .get(Math.min(6.0, Math.max(1.6, offsetSpeaker.getDistance(compensatedRobotPose.getTranslation()))))
+                .withDirection(
+                        offsetSpeaker.minus(compensatedRobotPose.getTranslation()).getAngle());
     }
 
     public double[] getWheelRadiusCharacterizationPosition() {

@@ -222,7 +222,7 @@ public final class Constants {
         /** THe CAN ID for the CANdle */
         public static final int CANdleID = 12;
         /** Total number of LEDs. */
-        public static final int LedCount = 100;
+        public static final int LedCount = 600;
 
     }
 }

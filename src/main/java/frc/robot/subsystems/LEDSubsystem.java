@@ -12,26 +12,26 @@ import frc.robot.Constants;
 
 public class LEDSubsystem extends SubsystemBase {
 
+  private final CANdle m_candle = new CANdle(Constants.LEDConstants.CANdleID, "kachow");
+  private final int m_ledCount = Constants.LEDConstants.LedCount;
 
-  
-private final CANdle m_candle = new CANdle(Constants.LEDConstants.CANdleID, "kachow");
-private final int m_ledCount = Constants.LEDConstants.LedCount;
+  private ShooterSubsystem m_shooter;
+  private double m_pastVelocity;
 
-private ShooterSubsystem m_shooter;
-private double m_pastVelocity;
-
-  public LEDSubsystem() {}
+  public LEDSubsystem() {
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
 
     // If the shooter drops by a critical value (100 rpm), LEDs turn red.
-    if (m_pastVelocity - m_shooter.outerShooterRPM() > 100) {
-      m_candle.setLEDs(255, 0, 0, 0, 1, m_ledCount);
-    }
+    // if (m_pastVelocity - m_shooter.outerShooterRPM() > 100) {
+    //   m_candle.setLEDs(255, 0, 0, 0, 1, m_ledCount);
+    // }
 
-    m_pastVelocity = m_shooter.outerShooterRPM();
+    // m_pastVelocity = m_shooter.outerShooterRPM();
+    m_candle.setLEDs(16, 0, 0, 0, 0, m_ledCount);
   }
 
   /**

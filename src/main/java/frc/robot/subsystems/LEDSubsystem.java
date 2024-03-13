@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.CANdleConfiguration;
+import com.ctre.phoenix.led.CANdle.LEDStripType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -12,8 +14,7 @@ import frc.robot.Constants;
 
 public class LEDSubsystem extends SubsystemBase {
 
-  private final CANdle m_candle = new CANdle(Constants.LEDConstants.CANdleID, "kachow");
-  private final int m_ledCount = Constants.LEDConstants.LedCount;
+  private final CANdle m_candle = new CANdle(Constants.LEDConstants.kCANdleID, "kachow");
 
   private ShooterSubsystem m_shooter;
   private double m_pastVelocity;
@@ -27,11 +28,14 @@ public class LEDSubsystem extends SubsystemBase {
 
     // If the shooter drops by a critical value (100 rpm), LEDs turn red.
     // if (m_pastVelocity - m_shooter.outerShooterRPM() > 100) {
-    //   m_candle.setLEDs(255, 0, 0, 0, 1, m_ledCount);
+    // m_candle.setLEDs(255, 0, 0, 0, 1, m_ledCount);
     // }
 
     // m_pastVelocity = m_shooter.outerShooterRPM();
-    m_candle.setLEDs(16, 0, 0, 0, 0, m_ledCount);
+    CANdleConfiguration config = new CANdleConfiguration();
+    config.stripType = LEDStripType.RGBW;
+    config.brightnessScalar = 0.25;
+    m_candle.configAllSettings(config);
   }
 
   /**
@@ -43,7 +47,5 @@ public class LEDSubsystem extends SubsystemBase {
    * @param w white, if applicable to LEDs (0-255)
    */
   public void setLED(int r, int g, int b, int w) {
-
-    m_candle.setLEDs(r, g, b, w, 1, m_ledCount);
   }
 }

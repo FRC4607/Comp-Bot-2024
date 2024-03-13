@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -72,6 +73,7 @@ public class WristSubsystem extends SubsystemBase {
         config.Slot0.kP = Calibrations.WristCalibrations.kP;
         config.Slot0.kS = Calibrations.WristCalibrations.kS;
         config.Slot0.kG = Calibrations.WristCalibrations.kG;
+        config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 
         config.Slot1.kD = Calibrations.WristCalibrations.kD;
         config.Slot1.kP = Calibrations.WristCalibrations.kP;
@@ -100,6 +102,7 @@ public class WristSubsystem extends SubsystemBase {
     public void periodic() {
         m_pid.Position = (m_setpoint.getAsDouble() - m_armAngleSupplier.getAsDouble()) / 360.0;
         // m_pid.FeedForward = Math.cos(Math.toRadians(getWristPosition())) * Calibrations.WristCalibrations.kG;
+        m_pid.Slot = m_armAngleSupplier.getAsDouble() > 2.0 ? 1 : 0;
         m_motor.setControl(m_pid);
 
         m_wristGoalLog.append(m_pid.Position);

@@ -163,7 +163,7 @@ public class RobotContainer {
                         return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
                                 .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)
                                 .withDeadband(0.1 * MaxSpeed * 0.25)
-                                .withRotationalDeadband(0.1 * MaxAngularRate * 0.25)
+                                .withRotationalDeadband(0.1 * MaxAngularRate)
                                 .withRotationalRate(
                                         -joystick.getRightX() * MaxAngularRate);
                     } else {
@@ -214,8 +214,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("Set Current Request", 0.0);
         SmartDashboard.putNumber("Shooter RPM", 0.0);
         SmartDashboard.putNumber("Wrist Angle Setter", 90.0);
-        SmartDashboard.putNumber("X SoM Compensation Value", 400.0);
-        SmartDashboard.putNumber("Y SoM Compensation Value", 400.0);
+        SmartDashboard.putNumber("SoM Compensation Value", 1000);
         SmartDashboard.putData("Run Wheel Radius Test", new WheelRadiusCharacterization(drivetrain));
 
         SmartDashboard.putData("Turn QF", drivetrain.getTurnQuasistaic(Direction.kForward));

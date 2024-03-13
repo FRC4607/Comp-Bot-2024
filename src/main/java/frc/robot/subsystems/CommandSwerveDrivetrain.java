@@ -381,7 +381,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         ShotInfo step1 = m_map.get(Math.min(6.0, Math.max(1.6, dist1)));
 
         // Find second compensated position
-        double scoreTime = Calibrations.DrivetrainCalibrations.kShootOnMoveConstant
+        double scoreTime = SmartDashboard.getNumber("SoM Compensation Value", 0)
                 * (dist1 / step1.getSpeed()); // 7028's code multiplies these last two values, but that doesn't make
                                               // sense to me. We will see...
         ChassisSpeeds fr = ChassisSpeeds.fromRobotRelativeSpeeds(this.m_cachedState.speeds,

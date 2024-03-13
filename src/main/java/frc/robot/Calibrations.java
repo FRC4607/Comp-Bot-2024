@@ -110,11 +110,11 @@ public final class Calibrations {
         /**
          * The kI constant of the wrist motor. In units of Amps/rotation^2.
          */
-        public static final double kI = 6.0;
+        public static final double kI = 0;
         /**
          * The kD constant of the wrist motor. In units of Amps/rps.
          */
-        public static final double kD = 130.0;
+        public static final double kD = 50.0;
         /** The absolute encoder offset of the wrist in rotations. */
         public static final double kEncoderOffset = -0.146240234375;
         /** The kS constant of the wrist in Amps. */

@@ -220,9 +220,11 @@ public final class Constants {
     /** Constants for the LEDs */
     public static final class LEDConstants {
         /** THe CAN ID for the CANdle */
-        public static final int CANdleID = 12;
-        /** Total number of LEDs. */
-        public static final int LedCount = 600;
+        public static final int kCANdleID = 12;
+        /** Total number of RGBW LEDs */
+        public static final int kRGBWCount = 30;
+        /** Total number of RGB LEDs. */
+        public static final int kRGBCount = 600;
 
     }
 }

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7785516381263733,
-      "y": 6.623673439025879
+      "x": 0.7644510865211487,
+      "y": 6.622134685516357
     },
-    "rotation": 58.13405192695897
+    "rotation": 58.39248022718688
   },
   "command": {
     "type": "sequential",
@@ -18,32 +18,7 @@
           }
         },
         {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetWristPosition 45"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetShooterSpeed 4000"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -53,23 +28,56 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "RunIntake 1"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Smart Shoot"
+                      }
+                    },
+                    {
+                      "type": "parallel",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "RunIntake 1"
+                            }
+                          },
+                          {
+                            "type": "sequential",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "Retract"
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "Prepare Smart Shot Wrist"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Prepare Smart Shot"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
                 }
               },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Retract"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Prepare Smart Shot"
-                }
-              }
             ]
           }
         },
@@ -127,7 +135,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 5.0
+                        "waitTime": 3.0
                       }
                     },
                     {

@@ -5,7 +5,7 @@
       "x": 1.339118719100952,
       "y": 5.545445442199707
     },
-    "rotation": 6.411410964906221e-36
+    "rotation": -1.1839899041281509e-25
   },
   "command": {
     "type": "sequential",
@@ -43,9 +43,34 @@
           }
         },
         {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3 piece speaker.1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "RunIntake 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "Retract"
+            "name": "Smart Shoot"
           }
         },
         {
@@ -55,13 +80,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "2 piece speaker.1"
+                  "pathName": "3 piece speaker.2"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "RunIntake 1"
+                  "name": "Retract"
                 }
               }
             ]
@@ -70,7 +95,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "2 piece speaker.2"
+            "pathName": "3 piece speaker.3"
           }
         },
         {
@@ -96,6 +121,12 @@
           "type": "named",
           "data": {
             "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetShooterSpeed 0"
           }
         }
       ]

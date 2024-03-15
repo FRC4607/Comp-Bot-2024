@@ -17,9 +17,9 @@ public class ShootUsingInterpolation extends SequentialCommandGroup {
     public ShootUsingInterpolation(CommandSwerveDrivetrain drive, WristSubsystem wrist, ShooterSubsystem flywheel, KickerSubsystem kicker) {
         super(
             new ParallelCommandGroup(
-                new MoveWristToPosition(() -> { return drive.getShotInfo().getWrist(); }, 3.0, wrist),
+                new MoveWristToPosition(() -> { return drive.getShotInfo().getWrist(); }, 1.0, wrist),
                 new SetShooterSpeed(() -> { return drive.getShotInfo().getSpeed(); }, 60, flywheel)
-            ).withTimeout(0.5),
+            ).withTimeout(0.75),
             new RunKickerWheel(3000.0, kicker).withTimeout(0.5)
         );
     }

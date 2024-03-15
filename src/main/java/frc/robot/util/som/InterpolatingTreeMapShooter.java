@@ -24,7 +24,8 @@ public class InterpolatingTreeMapShooter extends InterpolatingTreeMap<Double, Sh
         build.put(2.5, new ShotInfo(3100, 142));
         build.put(3.0, new ShotInfo(3300, 147.5));
         build.put(3.5, new ShotInfo(3700, 151.75));
-        build.put(4.0, new ShotInfo(4100, 155));
+        build.put(3.93, new ShotInfo(4100, 151));
+        //build.put(4.0, new ShotInfo(4100, 155));
         build.put(4.5, new ShotInfo(4500, 158));
         build.put(5.0, new ShotInfo(4900, 159));
         build.put(5.5, new ShotInfo(5100, 159.925));

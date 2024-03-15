@@ -214,7 +214,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("Set Current Request", 0.0);
         SmartDashboard.putNumber("Shooter RPM", 0.0);
         SmartDashboard.putNumber("Wrist Angle Setter", 90.0);
-        SmartDashboard.putNumber("SoM Compensation Value", 1000);
+        SmartDashboard.putNumber("SoM Compensation Value", 300);
         SmartDashboard.putData("Run Wheel Radius Test", new WheelRadiusCharacterization(drivetrain));
 
         SmartDashboard.putData("Turn QF", drivetrain.getTurnQuasistaic(Direction.kForward));
@@ -239,12 +239,12 @@ public class RobotContainer {
         // Register all of the commands for autos, then set up auto builder and the auto
         // chooser.
         NamedCommands.registerCommand("SetShooterSpeed 5000", new SetShooterSpeed(() -> 5000, 120, m_shooter));
-        NamedCommands.registerCommand("SetShooterSpeed 4000", new SetShooterSpeed(() -> 4000, 120, m_shooter));
+        NamedCommands.registerCommand("SetShooterSpeed 4000", new SetShooterSpeed(() -> 4000, 60, m_shooter));
         NamedCommands.registerCommand("SetShooterSpeed 1000", new SetShooterSpeed(() -> 1000, 120, m_shooter));
         NamedCommands.registerCommand("SetShooterSpeed 0", new SetShooterSpeed(() -> 0, 120, m_shooter));
         NamedCommands.registerCommand("SetArmPosition 36", new MoveArmToPosition(36, 3, m_arm));
         NamedCommands.registerCommand("SetWristPosition 45",
-                new MoveWristToPosition(() -> Preferences.getDouble("Subwoofer Wrist", 110.0), 5.0,
+                new MoveWristToPosition(() -> 130.0, 3.0,
                         m_wrist));
         NamedCommands.registerCommand("SetWristPosition 81", new MoveWristToPosition(() -> 148.5, 3, m_wrist));
         NamedCommands.registerCommand("SetWristPosition 76", new MoveWristToPosition(() -> 148, 3, m_wrist));

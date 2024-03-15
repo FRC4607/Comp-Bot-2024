@@ -49,12 +49,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "SetShooterSpeed 0"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -74,9 +68,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.5
+            "pathName": "2 piece Amp.2"
           }
         },
         {
@@ -84,15 +78,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "2 piece Amp.2"
+                  "name": "SetWristPosition 45"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "RunIntake 0"
+                  "name": "SetShooterSpeed 4000"
                 }
               }
             ]
@@ -101,25 +95,7 @@
         {
           "type": "named",
           "data": {
-            "name": "SetWristPosition 45"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetShooterSpeed 4000"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetShooterSpeed 0"
           }
         }
       ]

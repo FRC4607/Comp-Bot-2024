@@ -122,7 +122,7 @@ public final class Calibrations {
         /** The maximum velocity motion magic should use in rps. */
         public static final double kMotionMagicMaxVelocity = 2.0;
         /** The maximum acceleration motion magic should use in rps^2. */
-        public static final double kMotionMagicMaxAcceleration = 10.0;
+        public static final double kMotionMagicMaxAcceleration = 2.75;
         public static final double kG = 15.0;
     }
 
@@ -141,7 +141,7 @@ public final class Calibrations {
         /** The maximum acceleration the arm should achieve in rot/sec^2. */
         public static final double kMaxAccelerationMotionMagic = 0.75;
         /** The offset of the absolute encoder on the arm in rotations. */
-        public static final double kEncoderOffset = -0.495;
+        public static final double kEncoderOffset = -0.357177734375;
         /**
          * The maximum amount of current the controller should be allowed to output in
          * either direction in Amps.

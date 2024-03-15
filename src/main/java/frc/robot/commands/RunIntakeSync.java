@@ -68,6 +68,7 @@ public class RunIntakeSync extends Command {
     @Override
     public void initialize() {
         m_hadNote = false;
+        LEDSubsystem.setIntake();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -83,6 +84,7 @@ public class RunIntakeSync extends Command {
     public void end(boolean interrupted) {
         m_intake.setIntakeSetpoint(0);
         m_kicker.setKickerSetpoint(0);
+        LEDSubsystem.setNeutral();
     }
 
     // Returns true when the command should end.
@@ -102,7 +104,6 @@ public class RunIntakeSync extends Command {
                 }
 
                 if (i >= 1) {
-                    m_leds.setLED(0, 255, 0, 0);
                     return true;
                 }
             }

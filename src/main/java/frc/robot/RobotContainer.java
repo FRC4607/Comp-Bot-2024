@@ -118,7 +118,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("SetWristPosition 76", new MoveWristToPosition(143, 3, m_wrist));
         NamedCommands.registerCommand("SetWristPosition Four Piece Sides", new MoveWristToPosition(143.3, 3, m_wrist));
         NamedCommands.registerCommand("Shoot", new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5));
-        NamedCommands.registerCommand("RunIntake 1", new RunIntakeSync(() -> 1.0, m_intake, m_kicker, m_leds).withTimeout(3.0));
+        NamedCommands.registerCommand("RunIntake 1",
+                new RunIntakeSync(() -> 1.0, m_intake, m_kicker, m_leds).withTimeout(3.0));
         NamedCommands.registerCommand("Retract", new Retract(m_wrist, m_arm));
         NamedCommands.registerCommand("RunIntake 0", new RunIntakeSync(() -> 0.0, m_intake, m_kicker, m_leds, true));
         NamedCommands.registerCommand("ExtendToAmp", new InstantCommand());

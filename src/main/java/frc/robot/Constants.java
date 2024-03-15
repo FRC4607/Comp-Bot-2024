@@ -224,7 +224,7 @@ public final class Constants {
         /** Total number of RGBW LEDs */
         public static final int kRGBWCount = 30;
         /** Total number of RGB LEDs. */
-        public static final int kRGBCount = 600;
+        public static final int kRGBCount = 504 + 8; // Eight onboard LEDs too
 
     }
 }

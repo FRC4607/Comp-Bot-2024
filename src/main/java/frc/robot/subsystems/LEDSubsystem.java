@@ -14,6 +14,8 @@ import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,20 +39,20 @@ public class LEDSubsystem extends SubsystemBase {
     private static LEDSubsystemState m_currentState = LEDSubsystemState.DISABLED;
     private static LEDSubsystemState m_pastState = null;
 
-    private final StrobeAnimation m_noAlliance = new StrobeAnimation(255, 0, 255, 0, 1, Constants.LEDConstants.kRGBCount);
+    private final StrobeAnimation m_noAlliance = new StrobeAnimation(0, 255, 255, 0, 1, Constants.LEDConstants.kRGBCount);
 
-    private final SingleFadeAnimation m_redDisabled = new SingleFadeAnimation(255, 0, 0, 0, 0.2, Constants.LEDConstants.kRGBCount);
+    private final SingleFadeAnimation m_redDisabled = new SingleFadeAnimation(0, 255, 0, 0, 0.2, Constants.LEDConstants.kRGBCount);
     private final SingleFadeAnimation m_blueDisabled = new SingleFadeAnimation(0, 0, 255, 0, 0.2, Constants.LEDConstants.kRGBCount);
 
-    private final LarsonAnimation m_intake = new LarsonAnimation(255, 165, 0, 0, 0.25, Constants.LEDConstants.kRGBCount, LarsonAnimation.BounceMode.Back, 3);
+    private final LarsonAnimation m_intake = new LarsonAnimation(165, 255, 0, 0, 0.25, Constants.LEDConstants.kRGBCount, LarsonAnimation.BounceMode.Back, 3);
 
-    private final TwinkleOffAnimation m_shootNotReady = new TwinkleOffAnimation(255, 0, 0, 0, 1, Constants.LEDConstants.kRGBCount, TwinkleOffAnimation.TwinkleOffPercent.Percent64);
-    private final StrobeAnimation m_shootReady = new StrobeAnimation(0, 255, 0, 0, 1, Constants.LEDConstants.kRGBCount);
+    private final TwinkleOffAnimation m_shootNotReady = new TwinkleOffAnimation(0, 255, 0, 0, 1, Constants.LEDConstants.kRGBCount, TwinkleOffAnimation.TwinkleOffPercent.Percent64);
+    private final StrobeAnimation m_shootReady = new StrobeAnimation(255, 0, 0, 0, 1, Constants.LEDConstants.kRGBCount);
 
     public LEDSubsystem() {
         CANdleConfiguration config = new CANdleConfiguration();
-        config.stripType = LEDStripType.RGB; // The chips we use seem to be RGB
-        config.brightnessScalar = 0.25; // Avoid drawing too much current
+        config.stripType = LEDStripType.GRB; // The chips we use seem to be RGB
+        config.brightnessScalar = 1.0; // Avoid drawing too much current
         m_candle.configAllSettings(config);
     }
 
@@ -97,6 +99,7 @@ public class LEDSubsystem extends SubsystemBase {
                     m_candle.setLEDs(255, 165, 0, 0, 0, Constants.LEDConstants.kRGBCount);
                     break;
             }
+            System.out.println(m_currentState);
         }
         m_pastState = m_currentState;
     }

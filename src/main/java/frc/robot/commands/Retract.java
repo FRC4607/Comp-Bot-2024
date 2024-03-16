@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 
 /** A command group that puts the arm and wrist in the retracted position. */
@@ -25,6 +26,7 @@ public class Retract extends SequentialCommandGroup {
             new MoveArmToPosition(0, 10.0, arm),
             new InstantCommand(() -> {
                 arm.setNeutral();
+                LEDSubsystem.setNeutral();
             }, arm));
     }
 }

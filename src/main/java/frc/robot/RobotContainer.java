@@ -113,7 +113,7 @@ public class RobotContainer {
             return 1;
         }, m_intake, m_kicker, m_leds).withTimeout(4));
         joystick.leftBumper().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 7.5, m_arm),
-                new MoveWristToPosition(() -> 40.0, 7.5, m_wrist)));
+                new MoveWristToPosition(() -> 40.0, 7.5, m_wrist), new InstantCommand(LEDSubsystem::setAmp)));
         joystick.rightBumper().onTrue(new ParallelDeadlineGroup(
                 new SetShooterSpeed(() -> {
                     return drivetrain.getShotInfo().getSpeed();

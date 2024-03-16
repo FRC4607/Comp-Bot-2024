@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 
 import com.ctre.phoenix.led.CANdle;
@@ -14,12 +15,16 @@ import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 
+import edu.wpi.first.hal.AddressableLEDJNI;
+import edu.wpi.first.hal.simulation.AddressableLEDDataJNI;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.simulation.AddressableLEDSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.led.SK6811RGBWBuffer;
 
 public class LEDSubsystem extends SubsystemBase {
 
@@ -35,6 +40,9 @@ public class LEDSubsystem extends SubsystemBase {
     }
 
     private Alliance m_alliance = null;
+
+    private final AddressableLED m_led = new AddressableLED(1);
+    private final SK6811RGBWBuffer m_buffer = new SK6811RGBWBuffer(64);
 
     private static LEDSubsystemState m_currentState = LEDSubsystemState.DISABLED;
     private static LEDSubsystemState m_pastState = null;
@@ -52,7 +60,11 @@ public class LEDSubsystem extends SubsystemBase {
     public LEDSubsystem() {
         CANdleConfiguration config = new CANdleConfiguration();
         config.stripType = LEDStripType.GRB; // The chips we use seem to be RGB
-        config.brightnessScalar = 1.0; // Avoid drawing too much current
+        config.brightnessScalar = 0.5; // Avoid drawing too much current
+        m_buffer.fillRGBW(255, 0, 0, 0);
+        m_led.setLength(m_buffer.getFakeLength());
+        setBuf(m_led, m_buffer);
+        m_led.start();
         m_candle.configAllSettings(config);
     }
 
@@ -126,5 +138,23 @@ public class LEDSubsystem extends SubsystemBase {
     
     public static void setAmp() {
         m_currentState = LEDSubsystemState.AMP;
+    }
+
+    private void setBuf(AddressableLED led, SK6811RGBWBuffer buf) {
+        try {
+            Field handleField = led.getClass().getDeclaredField("m_handle");
+            handleField.setAccessible(true);
+            int handle = handleField.getInt(led);
+            AddressableLEDJNI.setData(handle, buf.getBuf());
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

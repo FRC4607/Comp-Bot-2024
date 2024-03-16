@@ -1,13 +1,13 @@
 package frc.robot.util.led;
 
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-
 public class SK6811RGBWBuffer {
     private byte[] buf;
 
     public SK6811RGBWBuffer(int length) {
-        buf = new byte[(length * 5) + ((length * 5) % 4)];
+        int calc = length * 5;
+        calc += length / 3;
+        calc = calc + (calc % 4);
+        buf = new byte[calc];
     }
 
     public void fillRGBW(int r, int g, int b, int w) {

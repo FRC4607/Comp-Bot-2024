@@ -62,6 +62,8 @@ public class LEDSubsystem extends SubsystemBase {
         config.stripType = LEDStripType.GRB; // The chips we use seem to be RGB
         config.brightnessScalar = 0.5; // Avoid drawing too much current
         m_buffer.fillRGBW(255, 0, 0, 0);
+        m_led.setBitTiming(300, 900, 600, 600);
+        m_led.setSyncTime(100);
         m_led.setLength(m_buffer.getFakeLength());
         setBuf(m_led, m_buffer);
         m_led.start();

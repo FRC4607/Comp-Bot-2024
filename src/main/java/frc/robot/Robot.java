@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.LEDSubsystem;
 
 public class Robot extends TimedRobot {
     private static BaseStatusSignal[] m_signalsToRefreshCaniv = {};
@@ -69,6 +71,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
+        LEDSubsystem.setDisabled();
     }
 
     @Override
@@ -86,6 +89,8 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
         }
+
+        LEDSubsystem.setNeutral();
     }
 
     @Override
@@ -101,6 +106,8 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+
+        LEDSubsystem.setNeutral();
     }
 
     @Override

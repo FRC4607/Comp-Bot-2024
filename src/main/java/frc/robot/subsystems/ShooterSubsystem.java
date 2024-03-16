@@ -43,6 +43,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private DoubleSupplier m_speedSupplier;
 
     private double m_shooterPowerCoefficient;
+    private double m_pastVelocity;
 
     /** Creates a new ShooterSubsystem. */
     public ShooterSubsystem() {
@@ -135,4 +136,6 @@ public class ShooterSubsystem extends SubsystemBase {
     public double innerShooterRPM() {
         return m_innerLog.m_velocity.getValueAsDouble() * 60.0;
     }
+    
+
 }

@@ -231,4 +231,15 @@ public final class Constants {
         public static final double kArmOffsetX = -Units.inchesToMeters(9.625);
         public static final double kArmOffsetZ = Units.inchesToMeters(10.245 + Calibrations.DrivetrainCalibrations.kWheelRadiusInches);
     }
+
+    /** Constants for the LEDs */
+    public static final class LEDConstants {
+        /** THe CAN ID for the CANdle */
+        public static final int kCANdleID = 12;
+        /** Total number of RGBW LEDs */
+        public static final int kRGBWCount = 30;
+        /** Total number of RGB LEDs. */
+        public static final int kRGBCount = 64; // Eight onboard LEDs too
+
+    }
 }

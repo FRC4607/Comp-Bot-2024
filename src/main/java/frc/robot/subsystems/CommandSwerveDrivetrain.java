@@ -325,7 +325,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         // Make sure we are using good data.
         Pose2d rel = pose.relativeTo(this.m_cachedState.Pose);
         if (tags > 0 && (DriverStation.isDisabled()
-                || ((tags > 1 || distance < 5) && rel.getTranslation().getNorm() < 1
+                || ((tags > 1 || distance < 5) && (rel.getTranslation().getNorm() < 1 || (tags > 1 && distance < 3))
                         && Math.abs(rel.getRotation().getDegrees()) < 5))) {
             // First, we compute estimated standard deviations for the X and Y measurements.
             // The approach is borrowed from 6328, see here for more info:

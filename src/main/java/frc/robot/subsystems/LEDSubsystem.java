@@ -91,8 +91,10 @@ public class LEDSubsystem extends SubsystemBase {
                     break;
                 case NEUTRAL:
                     if (m_alliance == Alliance.Blue) {
+                        m_candle.animate(null);
                         m_candle.setLEDs(0, 0, 255, 0, 0, Constants.LEDConstants.kRGBCount);
                     } else if (m_alliance == Alliance.Red) {
+                        m_candle.animate(null);
                         m_candle.setLEDs(255, 0, 0, 0, 0, Constants.LEDConstants.kRGBCount);
                     } else {
                         m_candle.animate(m_noAlliance);
@@ -108,6 +110,7 @@ public class LEDSubsystem extends SubsystemBase {
                     m_candle.animate(m_shootReady);
                     break;
                 case AMP:
+                    m_candle.animate(null);
                     m_candle.setLEDs(255, 165, 0, 0, 0, Constants.LEDConstants.kRGBCount);
                     break;
             }

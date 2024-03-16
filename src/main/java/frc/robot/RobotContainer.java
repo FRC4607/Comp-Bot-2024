@@ -102,18 +102,14 @@ public class RobotContainer {
                 .onFalse(new SetShooterSpeed(() -> 0, 120, m_shooter));
         joystick.b().onTrue(new ParallelCommandGroup(
                 new SetShooterSpeed(() -> 0, 120, m_shooter),
-                new SequentialCommandGroup(
-                        new MoveWristToPosition(() -> 90.0, 5.0, m_wrist),
-                        new MoveArmToPosition(0, 10.0, m_arm),
-                        new InstantCommand(() -> {
-                            m_arm.setNeutral();
-                        }, m_arm))));
+                new Retract(m_wrist, m_arm)));
         joystick.y().onTrue(new InstantCommand(drivetrain::seedFieldRelative, drivetrain));
-        joystick.x().onTrue(new RunIntakeSync(() -> {
+        joystick.x().onTrue(new InstantCommand(LEDSubsystem::setIntake).andThen(new RunIntakeSync(() -> {
             return 1;
-        }, m_intake, m_kicker, m_leds).withTimeout(4));
+        }, m_intake, m_kicker, m_leds).withTimeout(4).andThen(new InstantCommand(LEDSubsystem::setNeutral))));
         joystick.leftBumper().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 7.5, m_arm),
-                new MoveWristToPosition(() -> 40.0, 7.5, m_wrist), new InstantCommand(LEDSubsystem::setAmp)));
+                new MoveWristToPosition(() -> 40.0, 7.5, m_wrist),
+                new InstantCommand(LEDSubsystem::setAmp)));
         joystick.rightBumper().onTrue(new ParallelDeadlineGroup(
                 new SetShooterSpeed(() -> {
                     return drivetrain.getShotInfo().getSpeed();
@@ -197,15 +193,22 @@ public class RobotContainer {
                                 .withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
                                 .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)))
                         .andThen(new ParallelDeadlineGroup(
-                                new ParallelCommandGroup(new SetShooterSpeed(() -> 0.0, 120, m_shooter),
+                                new ParallelCommandGroup(
+                                        new SetShooterSpeed(() -> 0.0, 120,
+                                                m_shooter),
                                         new Retract(m_wrist, m_arm)),
                                 drivetrain.applyRequest(() -> {
-                                    return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                                            .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                                    return drive.withVelocityX(
+                                            -joystick.getLeftY() * MaxSpeed)
+                                            .withVelocityY(-joystick
+                                                    .getLeftX()
+                                                    * MaxSpeed)
                                             .withRotationalRate(
-                                                    -joystick.getRightX() * MaxAngularRate)
+                                                    -joystick.getRightX()
+                                                            * MaxAngularRate)
                                             .withDeadband(0.1 * MaxSpeed)
-                                            .withRotationalDeadband(0.1 * MaxAngularRate);
+                                            .withRotationalDeadband(0.1
+                                                    * MaxAngularRate);
                                 }))));
         joystick.povUp().onTrue(new ShootOverDefense(m_arm, m_wrist, m_kicker, m_shooter));
         joystick.povLeft().onTrue(new SourcePickup(m_arm, m_wrist));
@@ -255,7 +258,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("RunIntake 1",
                 new RunIntakeSync(() -> 1.0, m_intake, m_kicker, m_leds).withTimeout(3.0));
         NamedCommands.registerCommand("Retract", new Retract(m_wrist, m_arm));
-        NamedCommands.registerCommand("RunIntake 0", new RunIntakeSync(() -> 0.0, m_intake, m_kicker, m_leds, true));
+        NamedCommands.registerCommand("RunIntake 0",
+                new RunIntakeSync(() -> 0.0, m_intake, m_kicker, m_leds, true));
         NamedCommands.registerCommand("ExtendToAmp", new InstantCommand());
         NamedCommands.registerCommand("DropGamePiece", new InstantCommand());
         NamedCommands.registerCommand("RunKicker -0.5", new RunKickerWheel(-1500.0, m_kicker));

@@ -6,15 +6,13 @@ package frc.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.SteerRequestType;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.ForwardReference;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.ForwardReference;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,9 +20,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.Climb;
 import frc.robot.commands.MoveArmToPosition;
 import frc.robot.commands.MoveWristToPosition;
 import frc.robot.commands.Retract;
@@ -32,10 +30,10 @@ import frc.robot.commands.RunIntakeSync;
 import frc.robot.commands.RunKickerWheel;
 import frc.robot.commands.SetShooterSpeed;
 import frc.robot.commands.ShootOverDefense;
-import frc.robot.commands.ShootUsingInterpolation;
 import frc.robot.commands.SourcePickup;
 import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
@@ -52,6 +50,7 @@ public class RobotContainer {
     private static final Rotation2d HALF_ROTATION = Rotation2d.fromDegrees(180);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController operatorJoystick = new CommandXboxController(1);
 
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDriveRequestType(DriveRequestType.Velocity)
@@ -74,6 +73,7 @@ public class RobotContainer {
     private final KickerSubsystem m_kicker = new KickerSubsystem();
     private final LEDSubsystem m_leds = new LEDSubsystem();
 
+    private final ClimberSubsystem m_climber = new ClimberSubsystem();
     private final SendableChooser<Command> m_autoChooser;
 
     private void configureBindings() {
@@ -212,6 +212,9 @@ public class RobotContainer {
                                 }))));
         joystick.povUp().onTrue(new ShootOverDefense(m_arm, m_wrist, m_kicker, m_shooter));
         joystick.povLeft().onTrue(new SourcePickup(m_arm, m_wrist));
+
+        operatorJoystick.leftBumper().whileTrue(new Climb(0.5, m_climber));
+        operatorJoystick.rightBumper().whileTrue(new Climb(-0.5, m_climber));
     }
 
     public RobotContainer() {

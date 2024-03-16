@@ -1,8 +1,19 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ClimberConstants;
 
 public class ClimberSubsystem extends SubsystemBase {
+
+    // private final CANcoder m_leftEncoder;
+    // private final CANcoder m_rightEncoder
+
+    private final TalonFX m_leftMotor;
+    private final TalonFX m_rightMotor;
 
     /**
      * The subsystem which contains all motors/sensors/encoers on the robot
@@ -10,26 +21,41 @@ public class ClimberSubsystem extends SubsystemBase {
      */
     public ClimberSubsystem() {
 
+        
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.kSupplyAmpLimit;
+        
+        
+        m_leftMotor = new TalonFX(ClimberConstants.kLeftCANId, "kachow");
+        m_leftMotor.getConfigurator().apply(config);
+        m_rightMotor = new TalonFX(ClimberConstants.kRightCANId, "kachow");
+        m_rightMotor.getConfigurator().apply(config);
+
+        m_leftMotor.setNeutralMode(NeutralModeValue.Brake);
+        m_rightMotor.setNeutralMode(NeutralModeValue.Brake);
+        m_leftMotor.setInverted(false);
+        m_rightMotor.setInverted(true);
     }
 
     /**
-     * Sets the setpoint of the left climber to be used by PID control.
+     * Sets the setpoint of the left climber to be used by open loop control.
      * 
-     * @param newLeftClimberSetpoint The new setpoint which will update the old one.
+     * @param speed The new speed which will update the old one.
      */
-    public void setLeftClimberSetpoint(double newLeftClimberSetpoint) {
+    public void setLeftClimberSpeed(double speed) {
 
-        double leftclimbersetpoint = newLeftClimberSetpoint;
+        m_leftMotor.set(speed);
     }
 
     /**
-     * Sets the setpoint (Inches) of the right climber to be used by PID control.
+     * Sets the setpoint (Inches) of the right climber to be used by open loop control.
      * 
-     * @param newRightClimberSetpoint The new setpoint (inches) which will upate the
+     * @param speed The new setpoint (inches) which will upate the
      *                                old one.
      */
-    public void setRightClimberSetpoint(double newRightClimberSetpoint) {
+    public void setRightClimberSpeed(double speed) {
 
+        m_rightMotor.set(speed);
     }
 
     /**

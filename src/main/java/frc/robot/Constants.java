@@ -203,7 +203,10 @@ public final class Constants {
         public static final boolean kInverted = false;
         /** Whether or not to invert the wrist encoder. */
         public static final boolean kInvertEncoder = false;
-        /** Distance from pivot to the center of a note that is just touching the flywheels in meters. */
+        /**
+         * Distance from pivot to the center of a note that is just touching the
+         * flywheels in meters.
+         */
         public static final double kWristEffectiveLength = Units.inchesToMeters(17);
     }
 
@@ -229,7 +232,8 @@ public final class Constants {
         /** Pivot to pivot length of the arm in meters. */
         public static final double kArmLength = Units.inchesToMeters(23.5);
         public static final double kArmOffsetX = -Units.inchesToMeters(9.625);
-        public static final double kArmOffsetZ = Units.inchesToMeters(10.245 + Calibrations.DrivetrainCalibrations.kWheelRadiusInches);
+        public static final double kArmOffsetZ = Units
+                .inchesToMeters(10.245 + Calibrations.DrivetrainCalibrations.kWheelRadiusInches);
     }
 
     /** Constants for the LEDs */
@@ -240,6 +244,16 @@ public final class Constants {
         public static final int kRGBWCount = 30;
         /** Total number of RGB LEDs. */
         public static final int kRGBCount = 14 + 8; // Eight onboard LEDs too
+    }
+
+    /** Constants for the climber. */
+    public static final class ClimberConstants {
+        /** the CAN Id of the left side climber motor */
+        public static final int kLeftCANId = 11;
+        /** the can Id of the right side climber motor */
+        public static final int kRightCANId = 14;
+        /** the amp limit for each motor */
+        public static final int kSupplyAmpLimit = 120;
 
     }
 }

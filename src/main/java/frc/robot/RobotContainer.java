@@ -30,6 +30,7 @@ import frc.robot.commands.RunIntakeSync;
 import frc.robot.commands.RunKickerWheel;
 import frc.robot.commands.SetShooterSpeed;
 import frc.robot.commands.ShootOverDefense;
+import frc.robot.commands.ShootUsingInterpolation;
 import frc.robot.commands.SourcePickup;
 import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.subsystems.ArmSubsystem;
@@ -90,12 +91,12 @@ public class RobotContainer {
                             .withRotationalDeadband(0.1 * MaxAngularRate);
                 }));
 
-        // m_shooter.setDefaultCommand(
-        // new SetShooterSpeed(() -> SmartDashboard.getNumber("Shooter RPM", 0.0), 120,
-        // m_shooter));
-        // m_wrist.setDefaultCommand(
-        // new MoveWristToPosition(() -> SmartDashboard.getNumber("Wrist Angle Setter",
-        // 0.0), 5.0, m_wrist));
+        m_shooter.setDefaultCommand(
+        new SetShooterSpeed(() -> SmartDashboard.getNumber("Shooter RPM", 0.0), 120,
+        m_shooter));
+        m_wrist.setDefaultCommand(
+        new MoveWristToPosition(() -> SmartDashboard.getNumber("Wrist Angle Setter",
+        0.0), 5.0, m_wrist));
 
         // drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> current));
         joystick.a().onTrue(new SetShooterSpeed(() -> 5200, 120, m_shooter))
@@ -258,11 +259,18 @@ public class RobotContainer {
         NamedCommands.registerCommand("SetWristPosition Four Piece Sides",
                 new MoveWristToPosition(() -> 148.3, 3, m_wrist));
         NamedCommands.registerCommand("Shoot", new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5));
+        NamedCommands.registerCommand("Smart Shoot",
+                new ShootUsingInterpolation(drivetrain, m_wrist, m_shooter, m_kicker));
+        NamedCommands.registerCommand("Prepare Smart Shot", new SetShooterSpeed(() -> {
+            return drivetrain.getShotInfo().getSpeed();
+        }, 60.0, m_shooter));
+        NamedCommands.registerCommand("Prepare Smart Shot Wrist", new MoveWristToPosition(() -> {
+            return drivetrain.getShotInfo().getWrist();
+        }, 3.0, m_wrist));
         NamedCommands.registerCommand("RunIntake 1",
-                new RunIntakeSync(() -> 1.0, m_intake, m_kicker, m_leds).withTimeout(3.0));
+                new RunIntakeSync(() -> 1.0, m_intake, m_kicker, false).withTimeout(3.0));
         NamedCommands.registerCommand("Retract", new Retract(m_wrist, m_arm));
-        NamedCommands.registerCommand("RunIntake 0",
-                new RunIntakeSync(() -> 0.0, m_intake, m_kicker, m_leds, true));
+        NamedCommands.registerCommand("RunIntake 0", new RunIntakeSync(() -> 0.0, m_intake, m_kicker, true));
         NamedCommands.registerCommand("ExtendToAmp", new InstantCommand());
         NamedCommands.registerCommand("DropGamePiece", new InstantCommand());
         NamedCommands.registerCommand("RunKicker -0.5", new RunKickerWheel(-1500.0, m_kicker));

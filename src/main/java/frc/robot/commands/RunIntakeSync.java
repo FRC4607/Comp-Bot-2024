@@ -7,7 +7,6 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
@@ -19,7 +18,6 @@ public class RunIntakeSync extends Command {
     private final IntakeSubsystem m_intake;
     private final KickerSubsystem m_kicker;
     private final DoubleSupplier m_power;
-    private final LEDSubsystem m_leds;
     private boolean m_hadNote;
     private int i;
 
@@ -40,12 +38,11 @@ public class RunIntakeSync extends Command {
      *                   immidiately. Useful for stopping the intake in an
      *                   autonomous routine.
      */
-    public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker, LEDSubsystem leds, boolean ignoreBeam) {
+    public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker, boolean ignoreBeam) {
         m_power = power;
         m_intake = intake;
         m_kicker = kicker;
         m_ignoreBeam = ignoreBeam;
-        m_leds = leds;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(m_intake, m_kicker);
     }
@@ -61,7 +58,7 @@ public class RunIntakeSync extends Command {
      *               object.
      */
     public RunIntakeSync(DoubleSupplier power, IntakeSubsystem intake, KickerSubsystem kicker, LEDSubsystem leds) {
-        this(power, intake, kicker, leds, false);
+        this(power, intake, kicker, false);
     }
 
     // Called when the command is initially scheduled.

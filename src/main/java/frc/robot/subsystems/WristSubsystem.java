@@ -111,6 +111,7 @@ public class WristSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Wrist Angle", getWristPosition());
         SmartDashboard.putNumber("Arm Angle", m_armAngleSupplier.getAsDouble());
         SmartDashboard.putNumber("Setpoint", m_setpoint.getAsDouble() - m_armAngleSupplier.getAsDouble());
+        m_log.log();
     }
 
     /**

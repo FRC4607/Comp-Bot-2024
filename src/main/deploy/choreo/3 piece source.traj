@@ -1558,24 +1558,5 @@
       "timestamp": 12.253215986143644
     }
   ],
-  "eventMarkers": [
-    {
-      "timestamp": 2.6573585509873503,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "RunIntake 1"
-        }
-      }
-    },
-    {
-      "timestamp": 8.021365304621039,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "RunIntake 1"
-        }
-      }
-    }
-  ]
+  "eventMarkers": []
 }

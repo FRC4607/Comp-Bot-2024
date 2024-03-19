@@ -41,16 +41,16 @@ public class LEDSubsystem extends SubsystemBase {
 
     private Alliance m_alliance = null;
 
-    private final AddressableLED m_led = new AddressableLED(1);
-    private final SK6811RGBWBuffer m_buffer = new SK6811RGBWBuffer(64);
+    // private final AddressableLED m_led = new AddressableLED(1);
+    // private final SK6811RGBWBuffer m_buffer = new SK6811RGBWBuffer(64);
 
     private static LEDSubsystemState m_currentState = LEDSubsystemState.DISABLED;
     private static LEDSubsystemState m_pastState = null;
 
-    private final StrobeAnimation m_noAlliance = new StrobeAnimation(0, 255, 255, 0, 1, Constants.LEDConstants.kRGBCount);
+    private final StrobeAnimation m_noAlliance = new StrobeAnimation(0, 255, 255, 0, 0.5, Constants.LEDConstants.kRGBCount);
 
-    private final SingleFadeAnimation m_redDisabled = new SingleFadeAnimation(0, 255, 0, 0, 0.2, Constants.LEDConstants.kRGBCount);
-    private final SingleFadeAnimation m_blueDisabled = new SingleFadeAnimation(0, 0, 255, 0, 0.2, Constants.LEDConstants.kRGBCount);
+    private final SingleFadeAnimation m_redDisabled = new SingleFadeAnimation(0, 255, 0, 0, 0.3, Constants.LEDConstants.kRGBCount);
+    private final SingleFadeAnimation m_blueDisabled = new SingleFadeAnimation(0, 0, 255, 0, 0.3, Constants.LEDConstants.kRGBCount);
 
     private final LarsonAnimation m_intake = new LarsonAnimation(165, 255, 0, 0, 0.25, Constants.LEDConstants.kRGBCount, LarsonAnimation.BounceMode.Back, 3);
 
@@ -61,12 +61,12 @@ public class LEDSubsystem extends SubsystemBase {
         CANdleConfiguration config = new CANdleConfiguration();
         config.stripType = LEDStripType.GRB; // The chips we use seem to be RGB
         config.brightnessScalar = 0.5; // Avoid drawing too much current
-        m_buffer.fillRGBW(255, 0, 0, 0);
-        m_led.setBitTiming(300, 900, 600, 600);
-        m_led.setSyncTime(100);
-        m_led.setLength(m_buffer.getFakeLength());
-        setBuf(m_led, m_buffer);
-        m_led.start();
+        // m_buffer.fillRGBW(255, 0, 0, 0);
+        // m_led.setBitTiming(300, 900, 600, 600);
+        // m_led.setSyncTime(100);
+        // m_led.setLength(m_buffer.getFakeLength());
+        // setBuf(m_led, m_buffer);
+        // m_led.start();
         m_candle.configAllSettings(config);
     }
 
@@ -97,7 +97,7 @@ public class LEDSubsystem extends SubsystemBase {
                         m_candle.setLEDs(0, 0, 255, 0, 0, Constants.LEDConstants.kRGBCount);
                     } else if (m_alliance == Alliance.Red) {
                         m_candle.animate(null);
-                        m_candle.setLEDs(255, 0, 0, 0, 0, Constants.LEDConstants.kRGBCount);
+                        m_candle.setLEDs(0, 255, 0, 0, 0, Constants.LEDConstants.kRGBCount);
                     } else {
                         m_candle.animate(m_noAlliance);
                     }
@@ -113,7 +113,7 @@ public class LEDSubsystem extends SubsystemBase {
                     break;
                 case AMP:
                     m_candle.animate(null);
-                    m_candle.setLEDs(255, 165, 0, 0, 0, Constants.LEDConstants.kRGBCount);
+                    m_candle.setLEDs(165, 255, 0, 0, 0, Constants.LEDConstants.kRGBCount);
                     break;
             }
             System.out.println(m_currentState);

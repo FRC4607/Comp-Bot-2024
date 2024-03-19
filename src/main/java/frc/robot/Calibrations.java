@@ -36,7 +36,7 @@ public final class Calibrations {
         public static final double kSlipCurrentA = 123.5;
 
         /** The effective radius of the wheel attached to each swerve module. */
-        public static final double kWheelRadiusInches = 1.9098; // 3/9/24
+        public static final double kWheelRadiusInches = 1.938152547065645; // 3/16/24
 
         /**
          * The speed the robot would attain in meters per second if each of its drive
@@ -49,11 +49,11 @@ public final class Calibrations {
         /** The CANcoder offset of the front left module. */
         public static final double kFrontLeftEncoderOffset = -0.186767578125;
         /** The CANcoder offset of the front right module. */
-        public static final double kFrontRightEncoderOffset = -0.0908203125;
+        public static final double kFrontRightEncoderOffset = -0.08984375;
         /** The CANcoder offset of the back left module. */
         public static final double kBackLeftEncoderOffset = -0.353271484375;
         /** The CANcoder offset of the back right module. */
-        public static final double kBackRightEncoderOffset = -0.869873046875;
+        public static final double kBackRightEncoderOffset = -0.875732421875;
 
         // These are only used for simulation
         /** The simulated inertia of the steer motor of a swerve module(?). */
@@ -141,7 +141,7 @@ public final class Calibrations {
         /** The maximum acceleration the arm should achieve in rot/sec^2. */
         public static final double kMaxAccelerationMotionMagic = 0.75;
         /** The offset of the absolute encoder on the arm in rotations. */
-        public static final double kEncoderOffset = -0.357177734375;
+        public static final double kEncoderOffset = -0.5111762152;
         /**
          * The maximum amount of current the controller should be allowed to output in
          * either direction in Amps.

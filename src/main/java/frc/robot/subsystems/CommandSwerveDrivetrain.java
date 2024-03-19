@@ -111,8 +111,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final TorqueCurrentFOC m_sysidReq = new TorqueCurrentFOC(0);
 
     private final SysIdRoutine m_turnRoutine = new SysIdRoutine(new SysIdRoutine.Config(
-            Volts.of(0.25).per(Seconds.of(1)), // 0.25 "volts" (Amps) per second
-            Volts.of(100), // 100 "volts" amps
+            Volts.of(0.5).per(Seconds.of(1)), // 0.25 "volts" (Amps) per second
+            Volts.of(60), // 100 "volts" amps
             Seconds.of(3600), // Long timeout
             (state) -> {
                 SignalLogger.writeString("sysid-state", state.toString());
@@ -141,7 +141,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             }, null, this, "swerve-steer"));
     private final SysIdRoutine m_driveRoutine = new SysIdRoutine(new SysIdRoutine.Config(
             Volts.of(1).per(Seconds.of(1)), // 0.25 "volts" (Amps) per second
-            Volts.of(100), // 100 "volts" amps
+            Volts.of(60), // 100 "volts" amps
             Seconds.of(3600), // Long timeout
             (state) -> {
                 SignalLogger.writeString("sysid-state", state.toString());
@@ -378,19 +378,30 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 : Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition;
         double dist1 = speakerPos.getDistance(compensatedRobotPose.getTranslation());
         SmartDashboard.putNumber("Robot Distance", dist1);
-        ShotInfo step1 = m_map.get(Math.min(6.0, Math.max(1.6, dist1)));
+        ShotInfo step1 = m_map.get(Math.min(5.94, Math.max(1.369, dist1)));
+        ChassisSpeeds fr = ChassisSpeeds.fromRobotRelativeSpeeds(this.m_cachedState.speeds,
+                compensatedRobotPose.getRotation());
 
         // Find second compensated position
         double scoreTime = SmartDashboard.getNumber("SoM Compensation Value", 0)
-                * (dist1 / step1.getSpeed()); // 7028's code multiplies these last two values, but that doesn't make
-                                              // sense to me. We will see...
-        ChassisSpeeds fr = ChassisSpeeds.fromRobotRelativeSpeeds(this.m_cachedState.speeds,
-                compensatedRobotPose.getRotation());
+                * (dist1 / (step1.getSpeed() * Math.abs(Math.cos(Math.toRadians(step1.getWrist()))))); // Multiply by cosine of wrist to get X velocity
         Translation2d movementOffset = new Translation2d(fr.vxMetersPerSecond * scoreTime,
                 fr.vyMetersPerSecond * scoreTime);
         Translation2d offsetSpeaker = speakerPos.minus(movementOffset);
+        double dist2 = offsetSpeaker.getDistance(compensatedRobotPose.getTranslation());
+        ShotInfo step2 = m_map
+                .get(Math.min(5.94, Math.max(1.369, offsetSpeaker.getDistance(compensatedRobotPose.getTranslation()))))
+                .withDirection(
+                        offsetSpeaker.minus(compensatedRobotPose.getTranslation()).getAngle());
+
+        // Find third position, hopefully reduicing error
+        scoreTime = SmartDashboard.getNumber("SoM Compensation Value", 0)
+                * (dist2 / (step2.getSpeed() * Math.abs(Math.cos(Math.toRadians(step2.getWrist()))))); // Multiply by cosine of wrist to get X velocity
+        movementOffset = new Translation2d(fr.vxMetersPerSecond * scoreTime,
+                fr.vyMetersPerSecond * scoreTime);
+        offsetSpeaker = speakerPos.minus(movementOffset);
         m_shotInfo = m_map
-                .get(Math.min(6.0, Math.max(1.6, offsetSpeaker.getDistance(compensatedRobotPose.getTranslation()))))
+                .get(Math.min(5.94, Math.max(1.369, offsetSpeaker.getDistance(compensatedRobotPose.getTranslation()))))
                 .withDirection(
                         offsetSpeaker.minus(compensatedRobotPose.getTranslation()).getAngle());
     }

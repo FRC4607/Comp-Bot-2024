@@ -49,12 +49,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SetShooterSpeed 0"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "Retract"
                 }
               },
@@ -69,51 +63,32 @@
                 "data": {
                   "name": "RunIntake 1"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Prepare Smart Shot"
+                }
               }
             ]
           }
         },
         {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "RunIntake 0"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetWristPosition Four Piece Sides"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetShooterSpeed 5000"
-                }
-              }
-            ]
-          }
+            "type": "named",
+            "data": {
+              "name": "RunIntake 0"
+            }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Smart Shoot"
           }
         },
         {
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetShooterSpeed 0"
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -131,51 +106,32 @@
                 "data": {
                   "name": "RunIntake 1"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Prepare Smart Shot"
+                }
               }
             ]
           }
         },
         {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "RunIntake 0"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetWristPosition 76"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetShooterSpeed 5000"
-                }
-              }
-            ]
-          }
+            "type": "named",
+            "data": {
+              "name": "RunIntake 0"
+            }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Smart Shoot"
           }
         },
         {
           "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetShooterSpeed 0"
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -193,39 +149,26 @@
                 "data": {
                   "name": "RunIntake 1"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Prepare Smart Shot"
+                }
               }
             ]
           }
         },
         {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "RunIntake 0"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetWristPosition Four Piece Sides"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "SetShooterSpeed 5000"
-                }
-              }
-            ]
-          }
+            "type": "named",
+            "data": {
+              "name": "RunIntake 0"
+            }
         },
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "Smart Shoot"
           }
         },
         {

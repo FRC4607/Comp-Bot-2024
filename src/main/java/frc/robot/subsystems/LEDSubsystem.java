@@ -16,12 +16,9 @@ import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.TwinkleOffAnimation;
 
 import edu.wpi.first.hal.AddressableLEDJNI;
-import edu.wpi.first.hal.simulation.AddressableLEDDataJNI;
 import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.simulation.AddressableLEDSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.led.SK6811RGBWBuffer;
@@ -47,14 +44,19 @@ public class LEDSubsystem extends SubsystemBase {
     private static LEDSubsystemState m_currentState = LEDSubsystemState.DISABLED;
     private static LEDSubsystemState m_pastState = null;
 
-    private final StrobeAnimation m_noAlliance = new StrobeAnimation(0, 255, 255, 0, 0.5, Constants.LEDConstants.kRGBCount);
+    private final StrobeAnimation m_noAlliance = new StrobeAnimation(0, 255, 255, 0, 0.5,
+            Constants.LEDConstants.kRGBCount);
 
-    private final SingleFadeAnimation m_redDisabled = new SingleFadeAnimation(0, 255, 0, 0, 0.3, Constants.LEDConstants.kRGBCount);
-    private final SingleFadeAnimation m_blueDisabled = new SingleFadeAnimation(0, 0, 255, 0, 0.3, Constants.LEDConstants.kRGBCount);
+    private final SingleFadeAnimation m_redDisabled = new SingleFadeAnimation(0, 255, 0, 0, 0.3,
+            Constants.LEDConstants.kRGBCount);
+    private final SingleFadeAnimation m_blueDisabled = new SingleFadeAnimation(0, 0, 255, 0, 0.3,
+            Constants.LEDConstants.kRGBCount);
 
-    private final LarsonAnimation m_intake = new LarsonAnimation(165, 255, 0, 0, 0.25, Constants.LEDConstants.kRGBCount, LarsonAnimation.BounceMode.Back, 3);
+    private final LarsonAnimation m_intake = new LarsonAnimation(165, 255, 0, 0, 0.25, Constants.LEDConstants.kRGBCount,
+            LarsonAnimation.BounceMode.Back, 3);
 
-    private final TwinkleOffAnimation m_shootNotReady = new TwinkleOffAnimation(0, 255, 0, 0, 1, Constants.LEDConstants.kRGBCount, TwinkleOffAnimation.TwinkleOffPercent.Percent64);
+    private final TwinkleOffAnimation m_shootNotReady = new TwinkleOffAnimation(0, 255, 0, 0, 1,
+            Constants.LEDConstants.kRGBCount, TwinkleOffAnimation.TwinkleOffPercent.Percent64);
     private final StrobeAnimation m_shootReady = new StrobeAnimation(255, 0, 0, 0, 1, Constants.LEDConstants.kRGBCount);
 
     public LEDSubsystem() {
@@ -140,7 +142,7 @@ public class LEDSubsystem extends SubsystemBase {
     public static void setShootReady() {
         m_currentState = LEDSubsystemState.SHOOT_READY;
     }
-    
+
     public static void setAmp() {
         m_currentState = LEDSubsystemState.AMP;
     }

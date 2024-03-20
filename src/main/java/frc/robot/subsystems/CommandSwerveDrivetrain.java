@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -11,7 +10,6 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -34,15 +32,12 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableEvent.Kind;
-import edu.wpi.first.units.Velocity;
-import edu.wpi.first.units.Voltage;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StructArrayLogEntry;
@@ -50,10 +45,10 @@ import edu.wpi.first.util.datalog.StructLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -62,7 +57,6 @@ import frc.robot.Constants;
 import frc.robot.util.IsRed;
 import frc.robot.util.ctre.TalonFXStandardSignalLogger;
 import frc.robot.util.som.InterpolatingTreeMapShooter;
-import frc.robot.util.som.ProjectileMotion;
 import frc.robot.util.som.ShotInfo;
 import frc.robot.util.som.ShotInfoWithDirection;
 
@@ -260,8 +254,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     this.setControl(m_autoSetter.withSpeeds(speeds));
                 },
                 new HolonomicPathFollowerConfig(
-                        new PIDConstants(20.0, 0.0, 0.0),
-                        new PIDConstants(10.0, 0.0, 0.0),
+                        new PIDConstants(Calibrations.DrivetrainCalibrations.kPPathPlannerTranslation, 0.0, 0.0),
+                        new PIDConstants(Calibrations.DrivetrainCalibrations.kPPathPlannerRotation, 0.0, 0.0),
                         Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps,
                         m_moduleLocations[0].getNorm(),
                         new ReplanningConfig(
@@ -383,8 +377,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 compensatedRobotPose.getRotation());
 
         // Find second compensated position
-        double scoreTime = SmartDashboard.getNumber("SoM Compensation Value", 0)
-                * (dist1 / (step1.getSpeed() * Math.abs(Math.cos(Math.toRadians(step1.getWrist()))))); // Multiply by cosine of wrist to get X velocity
+        double scoreTime = Calibrations.DrivetrainCalibrations.kShootOnMoveConstant
+                * (dist1 / (step1.getSpeed() * Math.abs(Math.cos(Math.toRadians(step1.getWrist()))))); // Multiply by
+                                                                                                       // cosine of
+                                                                                                       // wrist to get X
+                                                                                                       // velocity
         Translation2d movementOffset = new Translation2d(fr.vxMetersPerSecond * scoreTime,
                 fr.vyMetersPerSecond * scoreTime);
         Translation2d offsetSpeaker = speakerPos.minus(movementOffset);
@@ -395,8 +392,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                         offsetSpeaker.minus(compensatedRobotPose.getTranslation()).getAngle());
 
         // Find third position, hopefully reduicing error
-        scoreTime = SmartDashboard.getNumber("SoM Compensation Value", 0)
-                * (dist2 / (step2.getSpeed() * Math.abs(Math.cos(Math.toRadians(step2.getWrist()))))); // Multiply by cosine of wrist to get X velocity
+        scoreTime = Calibrations.DrivetrainCalibrations.kShootOnMoveConstant
+                * (dist2 / (step2.getSpeed() * Math.abs(Math.cos(Math.toRadians(step2.getWrist()))))); // Multiply by
+                                                                                                       // cosine of
+                                                                                                       // wrist to get X
+                                                                                                       // velocity
         movementOffset = new Translation2d(fr.vxMetersPerSecond * scoreTime,
                 fr.vyMetersPerSecond * scoreTime);
         offsetSpeaker = speakerPos.minus(movementOffset);

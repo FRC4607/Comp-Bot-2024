@@ -13,7 +13,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.Climb;
 import frc.robot.commands.MoveArmToPosition;
 import frc.robot.commands.MoveWristToPosition;
@@ -31,8 +29,9 @@ import frc.robot.commands.RunKickerWheel;
 import frc.robot.commands.SetShooterSpeed;
 import frc.robot.commands.ShootOverDefense;
 import frc.robot.commands.ShootUsingInterpolation;
+import frc.robot.commands.SourcePass;
+import frc.robot.commands.SourcePassOver;
 import frc.robot.commands.SourcePickup;
-import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -46,7 +45,7 @@ import frc.robot.util.swerve.SetCurrentRequest;
 
 public class RobotContainer {
     private static final double MaxSpeed = Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps;
-    private static final double MaxAngularRate = Math.PI;
+    private static final double MaxAngularRate = Math.PI * 2;
 
     private static final Rotation2d HALF_ROTATION = Rotation2d.fromDegrees(180);
 
@@ -91,12 +90,12 @@ public class RobotContainer {
                             .withRotationalDeadband(0.1 * MaxAngularRate);
                 }));
 
-        m_shooter.setDefaultCommand(
-        new SetShooterSpeed(() -> SmartDashboard.getNumber("Shooter RPM", 0.0), 120,
-        m_shooter));
-        m_wrist.setDefaultCommand(
-        new MoveWristToPosition(() -> SmartDashboard.getNumber("Wrist Angle Setter",
-        0.0), 5.0, m_wrist));
+        // m_shooter.setDefaultCommand(
+        // new SetShooterSpeed(() -> SmartDashboard.getNumber("Shooter RPM", 0.0), 120,
+        // m_shooter));
+        // m_wrist.setDefaultCommand(
+        // new MoveWristToPosition(() -> SmartDashboard.getNumber("Wrist Angle Setter",
+        // 0.0), 5.0, m_wrist));
 
         // drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> current));
         joystick.a().onTrue(new SetShooterSpeed(() -> 5200, 120, m_shooter))
@@ -111,41 +110,6 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 7.5, m_arm),
                 new MoveWristToPosition(() -> 40.0, 7.5, m_wrist),
                 new InstantCommand(LEDSubsystem::setAmp)));
-        joystick.rightBumper().onTrue(new ParallelDeadlineGroup(
-                new SetShooterSpeed(() -> {
-                    return drivetrain.getShotInfo().getSpeed();
-                }, 120, m_shooter),
-                new MoveArmToPosition(0.0, 7.5, m_arm).andThen(new InstantCommand(() -> {
-                    m_arm.setNeutral();
-                }, m_arm)),
-                new MoveWristToPosition(() -> {
-                    return drivetrain.getShotInfo().getWrist();
-                }, 10, m_wrist),
-                drivetrain.applyRequest(() -> {
-                    if (Math.abs(joystick.getRightX()) > 0.1) {
-                        return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                                .withVelocityY(-joystick.getLeftX() * MaxSpeed)
-                                .withRotationalRate(
-                                        -joystick.getRightX() * MaxAngularRate);
-                    } else {
-                        Translation2d targetPose = IsRed.isRed()
-                                ? Constants.DrivetrainConstants.kRedAllianceSpeakerPosition
-                                : Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition;
-                        // https://www.chiefdelphi.com/t/is-there-a-builtin-function-to-find-the-angle-needed-to-get-one-pose2d-to-face-another-pose2d/455972/3
-                        return autoPoint
-                                .withTargetDirection(
-                                        drivetrain.getShotInfo().getRobot()
-                                                .plus(HALF_ROTATION)
-                                                .minus(drivetrain
-                                                        .getSwerveOffset()))
-                                .withCenterOfRotation(drivetrain.getRotationPoint())
-                                .withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                                .withVelocityY(-joystick.getLeftX() * MaxSpeed);
-                    }
-                }))
-                .andThen(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0)
-                        .andThen(new SetShooterSpeed(() -> 0.0, 120, m_shooter))
-                        .andThen(new Retract(m_wrist, m_arm))));
         joystick.povDown().onTrue(new ParallelCommandGroup(
                 new MoveArmToPosition(0.0, 7.5, m_arm).andThen(new InstantCommand(() -> {
                     m_arm.setNeutral();
@@ -211,32 +175,47 @@ public class RobotContainer {
                                             .withRotationalDeadband(0.1
                                                     * MaxAngularRate);
                                 }))));
-        joystick.povUp().onTrue(new ShootOverDefense(m_arm, m_wrist, m_kicker, m_shooter));
-        joystick.povLeft().onTrue(new SourcePickup(m_arm, m_wrist));
+        joystick.povUp().whileTrue(new ShootOverDefense(joystick::getLeftX, joystick::getLeftY,
+                joystick::getRightX, m_arm, m_wrist, m_kicker, m_shooter, drivetrain))
+                .onFalse(new ParallelCommandGroup(
+                        new SetShooterSpeed(() -> 0.0, 120, m_shooter),
+                        new Retract(m_wrist, m_arm)));
+        joystick.povLeft().whileTrue(new SourcePass(m_arm, m_wrist, m_shooter))
+                .onFalse(new SetShooterSpeed(() -> 0.0, 10000, m_shooter));
+        joystick.povRight().whileTrue(new SourcePassOver(m_arm, m_wrist, m_shooter))
+                .onFalse(new SetShooterSpeed(() -> 0.0, 10000, m_shooter));
 
         operatorJoystick.leftBumper().whileTrue(new Climb(0.5, m_climber));
         operatorJoystick.rightBumper().whileTrue(new Climb(-0.5, m_climber));
+        operatorJoystick.a().onTrue(new SourcePickup(m_arm, m_wrist));
     }
 
     public RobotContainer() {
-        SmartDashboard.putNumber("Set Current Request", 0.0);
-        SmartDashboard.putNumber("Shooter RPM", 0.0);
-        SmartDashboard.putNumber("Wrist Angle Setter", 90.0);
-        SmartDashboard.putNumber("SoM Compensation Value", 300);
-        SmartDashboard.putData("Run Wheel Radius Test", new WheelRadiusCharacterization(drivetrain));
+        // SmartDashboard.putNumber("Set Current Request", 0.0);
+        // SmartDashboard.putNumber("Shooter RPM", 0.0);
+        // SmartDashboard.putNumber("Wrist Angle Setter", 90.0);
+        // SmartDashboard.putNumber("SoM Compensation Value", 300);
+        // SmartDashboard.putData("Run Wheel Radius Test", new
+        // WheelRadiusCharacterization(drivetrain));
 
-        SmartDashboard.putData("Turn QF", drivetrain.getTurnQuasistaic(Direction.kForward));
-        SmartDashboard.putData("Turn QR", drivetrain.getTurnQuasistaic(Direction.kReverse));
-        SmartDashboard.putData("Turn DF", drivetrain.getTurnDynamic(Direction.kForward));
-        SmartDashboard.putData("Turn DR", drivetrain.getTurnDynamic(Direction.kReverse));
+        // SmartDashboard.putData("Turn QF",
+        // drivetrain.getTurnQuasistaic(Direction.kForward));
+        // SmartDashboard.putData("Turn QR",
+        // drivetrain.getTurnQuasistaic(Direction.kReverse));
+        // SmartDashboard.putData("Turn DF",
+        // drivetrain.getTurnDynamic(Direction.kForward));
+        // SmartDashboard.putData("Turn DR",
+        // drivetrain.getTurnDynamic(Direction.kReverse));
 
-        SmartDashboard.putData("Drive QF", drivetrain.getDriveQuasistatic(Direction.kForward));
-        SmartDashboard.putData("Drive QR", drivetrain.getDriveQuasistatic(Direction.kReverse));
-        SmartDashboard.putData("Drive DF", drivetrain.getDriveDynamic(Direction.kForward));
-        SmartDashboard.putData("Drive DR", drivetrain.getDriveDynamic(Direction.kReverse));
+        // SmartDashboard.putData("Drive QF",
+        // drivetrain.getDriveQuasistatic(Direction.kForward));
+        // SmartDashboard.putData("Drive QR",
+        // drivetrain.getDriveQuasistatic(Direction.kReverse));
+        // SmartDashboard.putData("Drive DF",
+        // drivetrain.getDriveDynamic(Direction.kForward));
+        // SmartDashboard.putData("Drive DR",
+        // drivetrain.getDriveDynamic(Direction.kReverse));
 
-        Preferences.initDouble("Subwoofer Wrist", 110.0);
-        Preferences.initDouble("Podium Wrist", 110.0);
         autoPoint.HeadingController.setPID(
                 Calibrations.DrivetrainCalibrations.kHeadingPIDP,
                 Calibrations.DrivetrainCalibrations.kHeadingPIDI,

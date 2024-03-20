@@ -37,6 +37,11 @@ public class TalonFXStandardSignalLogger {
     public final StatusSignal<Boolean> m_procTempFault;
     private final BooleanLogEntry m_procTempFaultLog;
 
+    public final StatusSignal<Boolean> m_bootDuringEnableFault;
+    private final BooleanLogEntry m_bootDuringEnableFaultLog;
+    public final StatusSignal<Boolean> m_hardwareFault;
+    private final BooleanLogEntry m_hardwareFaultLog;
+
     /**
      * Creates a new TalonFXStandardSignalLogger.
      * 
@@ -84,6 +89,14 @@ public class TalonFXStandardSignalLogger {
         m_procTempFault = device.getFault_ProcTemp();
         m_procTempFault.setUpdateFrequency(4.0);
         m_procTempFaultLog = new BooleanLogEntry(managedLog, prefix + "/faults/proctemp");
+        m_bootDuringEnableFault = m_device.getFault_BootDuringEnable();
+        m_bootDuringEnableFault.setUpdateFrequency(4.0);
+        m_bootDuringEnableFaultLog = new BooleanLogEntry(managedLog, prefix + "/faults/bootduringenable", prefix);
+        m_bootDuringEnableFaultLog.append(device.getStickyFault_BootDuringEnable().getValue());
+        m_hardwareFault = m_device.getFault_Hardware();
+        m_hardwareFault.setUpdateFrequency(4.0);
+        m_hardwareFaultLog = new BooleanLogEntry(managedLog, prefix + "/faults/hardware", prefix);
+        m_hardwareFaultLog.append(device.getStickyFault_Hardware().getValue());
 
         Robot.addSignalsCaniv(
                 m_pos,
@@ -94,7 +107,9 @@ public class TalonFXStandardSignalLogger {
                 m_deviceTemp,
                 m_processorTemp,
                 m_deviceTempFault,
-                m_procTempFault);
+                m_procTempFault,
+                m_bootDuringEnableFault,
+                m_hardwareFault);
         if (!skipUpdateRates) {
             m_pos.setUpdateFrequency(50.0);
             m_torque.setUpdateFrequency(50.0);
@@ -105,7 +120,8 @@ public class TalonFXStandardSignalLogger {
     }
 
     /**
-     * Creates a new TalonFXStandardSignalLogger and updates the rates of its signals.
+     * Creates a new TalonFXStandardSignalLogger and updates the rates of its
+     * signals.
      * 
      * @param device The {@link com.ctre.phoenix6.hardware.CoreTalonFX} to use.
      * @param prefix A string that will be prefixed to the various log entries.
@@ -131,5 +147,7 @@ public class TalonFXStandardSignalLogger {
 
         m_deviceTempFaultLog.append(m_deviceTempFault.getValue());
         m_procTempFaultLog.append(m_procTempFault.getValue());
+        m_bootDuringEnableFaultLog.append(m_bootDuringEnableFault.getValue());
+        m_hardwareFaultLog.append(m_hardwareFault.getValue());
     }
 }

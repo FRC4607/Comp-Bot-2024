@@ -61,24 +61,41 @@ public final class Calibrations {
         /** The simulated inertia of the drive motor of a swerve module(?). */
         public static final double kDriveInertia = 0.001;
 
+        /**
+         * The P value of the PID controler used to control the robot's heading when
+         * tracking the speaker.
+         */
         public static final double kHeadingPIDP = 16.0;
 
+        /**
+         * The I value of the PID controler used to control the robot's heading when
+         * tracking the speaker.
+         */
         public static final double kHeadingPIDI = 0;
 
+        /**
+         * The D value of the PID controler used to control the robot's heading when
+         * tracking the speaker.
+         */
         public static final double kHeadingPIDD = 0;
 
-        public static final double kShootOnMoveConstant = 2000;
+        /**
+         * A constant that is used during the shoot on the move calculations. Converts
+         * between meters/rpm and seconds
+         */
+        public static final double kShootOnMoveConstant = 300;
 
         /**
-         * The value A in the equation stddev = Ae^(Bx), where X is the average distance
-         * to the AprilTag(s) in meters as reported by the Limelight.
+         * The P value of the PID controller that PathPlanner uses to correct for
+         * translation error.
          */
-        public static double kVisionStdDevA = 4.7e-3;
+        public static final double kPPathPlannerTranslation = 20.0;
+
         /**
-         * The value B in the equation stddev = Ae^(Bx), where X is the average distance
-         * to the AprilTag(s) in meters as reported by the Limelight.
+         * The P value of the PID controller that PathPlanner uses to correct for
+         * heading error.
          */
-        public static double kVisionStdDevB = 0.798;
+        public static final double kPPathPlannerRotation = 10.0;
     }
 
     /**
@@ -86,11 +103,12 @@ public final class Calibrations {
      */
     public static final class ShooterCalibrations {
         /**
-         * The kP constant of the shooter, in Amps/(rotation per second).
+         * The kP constant of the shooter, in Amps/(rotations per second).
          */
         public static final double kP = 12.0;
         /** The kS constant of the shooter in Amps. */
         public static final double kS = 8.0;
+        /** The kV constant of the shooter in Amps/(rotations per second) */
         public static final double kV = 0.01;
         /**
          * The maximum current that the velocity PID should output in either direction
@@ -123,6 +141,7 @@ public final class Calibrations {
         public static final double kMotionMagicMaxVelocity = 2.0;
         /** The maximum acceleration motion magic should use in rps^2. */
         public static final double kMotionMagicMaxAcceleration = 2.75;
+        /** The kG constant of the wrist when the arm is at 0deg, in Amps. */
         public static final double kG = 15.0;
     }
 
@@ -157,6 +176,7 @@ public final class Calibrations {
         public static final double kAgitatorP = 0;
         /** The static constant for roller feedforward in Amps. */
         public static final double kRollerS = 9;
+        /** The velocity constant for roller feedforward in Amps/(rotation/second) */
         public static final double kRollerV = 0.1;
         /**
          * The derivative constant for roller feedback in Amps/(rotations per second^2).
@@ -172,8 +192,9 @@ public final class Calibrations {
         public static final double kP = 10;
         /** The derivative constant for roller feedback in Amps/rps^2. */
         public static final double kD = 0;
-        /** The roller feedforward constant in Amps. */
+        /** The roller static feedforward constant in Amps. */
         public static final double kS = 23.5;
+        /** The roller velocity feedforward constant in Amps/(rotation per second) */
         public static final double kV = 0.1;
     }
 }

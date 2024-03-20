@@ -266,6 +266,12 @@
           "data": {
             "name": "Retract"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SetShooterSpeed 0"
+          }
         }
       ]
     }

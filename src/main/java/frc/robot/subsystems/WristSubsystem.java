@@ -68,7 +68,7 @@ public class WristSubsystem extends SubsystemBase {
         config.MotorOutput.Inverted = Constants.WristConstants.kInverted ? InvertedValue.Clockwise_Positive
                 : InvertedValue.CounterClockwise_Positive;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        
+
         config.Slot0.kD = Calibrations.WristCalibrations.kD;
         config.Slot0.kP = Calibrations.WristCalibrations.kP;
         config.Slot0.kS = Calibrations.WristCalibrations.kS;
@@ -101,7 +101,8 @@ public class WristSubsystem extends SubsystemBase {
 
     public void periodic() {
         m_pid.Position = (m_setpoint.getAsDouble() - m_armAngleSupplier.getAsDouble()) / 360.0;
-        // m_pid.FeedForward = Math.cos(Math.toRadians(getWristPosition())) * Calibrations.WristCalibrations.kG;
+        // m_pid.FeedForward = Math.cos(Math.toRadians(getWristPosition())) *
+        // Calibrations.WristCalibrations.kG;
         m_pid.Slot = m_armAngleSupplier.getAsDouble() > 2.0 ? 1 : 0;
         m_motor.setControl(m_pid);
 
@@ -110,7 +111,6 @@ public class WristSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber("Wrist Angle", getWristPosition());
         SmartDashboard.putNumber("Arm Angle", m_armAngleSupplier.getAsDouble());
-        SmartDashboard.putNumber("Setpoint", m_setpoint.getAsDouble() - m_armAngleSupplier.getAsDouble());
         m_log.log();
     }
 

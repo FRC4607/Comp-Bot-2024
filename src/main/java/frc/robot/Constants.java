@@ -133,8 +133,11 @@ public final class Constants {
          * Uses a blue alliance origin.
          */
         public static final Translation2d kBlueAllianceSpeakerPosition = new Translation2d(0.0, 5.54775544);
+        /**
+         * The pose of the red alliance speaker to target, projected onto the floor.
+         * Uses a blue alliance origin.
+         */
         public static final Translation2d kRedAllianceSpeakerPosition = new Translation2d(16.57997700, 5.54775544);
-        public static final double kSpeakerTargetHeight = Units.inchesToMeters(80);
     }
 
     /** Constants for the shooter. */
@@ -231,28 +234,34 @@ public final class Constants {
         public static final boolean kInvertEncoder = true;
         /** Pivot to pivot length of the arm in meters. */
         public static final double kArmLength = Units.inchesToMeters(23.5);
+        /**
+         * How far the axis of the pipe is offset from the center of the robot in the X
+         * direction, in meters.
+         */
         public static final double kArmOffsetX = -Units.inchesToMeters(9.625);
+        /**
+         * How far the axis of the pipe is offset from the center of the robot in the Z
+         * direction, in meters.
+         */
         public static final double kArmOffsetZ = Units
                 .inchesToMeters(10.245 + Calibrations.DrivetrainCalibrations.kWheelRadiusInches);
     }
 
     /** Constants for the LEDs */
     public static final class LEDConstants {
-        /** THe CAN ID for the CANdle */
+        /** The CAN ID for the CANdle */
         public static final int kCANdleID = 12;
-        /** Total number of RGBW LEDs */
-        public static final int kRGBWCount = 30;
         /** Total number of RGB LEDs. */
         public static final int kRGBCount = (14 * 2) + 8; // Eight onboard LEDs too
     }
 
     /** Constants for the climber. */
     public static final class ClimberConstants {
-        /** the CAN Id of the left side climber motor */
+        /** The CAN ID of the left side climber motor. */
         public static final int kLeftCANId = 11;
-        /** the can Id of the right side climber motor */
+        /** The CAN ID of the right side climber motor. */
         public static final int kRightCANId = 14;
-        /** the amp limit for each motor */
+        /** The Amp limit for each motor. */
         public static final int kSupplyAmpLimit = 120;
 
     }

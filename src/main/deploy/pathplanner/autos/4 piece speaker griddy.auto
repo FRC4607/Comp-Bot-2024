@@ -74,10 +74,10 @@
           }
         },
         {
-            "type": "named",
-            "data": {
-              "name": "RunIntake 0"
-            }
+          "type": "named",
+          "data": {
+            "name": "RunIntake 0"
+          }
         },
         {
           "type": "named",
@@ -117,10 +117,10 @@
           }
         },
         {
-            "type": "named",
-            "data": {
-              "name": "RunIntake 0"
-            }
+          "type": "named",
+          "data": {
+            "name": "RunIntake 0"
+          }
         },
         {
           "type": "named",
@@ -160,10 +160,10 @@
           }
         },
         {
-            "type": "named",
-            "data": {
-              "name": "RunIntake 0"
-            }
+          "type": "named",
+          "data": {
+            "name": "RunIntake 0"
+          }
         },
         {
           "type": "named",
@@ -178,9 +178,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 5.0
+            "name": "SetShooterSpeed 0"
           }
         }
       ]

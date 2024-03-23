@@ -36,7 +36,7 @@ public final class Calibrations {
         public static final double kSlipCurrentA = 123.5;
 
         /** The effective radius of the wheel attached to each swerve module. */
-        public static final double kWheelRadiusInches = 1.938152547065645; // 3/16/24
+        public static final double kWheelRadiusInches = 1.941379382973184; // 3/16/24
 
         /**
          * The speed the robot would attain in meters per second if each of its drive
@@ -83,7 +83,7 @@ public final class Calibrations {
          * A constant that is used during the shoot on the move calculations. Converts
          * between meters/rpm and seconds
          */
-        public static final double kShootOnMoveConstant = 300;
+        public static final double kShootOnMoveConstant = 325;
 
         /**
          * The P value of the PID controller that PathPlanner uses to correct for

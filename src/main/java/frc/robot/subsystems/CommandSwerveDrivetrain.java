@@ -377,7 +377,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 compensatedRobotPose.getRotation());
 
         // Find second compensated position
-        double scoreTime = Calibrations.DrivetrainCalibrations.kShootOnMoveConstant
+        double scoreTime = SmartDashboard.getNumber("SOM", Calibrations.DrivetrainCalibrations.kShootOnMoveConstant)
                 * (dist1 / (step1.getSpeed() * Math.abs(Math.cos(Math.toRadians(step1.getWrist()))))); // Multiply by
                                                                                                        // cosine of
                                                                                                        // wrist to get X
@@ -387,12 +387,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         Translation2d offsetSpeaker = speakerPos.minus(movementOffset);
         double dist2 = offsetSpeaker.getDistance(compensatedRobotPose.getTranslation());
         ShotInfo step2 = m_map
-                .get(Math.min(5.94, Math.max(1.369, offsetSpeaker.getDistance(compensatedRobotPose.getTranslation()))))
-                .withDirection(
-                        offsetSpeaker.minus(compensatedRobotPose.getTranslation()).getAngle());
+                .get(Math.min(5.94, Math.max(1.369, offsetSpeaker.getDistance(compensatedRobotPose.getTranslation()))));
 
         // Find third position, hopefully reduicing error
-        scoreTime = Calibrations.DrivetrainCalibrations.kShootOnMoveConstant
+        scoreTime = SmartDashboard.getNumber("SOM", Calibrations.DrivetrainCalibrations.kShootOnMoveConstant)
                 * (dist2 / (step2.getSpeed() * Math.abs(Math.cos(Math.toRadians(step2.getWrist()))))); // Multiply by
                                                                                                        // cosine of
                                                                                                        // wrist to get X
@@ -400,10 +398,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         movementOffset = new Translation2d(fr.vxMetersPerSecond * scoreTime,
                 fr.vyMetersPerSecond * scoreTime);
         offsetSpeaker = speakerPos.minus(movementOffset);
-        m_shotInfo = m_map
+        ShotInfoWithDirection temp = m_map
                 .get(Math.min(5.94, Math.max(1.369, offsetSpeaker.getDistance(compensatedRobotPose.getTranslation()))))
                 .withDirection(
                         offsetSpeaker.minus(compensatedRobotPose.getTranslation()).getAngle());
+        m_shotInfo = new ShotInfoWithDirection(temp.getSpeed(), temp.getWrist() + SmartDashboard.getNumber("SOM Bump", 0.0), temp.getRobot());
     }
 
     public double[] getWheelRadiusCharacterizationPosition() {

@@ -32,6 +32,7 @@ import frc.robot.commands.ShootUsingInterpolation;
 import frc.robot.commands.SourcePass;
 import frc.robot.commands.SourcePassOver;
 import frc.robot.commands.SourcePickup;
+import frc.robot.commands.WheelRadiusCharacterization;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -107,7 +108,7 @@ public class RobotContainer {
         joystick.x().onTrue(new InstantCommand(LEDSubsystem::setIntake).andThen(new RunIntakeSync(() -> {
             return 1;
         }, m_intake, m_kicker, m_leds).withTimeout(4).andThen(new InstantCommand(LEDSubsystem::setNeutral))));
-        joystick.leftBumper().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 7.5, m_arm),
+        joystick.povLeft().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 7.5, m_arm),
                 new MoveWristToPosition(() -> 40.0, 7.5, m_wrist),
                 new InstantCommand(LEDSubsystem::setAmp)));
         joystick.povDown().onTrue(new ParallelCommandGroup(
@@ -180,10 +181,10 @@ public class RobotContainer {
                 .onFalse(new ParallelCommandGroup(
                         new SetShooterSpeed(() -> 0.0, 120, m_shooter),
                         new Retract(m_wrist, m_arm)));
-        joystick.povLeft().whileTrue(new SourcePass(m_arm, m_wrist, m_shooter))
-                .onFalse(new SetShooterSpeed(() -> 0.0, 10000, m_shooter));
-        joystick.povRight().whileTrue(new SourcePassOver(m_arm, m_wrist, m_shooter))
-                .onFalse(new SetShooterSpeed(() -> 0.0, 10000, m_shooter));
+        joystick.leftBumper().whileTrue(new SourcePass(m_arm, m_wrist, m_shooter))
+                .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0).andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter)));
+        joystick.rightBumper().whileTrue(new SourcePassOver(m_arm, m_wrist, m_shooter))
+                .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0).andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter)));
 
         operatorJoystick.leftBumper().whileTrue(new Climb(0.5, m_climber));
         operatorJoystick.rightBumper().whileTrue(new Climb(-0.5, m_climber));
@@ -194,9 +195,10 @@ public class RobotContainer {
         // SmartDashboard.putNumber("Set Current Request", 0.0);
         // SmartDashboard.putNumber("Shooter RPM", 0.0);
         // SmartDashboard.putNumber("Wrist Angle Setter", 90.0);
-        // SmartDashboard.putNumber("SoM Compensation Value", 300);
-        // SmartDashboard.putData("Run Wheel Radius Test", new
-        // WheelRadiusCharacterization(drivetrain));
+        SmartDashboard.putNumber("SOM", Calibrations.DrivetrainCalibrations.kShootOnMoveConstant);
+        SmartDashboard.putNumber("SOM Bump", -2.0);
+        SmartDashboard.putData("Run Wheel Radius Test", new
+        WheelRadiusCharacterization(drivetrain));
 
         // SmartDashboard.putData("Turn QF",
         // drivetrain.getTurnQuasistaic(Direction.kForward));
@@ -227,6 +229,7 @@ public class RobotContainer {
         // chooser.
         NamedCommands.registerCommand("SetShooterSpeed 5000", new SetShooterSpeed(() -> 5000, 120, m_shooter));
         NamedCommands.registerCommand("SetShooterSpeed 4000", new SetShooterSpeed(() -> 4000, 60, m_shooter));
+        NamedCommands.registerCommand("SetShooterSpeed SW Center", new SetShooterSpeed(() -> 2600, 60, m_shooter));
         NamedCommands.registerCommand("SetShooterSpeed 1000", new SetShooterSpeed(() -> 1000, 120, m_shooter));
         NamedCommands.registerCommand("SetShooterSpeed 0", new SetShooterSpeed(() -> 0, 120, m_shooter));
         NamedCommands.registerCommand("SetArmPosition 36", new MoveArmToPosition(36, 3, m_arm));
@@ -235,6 +238,7 @@ public class RobotContainer {
                         m_wrist));
         NamedCommands.registerCommand("SetWristPosition 81", new MoveWristToPosition(() -> 148.5, 3, m_wrist));
         NamedCommands.registerCommand("SetWristPosition 76", new MoveWristToPosition(() -> 148, 3, m_wrist));
+        NamedCommands.registerCommand("SetWristPosition SW Center", new MoveWristToPosition(() -> 128, 3, m_wrist));
         NamedCommands.registerCommand("SetWristPosition Four Piece Sides",
                 new MoveWristToPosition(() -> 148.3, 3, m_wrist));
         NamedCommands.registerCommand("Shoot", new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5));

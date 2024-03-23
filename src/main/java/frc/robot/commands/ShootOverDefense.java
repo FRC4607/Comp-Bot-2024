@@ -53,7 +53,6 @@ public class ShootOverDefense extends ParallelCommandGroup {
                         return autoPoint
                                 .withTargetDirection(
                                         drivetrain.getShotInfo().getRobot()
-                                                .plus(HALF_ROTATION)
                                                 .minus(drivetrain
                                                         .getSwerveOffset()))
                                 .withCenterOfRotation(drivetrain.getRotationPoint())
@@ -70,7 +69,7 @@ public class ShootOverDefense extends ParallelCommandGroup {
                     }
                 }),
                 new MoveArmToPosition(90, 0.75, arm),
-                new MoveWristToPosition(() -> 25.0, 0.75, wrist),
+                new MoveWristToPosition(() -> 28.0, 0.75, wrist),
                 new SetShooterSpeed(() -> 3000, 120, shoot),
                 new RunCommand(() -> {
                 }));

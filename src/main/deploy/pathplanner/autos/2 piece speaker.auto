@@ -5,7 +5,7 @@
       "x": 1.339118719100952,
       "y": 5.545445442199707
     },
-    "rotation": 6.411410964906221e-36
+    "rotation": -1.4000438390639833e-35
   },
   "command": {
     "type": "sequential",
@@ -24,13 +24,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SetWristPosition 45"
+                  "name": "SetWristPosition SW Center"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "SetShooterSpeed 4000"
+                  "name": "SetShooterSpeed SW Center"
                 }
               }
             ]
@@ -80,13 +80,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SetWristPosition 45"
+                  "name": "SetWristPosition SW Center"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "SetShooterSpeed 4000"
+                  "name": "SetShooterSpeed SW Center"
                 }
               }
             ]

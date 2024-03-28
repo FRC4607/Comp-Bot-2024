@@ -134,7 +134,7 @@ public final class Calibrations {
          */
         public static final double kD = 50.0;
         /** The absolute encoder offset of the wrist in rotations. */
-        public static final double kEncoderOffset = -0.146240234375;
+        public static final double kEncoderOffset = -0.37744140625;
         /** The kS constant of the wrist in Amps. */
         public static final double kS = 0.0;
         /** The maximum velocity motion magic should use in rps. */

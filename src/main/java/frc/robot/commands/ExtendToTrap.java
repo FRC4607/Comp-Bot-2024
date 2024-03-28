@@ -11,9 +11,9 @@ import frc.robot.subsystems.WristSubsystem;
 public class ExtendToTrap extends SequentialCommandGroup {
     /** Creates a new ExtendToTrap. */
     public ExtendToTrap(ArmSubsystem arm, WristSubsystem wrist) {
-        super(new MoveArmToPosition(45, 5, arm),
+        super(new MoveArmToPosition(() -> 45, 5, arm),
                 new MoveWristToPosition(() -> -90.0, 5, wrist),
-                new MoveArmToPosition(85, 5, arm),
+                new MoveArmToPosition(() -> 85, 5, arm),
                 new MoveWristToPosition(() -> -100.0, 5, wrist),
                 new MoveWristToPosition(() -> -260, 5, wrist));
     }

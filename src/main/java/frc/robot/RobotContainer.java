@@ -45,6 +45,8 @@ import frc.robot.util.IsRed;
 import frc.robot.util.swerve.SetCurrentRequest;
 
 public class RobotContainer {
+
+    
     private static final double MaxSpeed = Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps;
     private static final double MaxAngularRate = Math.PI * 2;
 
@@ -101,6 +103,8 @@ public class RobotContainer {
         // drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> current));
         joystick.a().onTrue(new SetShooterSpeed(() -> 5200, 120, m_shooter))
                 .onFalse(new SetShooterSpeed(() -> 0, 120, m_shooter));
+        operatorJoystick.b().onTrue(new SetShooterSpeed(() -> 350, 120, m_shooter))
+                .onFalse(new SetShooterSpeed(() -> 0, 120, m_shooter));
         joystick.b().onTrue(new ParallelCommandGroup(
                 new SetShooterSpeed(() -> 0, 120, m_shooter),
                 new Retract(m_wrist, m_arm)));
@@ -108,11 +112,17 @@ public class RobotContainer {
         joystick.x().onTrue(new InstantCommand(LEDSubsystem::setIntake).andThen(new RunIntakeSync(() -> {
             return 1;
         }, m_intake, m_kicker, m_leds).withTimeout(4).andThen(new InstantCommand(LEDSubsystem::setNeutral))));
-        joystick.povLeft().onTrue(new ParallelCommandGroup(new MoveArmToPosition(90.0, 7.5, m_arm),
+        joystick.povLeft().onTrue(new ParallelCommandGroup(new MoveArmToPosition(() -> 90.0, 7.5, m_arm),
                 new MoveWristToPosition(() -> 40.0, 7.5, m_wrist),
                 new InstantCommand(LEDSubsystem::setAmp)));
+
+                 
+        joystick.povRight().onTrue(new ParallelCommandGroup(new MoveArmToPosition(() -> SmartDashboard.getNumber("Trap Shoulder Position", 85.0), 7.5, m_arm),
+                new MoveWristToPosition(() -> SmartDashboard.getNumber("Trap Wrist Position", 105.0), 7.5, m_wrist),
+                new InstantCommand(LEDSubsystem::setAmp)));
+                
         joystick.povDown().onTrue(new ParallelCommandGroup(
-                new MoveArmToPosition(0.0, 7.5, m_arm).andThen(new InstantCommand(() -> {
+                new MoveArmToPosition(() -> 0.0, 7.5, m_arm).andThen(new InstantCommand(() -> {
                     m_arm.setNeutral();
                 }, m_arm)),
                 new MoveWristToPosition(() -> {
@@ -192,6 +202,9 @@ public class RobotContainer {
     }
 
     public RobotContainer() {
+
+        SmartDashboard.putNumber("Trap Wrist Position", 105.0);
+        SmartDashboard.putNumber("Trap Shoulder Position", 85.0);
         // SmartDashboard.putNumber("Set Current Request", 0.0);
         // SmartDashboard.putNumber("Shooter RPM", 0.0);
         // SmartDashboard.putNumber("Wrist Angle Setter", 90.0);
@@ -232,7 +245,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("SetShooterSpeed SW Center", new SetShooterSpeed(() -> 2600, 60, m_shooter));
         NamedCommands.registerCommand("SetShooterSpeed 1000", new SetShooterSpeed(() -> 1000, 120, m_shooter));
         NamedCommands.registerCommand("SetShooterSpeed 0", new SetShooterSpeed(() -> 0, 120, m_shooter));
-        NamedCommands.registerCommand("SetArmPosition 36", new MoveArmToPosition(36, 3, m_arm));
+        NamedCommands.registerCommand("SetArmPosition 36", new MoveArmToPosition(() -> 36, 3, m_arm));
         NamedCommands.registerCommand("SetWristPosition 45",
                 new MoveWristToPosition(() -> 130.0, 3.0,
                         m_wrist));

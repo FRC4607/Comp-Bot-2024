@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ArmSubsystem;
 
@@ -13,7 +15,7 @@ import frc.robot.subsystems.ArmSubsystem;
  */
 public class MoveArmToPosition extends Command {
     private final ArmSubsystem m_subsystem;
-    private final double m_position;
+    private final DoubleSupplier m_position;
     private final double m_tol;
 
     /**
@@ -25,7 +27,8 @@ public class MoveArmToPosition extends Command {
      * @param subsystem A reference to the {@link frc.robot.subsystems.ArmSubsystem}
      *                  object.
      */
-    public MoveArmToPosition(double position, double tol, ArmSubsystem subsystem) {
+
+    public MoveArmToPosition(DoubleSupplier position, double tol, ArmSubsystem subsystem) {
         m_subsystem = subsystem;
         m_position = position;
         m_tol = tol;
@@ -33,10 +36,11 @@ public class MoveArmToPosition extends Command {
         // Use addRequirements() here to declare subsystem dependencies.
     }
 
+
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_subsystem.setArmSetpoint(m_position);
+        m_subsystem.setArmSetpoint(m_position.getAsDouble());
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -52,6 +56,6 @@ public class MoveArmToPosition extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(m_subsystem.armPosition() - m_position) < m_tol;
+        return Math.abs(m_subsystem.armPosition() - m_position.getAsDouble()) < m_tol;
     }
 }

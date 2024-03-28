@@ -33,7 +33,8 @@ public class LEDSubsystem extends SubsystemBase {
         INTAKE,
         SHOOT_NOT_READY,
         SHOOT_READY,
-        AMP
+        AMP,
+        TRAP
     }
 
     private Alliance m_alliance = null;
@@ -114,6 +115,10 @@ public class LEDSubsystem extends SubsystemBase {
                     m_candle.animate(m_shootReady);
                     break;
                 case AMP:
+                    m_candle.animate(null);
+                    m_candle.setLEDs(165, 255, 0, 0, 0, Constants.LEDConstants.kRGBCount);
+                    break;
+                case TRAP:
                     m_candle.animate(null);
                     m_candle.setLEDs(165, 255, 0, 0, 0, Constants.LEDConstants.kRGBCount);
                     break;

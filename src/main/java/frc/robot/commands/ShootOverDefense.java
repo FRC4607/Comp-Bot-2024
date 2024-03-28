@@ -68,7 +68,7 @@ public class ShootOverDefense extends ParallelCommandGroup {
                                 .withRotationalDeadband(0.1 * 2 * Math.PI);
                     }
                 }),
-                new MoveArmToPosition(90, 0.75, arm),
+                new MoveArmToPosition(() -> 90, 0.75, arm),
                 new MoveWristToPosition(() -> 28.0, 0.75, wrist),
                 new SetShooterSpeed(() -> 3000, 120, shoot),
                 new RunCommand(() -> {

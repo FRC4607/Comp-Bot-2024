@@ -7,7 +7,7 @@ import frc.robot.subsystems.WristSubsystem;
 public class SourcePickup extends ParallelCommandGroup {
     public SourcePickup(ArmSubsystem arm, WristSubsystem wrist) {
         super(
-            new MoveArmToPosition(90, 1, arm),
+            new MoveArmToPosition(() -> 90, 1, arm),
             new MoveWristToPosition(() -> -15.0, 1, wrist)
         );
     }

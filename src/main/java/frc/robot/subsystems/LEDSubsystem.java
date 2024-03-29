@@ -34,7 +34,8 @@ public class LEDSubsystem extends SubsystemBase {
         SHOOT_NOT_READY,
         SHOOT_READY,
         AMP,
-        TRAP
+        TRAP,
+        ERROR
     }
 
     private Alliance m_alliance = null;
@@ -56,6 +57,9 @@ public class LEDSubsystem extends SubsystemBase {
     private final LarsonAnimation m_intake = new LarsonAnimation(165, 255, 0, 0, 0.25, Constants.LEDConstants.kRGBCount,
             LarsonAnimation.BounceMode.Back, 3);
 
+    private final StrobeAnimation m_error = new StrobeAnimation(0, 255, 0, 0, 0.5,
+            Constants.LEDConstants.kRGBCount);
+
     private final TwinkleOffAnimation m_shootNotReady = new TwinkleOffAnimation(0, 255, 0, 0, 1,
             Constants.LEDConstants.kRGBCount, TwinkleOffAnimation.TwinkleOffPercent.Percent64);
     private final StrobeAnimation m_shootReady = new StrobeAnimation(255, 0, 0, 0, 1, Constants.LEDConstants.kRGBCount);
@@ -63,7 +67,7 @@ public class LEDSubsystem extends SubsystemBase {
     public LEDSubsystem() {
         CANdleConfiguration config = new CANdleConfiguration();
         config.stripType = LEDStripType.GRB; // The chips we use seem to be RGB
-        config.brightnessScalar = 0.5; // Avoid drawing too much current
+        config.brightnessScalar = 1; // Avoid drawing too much current
         // m_buffer.fillRGBW(255, 0, 0, 0);
         // m_led.setBitTiming(300, 900, 600, 600);
         // m_led.setSyncTime(100);
@@ -122,6 +126,10 @@ public class LEDSubsystem extends SubsystemBase {
                     m_candle.animate(null);
                     m_candle.setLEDs(165, 255, 0, 0, 0, Constants.LEDConstants.kRGBCount);
                     break;
+                case ERROR:
+                    m_candle.animate(m_error);
+                    //m_candle.setLEDs(255, 0, 0, 0, 0, Constants.LEDConstants.kRGBCount);
+                    break;
             }
             System.out.println(m_currentState);
         }
@@ -150,6 +158,9 @@ public class LEDSubsystem extends SubsystemBase {
 
     public static void setAmp() {
         m_currentState = LEDSubsystemState.AMP;
+    }
+    public static void setError() {
+        m_currentState = LEDSubsystemState.ERROR;
     }
 
     private void setBuf(AddressableLED led, SK6811RGBWBuffer buf) {

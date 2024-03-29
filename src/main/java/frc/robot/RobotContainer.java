@@ -120,7 +120,7 @@ public class RobotContainer {
         joystick.povRight().onTrue(new ParallelCommandGroup(new MoveArmToPosition(() -> SmartDashboard.getNumber("Trap Shoulder Position", 85.0), 7.5, m_arm),
                 new MoveWristToPosition(() -> SmartDashboard.getNumber("Trap Wrist Position", 105.0), 7.5, m_wrist),
                 new InstantCommand(LEDSubsystem::setAmp)));
-                
+
         joystick.povDown().onTrue(new ParallelCommandGroup(
                 new MoveArmToPosition(() -> 0.0, 7.5, m_arm).andThen(new InstantCommand(() -> {
                     m_arm.setNeutral();
@@ -278,5 +278,13 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // return new InstantCommand();
         return m_autoChooser.getSelected();
+    }
+
+    public double getWristPosition(){
+        return m_wrist.getWristPosition();
+    }
+
+    public double getArmPosition(){
+        return m_arm.armPosition();
     }
 }

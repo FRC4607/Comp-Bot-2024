@@ -13,6 +13,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Calibrations.KickerCalibrations;
 import frc.robot.Constants;
@@ -72,6 +73,7 @@ public class KickerSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Target Kicker RPM", (m_pid.Velocity / (Math.PI * Constants.KickerConstants.kKickerDiameter)) * 60);
         m_log.log();
     }
 }

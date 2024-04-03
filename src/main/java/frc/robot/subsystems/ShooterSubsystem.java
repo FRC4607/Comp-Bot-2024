@@ -17,6 +17,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Calibrations.ShooterCalibrations;
 import frc.robot.Constants;
@@ -91,6 +92,7 @@ public class ShooterSubsystem extends SubsystemBase {
             m_outer.setControl(m_req.withVelocity(m_speedSupplier.getAsDouble() / 60.0));
         }
         m_inner.setControl(m_follow);
+        SmartDashboard.putNumber("Target Shooter RPM", m_speedSupplier.getAsDouble());
     }
 
     /**

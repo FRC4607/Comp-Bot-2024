@@ -9,7 +9,7 @@ public class InterpolatingTreeMapShooter extends InterpolatingTreeMap<Double, Sh
         // Linearly interpolate each value.
         return new ShotInfo(
             start.getSpeed() + (end.getSpeed() - start.getSpeed()) * Math.pow(t, 2),
-            start.getWrist() + (end.getWrist() - start.getWrist()) * Math.sqrt(t)
+            start.getWrist() + (end.getWrist() - start.getWrist()) * Math.pow(t, 2.0 / 3.0)
         );
     }
 

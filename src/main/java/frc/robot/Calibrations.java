@@ -33,7 +33,7 @@ public final class Calibrations {
          * The maximum current that can be applied to the drive motor of a robot locked
          * in place before the wheels start to slip.
          */
-        public static final double kSlipCurrentA = 123.5;
+        public static final double kSlipCurrentA = 40.0;
 
         /** The effective radius of the wheel attached to each swerve module. */
         public static final double kWheelRadiusInches = 1.941379382973184; // 3/16/24
@@ -95,7 +95,7 @@ public final class Calibrations {
          * The P value of the PID controller that PathPlanner uses to correct for
          * heading error.
          */
-        public static final double kPPathPlannerRotation = 10.0;
+        public static final double kPPathPlannerRotation = 20.0;
     }
 
     /**

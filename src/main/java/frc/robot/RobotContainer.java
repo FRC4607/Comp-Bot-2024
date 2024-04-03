@@ -100,7 +100,7 @@ public class RobotContainer {
         // new MoveWristToPosition(() -> SmartDashboard.getNumber("Wrist Angle Setter",
         // 0.0), 5.0, m_wrist));
 
-        // drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> current));
+        //drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> current));
         joystick.a().onTrue(new SetShooterSpeed(() -> 5200, 120, m_shooter))
                 .onFalse(new SetShooterSpeed(() -> 0, 120, m_shooter));
         operatorJoystick.b().onTrue(new SetShooterSpeed(() -> 350, 120, m_shooter))
@@ -149,7 +149,8 @@ public class RobotContainer {
                                         drivetrain.getShotInfo().getRobot()
                                                 .plus(HALF_ROTATION)
                                                 .minus(drivetrain
-                                                        .getSwerveOffset()))
+                                                        .getSwerveOffset())
+                                                .plus(Rotation2d.fromDegrees(SmartDashboard.getNumber("Robot Heading Offset", 0.0))))
                                 .withCenterOfRotation(drivetrain.getRotationPoint())
                                 .withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
                                 .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)
@@ -164,7 +165,8 @@ public class RobotContainer {
                                         drivetrain.getShotInfo().getRobot()
                                                 .plus(HALF_ROTATION)
                                                 .minus(drivetrain
-                                                        .getSwerveOffset()))
+                                                        .getSwerveOffset())
+                                                .plus(Rotation2d.fromDegrees(SmartDashboard.getNumber("Robot Heading Offset", 0.0))))
                                 .withCenterOfRotation(drivetrain.getRotationPoint())
                                 .withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
                                 .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)))
@@ -196,8 +198,9 @@ public class RobotContainer {
         joystick.rightBumper().whileTrue(new SourcePassOver(m_arm, m_wrist, m_shooter))
                 .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0).andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter)));
 
-        operatorJoystick.leftBumper().whileTrue(new Climb(0.5, m_climber));
-        operatorJoystick.rightBumper().whileTrue(new Climb(-0.5, m_climber));
+        operatorJoystick.povDown().onTrue(new Climb(30, m_climber));
+        operatorJoystick.povRight().onTrue(new Climb(65, m_climber));
+        operatorJoystick.povUp().onTrue(new Climb(150, m_climber));
         operatorJoystick.a().onTrue(new SourcePickup(m_arm, m_wrist));
     }
 
@@ -209,7 +212,8 @@ public class RobotContainer {
         // SmartDashboard.putNumber("Shooter RPM", 0.0);
         // SmartDashboard.putNumber("Wrist Angle Setter", 90.0);
         SmartDashboard.putNumber("SOM", Calibrations.DrivetrainCalibrations.kShootOnMoveConstant);
-        SmartDashboard.putNumber("SOM Bump", -2.0);
+        SmartDashboard.putNumber("SOM Bump", 1.0);
+        SmartDashboard.putNumber("Robot Heading Offset", -2.0);
         SmartDashboard.putData("Run Wheel Radius Test", new
         WheelRadiusCharacterization(drivetrain));
 

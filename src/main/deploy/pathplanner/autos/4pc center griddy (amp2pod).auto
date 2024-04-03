@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7503048181533813,
-      "y": 6.661335468292236
+      "x": 1.339118719100952,
+      "y": 5.545445442199707
     },
-    "rotation": 59.264531872204245
+    "rotation": -9.777578387500652e-28
   },
   "command": {
     "type": "sequential",
@@ -24,13 +24,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "SetWristPosition 45"
+                  "name": "SetWristPosition SW Center"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "SetShooterSpeed 4000"
+                  "name": "SetShooterSpeed SW Center"
                 }
               }
             ]
@@ -47,15 +47,9 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "Retract"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "4 piece speaker griddy.1"
+                  "pathName": "4pc center griddy.1"
                 }
               },
               {
@@ -67,22 +61,10 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Prepare Smart Shot"
+                  "name": "Retract"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "RunIntake 0"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Smart Shoot"
           }
         },
         {
@@ -92,13 +74,32 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Retract"
+                  "name": "SetWristPosition SW Center"
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "SetShooterSpeed SW Center"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
                 "type": "path",
                 "data": {
-                  "pathName": "4 piece speaker griddy.2"
+                  "pathName": "4pc center griddy.3"
                 }
               },
               {
@@ -110,22 +111,10 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Prepare Smart Shot"
+                  "name": "Retract"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "RunIntake 0"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Smart Shoot"
           }
         },
         {
@@ -135,13 +124,32 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Retract"
+                  "name": "SetWristPosition SW Center"
                 }
               },
               {
+                "type": "named",
+                "data": {
+                  "name": "SetShooterSpeed SW Center"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
                 "type": "path",
                 "data": {
-                  "pathName": "4 piece speaker griddy.3"
+                  "pathName": "4pc center griddy.2"
                 }
               },
               {
@@ -153,7 +161,26 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Prepare Smart Shot"
+                  "name": "Retract"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetWristPosition SW Center"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetShooterSpeed SW Center"
                 }
               }
             ]
@@ -162,13 +189,7 @@
         {
           "type": "named",
           "data": {
-            "name": "RunIntake 0"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Smart Shoot"
+            "name": "Shoot"
           }
         },
         {

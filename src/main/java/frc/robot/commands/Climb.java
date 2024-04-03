@@ -11,11 +11,11 @@ public class Climb extends Command {
 
   private ClimberSubsystem m_climber;
 
-  private double m_speed;
+  private double m_position;
 
   /** Creates a new Climb. */
-  public Climb(double speed, ClimberSubsystem climber) {
-    m_speed = speed;
+  public Climb(double position, ClimberSubsystem climber) {
+    m_position = position;
     m_climber = climber;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(climber);
@@ -25,20 +25,17 @@ public class Climb extends Command {
   @Override
   public void execute() {
 
-    m_climber.setLeftClimberSpeed(m_speed);
-    m_climber.setRightClimberSpeed(m_speed);
+    m_climber.setClimberPosition(m_position);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_climber.setLeftClimberSpeed(0);
-    m_climber.setRightClimberSpeed(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

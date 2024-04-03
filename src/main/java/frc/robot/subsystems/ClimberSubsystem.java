@@ -1,11 +1,13 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.util.ctre.TalonFXStandardSignalLogger;
 
 public class ClimberSubsystem extends SubsystemBase {
 
@@ -15,15 +17,26 @@ public class ClimberSubsystem extends SubsystemBase {
     private final TalonFX m_leftMotor;
     private final TalonFX m_rightMotor;
 
+    private final TalonFXStandardSignalLogger m_leftLogger;
+    private final TalonFXStandardSignalLogger m_rightLogger;
+
+    private final MotionMagicTorqueCurrentFOC m_control;
+
     /**
      * The subsystem which contains all motors/sensors/encoers on the robot
      * climbers.
      */
     public ClimberSubsystem() {
 
+        m_control = new MotionMagicTorqueCurrentFOC(0);
         
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.kSupplyAmpLimit;
+        config.MotionMagic.MotionMagicAcceleration = 647.25;
+        config.MotionMagic.MotionMagicCruiseVelocity = 98;
+        config.Slot0.kP = 32;
+        config.Slot0.kD = 6.4;
+        config.Slot0.kS = 1.75;
         
         
         m_leftMotor = new TalonFX(ClimberConstants.kLeftCANId, "kachow");
@@ -35,17 +48,23 @@ public class ClimberSubsystem extends SubsystemBase {
         m_rightMotor.setNeutralMode(NeutralModeValue.Brake);
         m_leftMotor.setInverted(false);
         m_rightMotor.setInverted(true);
+
+        m_leftLogger = new TalonFXStandardSignalLogger(m_leftMotor, "/climber/left");
+        m_rightLogger = new TalonFXStandardSignalLogger(m_rightMotor, "/climber/right");
     }
 
-    /**
-     * Sets the setpoint of the left climber to be used by open loop control.
-     * 
-     * @param speed The new speed which will update the old one.
-     */
-    public void setLeftClimberSpeed(double speed) {
+    @Override
+    public void periodic() {
+        // m_control.FeedForward = ((leftClimberPosition() + rightClimberPosition())/2.0) > 50.0 ? 11.0 : 0.0;
 
-        m_leftMotor.set(speed);
+        m_leftMotor.setControl(m_control);
+        m_rightMotor.setControl(m_control);
+
+        m_leftLogger.log();
+        m_rightLogger.log();
     }
+
+
 
     /**
      * Sets the setpoint (Inches) of the right climber to be used by open loop control.
@@ -53,9 +72,9 @@ public class ClimberSubsystem extends SubsystemBase {
      * @param speed The new setpoint (inches) which will upate the
      *                                old one.
      */
-    public void setRightClimberSpeed(double speed) {
+    public void setClimberPosition(double position) {
 
-        m_rightMotor.set(speed);
+        m_control.Position = position;
     }
 
     /**
@@ -77,7 +96,7 @@ public class ClimberSubsystem extends SubsystemBase {
     public double leftClimberPosition() {
 
         // will need more variables once encoders are added
-        return 0.0;
+        return m_leftLogger.m_pos.getValueAsDouble();
     }
 
     /**
@@ -88,6 +107,6 @@ public class ClimberSubsystem extends SubsystemBase {
     public double rightClimberPosition() {
 
         // will need more variables once encoders are added
-        return 0.0;
+        return m_rightLogger.m_pos.getValueAsDouble();
     }
 }

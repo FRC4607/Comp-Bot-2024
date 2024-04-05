@@ -95,6 +95,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final StructLogEntry<Pose2d> m_flywheelLog = StructLogEntry.create(DataLogManager.getLog(),
             "flywheelll",
             Pose2d.struct);
+    private final int m_frontSubscriber;
+    private final StructLogEntry<Pose2d> m_frontLog = StructLogEntry.create(DataLogManager.getLog(),
+            "flywheelll",
+            Pose2d.struct);
 
     private ShotInfoWithDirection m_shotInfo;
     private final InterpolatingTreeMapShooter m_map = InterpolatingTreeMapShooter.getShotMap();
@@ -195,6 +199,16 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     this.handleLLUpdate(pose, result[9], result[7], result[6]);
                     m_flywheelLog.append(pose);
                 });
+        m_frontSubscriber = NetworkTableInstance.getDefault().getTable("limelight-front").addListener(
+                "botpose_wpiblue",
+                EnumSet.of(Kind.kValueRemote),
+                (NetworkTable table, String topic, NetworkTableEvent event) -> {
+                    double[] result = event.valueData.value.getDoubleArray();
+                    Pose2d pose = new Pose2d(result[0], result[1],
+                            Rotation2d.fromDegrees(result[5]));
+                    this.handleLLUpdate(pose, result[9], result[7], result[6]);
+                    m_frontLog.append(pose);
+                });
         m_armAngle = armAngle;
         m_wristAngle = wristAngle;
     }
@@ -233,6 +247,16 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                             Rotation2d.fromDegrees(result[5]));
                     this.handleLLUpdate(pose, result[9], result[7], result[6]);
                     m_flywheelLog.append(pose);
+                });
+        m_frontSubscriber = NetworkTableInstance.getDefault().getTable("limelight-front").addListener(
+                "botpose_wpiblue",
+                EnumSet.of(Kind.kValueRemote),
+                (NetworkTable table, String topic, NetworkTableEvent event) -> {
+                    double[] result = event.valueData.value.getDoubleArray();
+                    Pose2d pose = new Pose2d(result[0], result[1],
+                            Rotation2d.fromDegrees(result[5]));
+                    this.handleLLUpdate(pose, result[9], result[7], result[6]);
+                    m_frontLog.append(pose);
                 });
         m_armAngle = armAngle;
         m_wristAngle = wristAngle;
@@ -402,7 +426,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 .get(Math.min(5.94, Math.max(1.369, offsetSpeaker.getDistance(compensatedRobotPose.getTranslation()))))
                 .withDirection(
                         offsetSpeaker.minus(compensatedRobotPose.getTranslation()).getAngle());
-        m_shotInfo = new ShotInfoWithDirection(temp.getSpeed(), temp.getWrist() + SmartDashboard.getNumber("SOM Bump", 0.0), temp.getRobot());
+        m_shotInfo = new ShotInfoWithDirection(temp.getSpeed(),
+                temp.getWrist() + SmartDashboard.getNumber("SOM Bump", 0.0), temp.getRobot());
     }
 
     public double[] getWheelRadiusCharacterizationPosition() {

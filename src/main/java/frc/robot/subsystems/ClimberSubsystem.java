@@ -33,7 +33,7 @@ public class ClimberSubsystem extends SubsystemBase {
         
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.kSupplyAmpLimit;
-        config.MotionMagic.MotionMagicAcceleration = 647.25;
+        config.MotionMagic.MotionMagicAcceleration = 647.25 / 4.0;
         config.MotionMagic.MotionMagicCruiseVelocity = 98;
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.Slot0.kP = 32;

@@ -198,9 +198,8 @@ public class RobotContainer {
         joystick.rightBumper().whileTrue(new SourcePassOver(m_arm, m_wrist, m_shooter))
                 .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0).andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter)));
 
-        operatorJoystick.povDown().onTrue(new Climb(30, m_climber));
-        operatorJoystick.povRight().onTrue(new Climb(65, m_climber));
-        operatorJoystick.povUp().onTrue(new Climb(150, m_climber));
+        operatorJoystick.povDown().onTrue(new Climb(0, m_climber));
+        operatorJoystick.povUp().onTrue(new Climb(85, m_climber));
         operatorJoystick.a().onTrue(new SourcePickup(m_arm, m_wrist));
     }
 

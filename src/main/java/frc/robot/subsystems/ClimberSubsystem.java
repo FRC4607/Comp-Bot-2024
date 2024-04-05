@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,20 +35,21 @@ public class ClimberSubsystem extends SubsystemBase {
         config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.kSupplyAmpLimit;
         config.MotionMagic.MotionMagicAcceleration = 647.25;
         config.MotionMagic.MotionMagicCruiseVelocity = 98;
+        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.Slot0.kP = 32;
         config.Slot0.kD = 6.4;
         config.Slot0.kS = 1.75;
+        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0.0;
+        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 85.0;
         
-        
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         m_leftMotor = new TalonFX(ClimberConstants.kLeftCANId, "kachow");
         m_leftMotor.getConfigurator().apply(config);
+        config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         m_rightMotor = new TalonFX(ClimberConstants.kRightCANId, "kachow");
         m_rightMotor.getConfigurator().apply(config);
-
-        m_leftMotor.setNeutralMode(NeutralModeValue.Brake);
-        m_rightMotor.setNeutralMode(NeutralModeValue.Brake);
-        m_leftMotor.setInverted(false);
-        m_rightMotor.setInverted(true);
 
         m_leftLogger = new TalonFXStandardSignalLogger(m_leftMotor, "/climber/left");
         m_rightLogger = new TalonFXStandardSignalLogger(m_rightMotor, "/climber/right");
@@ -55,7 +57,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // m_control.FeedForward = ((leftClimberPosition() + rightClimberPosition())/2.0) > 50.0 ? 11.0 : 0.0;
+        m_control.FeedForward = ((leftClimberPosition() + rightClimberPosition())/2.0) < 20.0 ? 11.0 : 0.0;
 
         m_leftMotor.setControl(m_control);
         m_rightMotor.setControl(m_control);

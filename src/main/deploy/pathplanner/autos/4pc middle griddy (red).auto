@@ -168,6 +168,25 @@
           }
         },
         {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetWristPosition SW Center"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetShooterSpeed SW Center"
+                }
+              }
+            ]
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Shoot"

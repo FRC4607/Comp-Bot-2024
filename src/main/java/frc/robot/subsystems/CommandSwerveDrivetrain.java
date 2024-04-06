@@ -97,7 +97,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             Pose2d.struct);
     private final int m_frontSubscriber;
     private final StructLogEntry<Pose2d> m_frontLog = StructLogEntry.create(DataLogManager.getLog(),
-            "flywheelll",
+            "frontll",
             Pose2d.struct);
 
     private ShotInfoWithDirection m_shotInfo;

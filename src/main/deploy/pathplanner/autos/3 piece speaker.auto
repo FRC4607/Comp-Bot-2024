@@ -5,7 +5,7 @@
       "x": 1.339118719100952,
       "y": 5.545445442199707
     },
-    "rotation": 5.53041811940036e-32
+    "rotation": -8.697410113092428e-39
   },
   "command": {
     "type": "sequential",
@@ -70,7 +70,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Smart Shoot"
+            "name": "Smart Shoot With Turning"
           }
         },
         {

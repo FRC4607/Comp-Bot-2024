@@ -11,6 +11,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.ForwardReference;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Climb;
 import frc.robot.commands.MoveArmToPosition;
@@ -29,6 +31,7 @@ import frc.robot.commands.RunKickerWheel;
 import frc.robot.commands.SetShooterSpeed;
 import frc.robot.commands.ShootOverDefense;
 import frc.robot.commands.ShootUsingInterpolation;
+import frc.robot.commands.ShootUsingInterpolationWithCorrection;
 import frc.robot.commands.SourcePass;
 import frc.robot.commands.SourcePassOver;
 import frc.robot.commands.SourcePickup;
@@ -46,7 +49,6 @@ import frc.robot.util.swerve.SetCurrentRequest;
 
 public class RobotContainer {
 
-    
     private static final double MaxSpeed = Calibrations.DrivetrainCalibrations.kSpeedAt12VoltsMps;
     private static final double MaxAngularRate = Math.PI * 2;
 
@@ -100,10 +102,8 @@ public class RobotContainer {
         // new MoveWristToPosition(() -> SmartDashboard.getNumber("Wrist Angle Setter",
         // 0.0), 5.0, m_wrist));
 
-        //drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> current));
+        // drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> current));
         joystick.a().onTrue(new SetShooterSpeed(() -> 5200, 120, m_shooter))
-                .onFalse(new SetShooterSpeed(() -> 0, 120, m_shooter));
-        operatorJoystick.b().onTrue(new SetShooterSpeed(() -> 350, 120, m_shooter))
                 .onFalse(new SetShooterSpeed(() -> 0, 120, m_shooter));
         joystick.b().onTrue(new ParallelCommandGroup(
                 new SetShooterSpeed(() -> 0, 120, m_shooter),
@@ -116,8 +116,8 @@ public class RobotContainer {
                 new MoveWristToPosition(() -> 40.0, 7.5, m_wrist),
                 new InstantCommand(LEDSubsystem::setAmp)));
 
-                 
-        joystick.povRight().onTrue(new ParallelCommandGroup(new MoveArmToPosition(() -> SmartDashboard.getNumber("Trap Shoulder Position", 85.0), 7.5, m_arm),
+        joystick.povRight().onTrue(new ParallelCommandGroup(
+                new MoveArmToPosition(() -> SmartDashboard.getNumber("Trap Shoulder Position", 85.0), 7.5, m_arm),
                 new MoveWristToPosition(() -> SmartDashboard.getNumber("Trap Wrist Position", 105.0), 7.5, m_wrist),
                 new InstantCommand(LEDSubsystem::setAmp)));
 
@@ -150,7 +150,8 @@ public class RobotContainer {
                                                 .plus(HALF_ROTATION)
                                                 .minus(drivetrain
                                                         .getSwerveOffset())
-                                                .plus(Rotation2d.fromDegrees(SmartDashboard.getNumber("Robot Heading Offset", 0.0))))
+                                                .plus(Rotation2d.fromDegrees(
+                                                        SmartDashboard.getNumber("Robot Heading Offset", 0.0))))
                                 .withCenterOfRotation(drivetrain.getRotationPoint())
                                 .withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
                                 .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)
@@ -166,7 +167,8 @@ public class RobotContainer {
                                                 .plus(HALF_ROTATION)
                                                 .minus(drivetrain
                                                         .getSwerveOffset())
-                                                .plus(Rotation2d.fromDegrees(SmartDashboard.getNumber("Robot Heading Offset", 0.0))))
+                                                .plus(Rotation2d.fromDegrees(
+                                                        SmartDashboard.getNumber("Robot Heading Offset", 0.0))))
                                 .withCenterOfRotation(drivetrain.getRotationPoint())
                                 .withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
                                 .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)))
@@ -194,13 +196,39 @@ public class RobotContainer {
                         new SetShooterSpeed(() -> 0.0, 120, m_shooter),
                         new Retract(m_wrist, m_arm)));
         joystick.leftBumper().whileTrue(new SourcePass(m_arm, m_wrist, m_shooter))
-                .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0).andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter)));
+                .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0)
+                        .andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter)));
         joystick.rightBumper().whileTrue(new SourcePassOver(m_arm, m_wrist, m_shooter))
-                .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0).andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter)));
+                .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0)
+                        .andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter)));
 
         operatorJoystick.povDown().onTrue(new Climb(0, m_climber));
         operatorJoystick.povUp().onTrue(new Climb(85, m_climber));
-        operatorJoystick.a().onTrue(new SourcePickup(m_arm, m_wrist));
+        operatorJoystick.povLeft().onTrue(new SourcePickup(m_arm, m_wrist));
+        operatorJoystick.a().onTrue(new SetShooterSpeed(() -> -3000, 120, m_shooter))
+                .onFalse(new SetShooterSpeed(() -> 0, 120, m_shooter));
+        operatorJoystick.b().onTrue(new SetShooterSpeed(() -> 350, 120, m_shooter))
+                .onFalse(new SetShooterSpeed(() -> 0, 120, m_shooter));
+        operatorJoystick.leftStick().onTrue(new InstantCommand(() -> {
+            drivetrain.seedFieldRelative(new Pose2d(
+                    new Translation2d(
+                            IsRed.isRed() ? 16.42 - 0.40005 : 0.40005,
+                            8.18 - 0.40005),
+                    Rotation2d.fromDegrees(
+                            IsRed.isRed() ? 180.0 : 0.0)));
+        }, drivetrain));
+        operatorJoystick.x().onTrue(new SequentialCommandGroup( // Sides
+                new SetShooterSpeed(() -> 4000, 120, m_shooter),
+                new MoveWristToPosition(() -> 125.0, 3.0, m_wrist),
+                new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5),
+                new Retract(m_wrist, m_arm),
+                new SetShooterSpeed(() -> 0, 120, m_shooter)));
+        operatorJoystick.y().onTrue(new SequentialCommandGroup( // Center
+                new SetShooterSpeed(() -> 2600, 120, m_shooter),
+                new MoveWristToPosition(() -> 125.0, 3.0, m_wrist),
+                new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5),
+                new Retract(m_wrist, m_arm),
+                new SetShooterSpeed(() -> 0, 120.0, m_shooter)));
     }
 
     public RobotContainer() {
@@ -211,10 +239,9 @@ public class RobotContainer {
         // SmartDashboard.putNumber("Shooter RPM", 0.0);
         // SmartDashboard.putNumber("Wrist Angle Setter", 90.0);
         SmartDashboard.putNumber("SOM", Calibrations.DrivetrainCalibrations.kShootOnMoveConstant);
-        SmartDashboard.putNumber("SOM Bump", 1.0);
+        SmartDashboard.putNumber("SOM Bump", -1.0);
         SmartDashboard.putNumber("Robot Heading Offset", -2.0);
-        SmartDashboard.putData("Run Wheel Radius Test", new
-        WheelRadiusCharacterization(drivetrain));
+        SmartDashboard.putData("Run Wheel Radius Test", new WheelRadiusCharacterization(drivetrain));
 
         // SmartDashboard.putData("Turn QF",
         // drivetrain.getTurnQuasistaic(Direction.kForward));
@@ -250,16 +277,18 @@ public class RobotContainer {
         NamedCommands.registerCommand("SetShooterSpeed 0", new SetShooterSpeed(() -> 0, 120, m_shooter));
         NamedCommands.registerCommand("SetArmPosition 36", new MoveArmToPosition(() -> 36, 3, m_arm));
         NamedCommands.registerCommand("SetWristPosition 45",
-                new MoveWristToPosition(() -> 130.0, 3.0,
+                new MoveWristToPosition(() -> 125.0, 3.0,
                         m_wrist));
         NamedCommands.registerCommand("SetWristPosition 81", new MoveWristToPosition(() -> 148.5, 3, m_wrist));
         NamedCommands.registerCommand("SetWristPosition 76", new MoveWristToPosition(() -> 148, 3, m_wrist));
-        NamedCommands.registerCommand("SetWristPosition SW Center", new MoveWristToPosition(() -> 128, 3, m_wrist));
+        NamedCommands.registerCommand("SetWristPosition SW Center", new MoveWristToPosition(() -> 125, 3, m_wrist));
         NamedCommands.registerCommand("SetWristPosition Four Piece Sides",
                 new MoveWristToPosition(() -> 148.3, 3, m_wrist));
         NamedCommands.registerCommand("Shoot", new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5));
         NamedCommands.registerCommand("Smart Shoot",
                 new ShootUsingInterpolation(drivetrain, m_wrist, m_shooter, m_kicker));
+        NamedCommands.registerCommand("Smart Shoot With Turning",
+                new ShootUsingInterpolationWithCorrection(drivetrain, m_wrist, m_shooter, m_kicker));
         NamedCommands.registerCommand("Prepare Smart Shot", new SetShooterSpeed(() -> {
             return drivetrain.getShotInfo().getSpeed();
         }, 60.0, m_shooter));
@@ -283,11 +312,11 @@ public class RobotContainer {
         return m_autoChooser.getSelected();
     }
 
-    public double getWristPosition(){
+    public double getWristPosition() {
         return m_wrist.getWristPosition();
     }
 
-    public double getArmPosition(){
+    public double getArmPosition() {
         return m_arm.armPosition();
     }
 }

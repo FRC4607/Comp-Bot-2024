@@ -33,7 +33,7 @@ public final class Calibrations {
          * The maximum current that can be applied to the drive motor of a robot locked
          * in place before the wheels start to slip.
          */
-        public static final double kSlipCurrentA = 40.0;
+        public static final double kSlipCurrentA = 77.1875;
 
         /** The effective radius of the wheel attached to each swerve module. */
         public static final double kWheelRadiusInches = 1.941379382973184; // 3/16/24
@@ -134,7 +134,7 @@ public final class Calibrations {
          */
         public static final double kD = 50.0;
         /** The absolute encoder offset of the wrist in rotations. */
-        public static final double kEncoderOffset = -0.37744140625;
+        public static final double kEncoderOffset = -0.38282421875;
         /** The kS constant of the wrist in Amps. */
         public static final double kS = 0.0;
         /** The maximum velocity motion magic should use in rps. */

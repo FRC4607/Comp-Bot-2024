@@ -53,7 +53,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         TalonFXConfiguration config = new TalonFXConfiguration();
 
-        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
         config.Slot0.kS = ShooterCalibrations.kS;

@@ -17,6 +17,7 @@ public class MoveWristToPosition extends Command {
     private final DoubleSupplier m_position;
     private final double m_tol;
     private final WristSubsystem m_subsystem;
+    private final boolean m_ignoreArm;
 
     private int m_debounce;
 
@@ -29,16 +30,22 @@ public class MoveWristToPosition extends Command {
      * @param subsystem A reference to the
      *                  {@link frc.robot.subsystems.WristSubsystem} object.
      */
-    public MoveWristToPosition(DoubleSupplier position, double tol, WristSubsystem subsystem) {
+    public MoveWristToPosition(DoubleSupplier position, double tol, WristSubsystem subsystem, boolean ignoreArm) {
         m_position = position;
         m_tol = tol;
         m_subsystem = subsystem;
+        m_ignoreArm = ignoreArm;
         addRequirements(m_subsystem);
+    }
+
+    public MoveWristToPosition(DoubleSupplier position, double tol, WristSubsystem subsystem) {
+        this(position, tol, subsystem, false);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        m_subsystem.setIgnoreArm(m_ignoreArm);
         m_subsystem.setWristSetpoint(m_position);
         m_debounce = 0;
     }
@@ -56,7 +63,7 @@ public class MoveWristToPosition extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (Math.abs(Math.IEEEremainder(m_subsystem.getWristPosition(), 360.0) - m_position.getAsDouble()) < m_tol) {
+        if (Math.abs(Math.IEEEremainder(m_ignoreArm ? m_subsystem.getRawWristPosition() : m_subsystem.getWristPosition(), 360.0) - m_position.getAsDouble()) < m_tol) {
             m_debounce++;
         } else {
             m_debounce = 0;

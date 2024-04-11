@@ -39,6 +39,8 @@ public class WristSubsystem extends SubsystemBase {
 
     private DoubleSupplier m_setpoint;
 
+    private boolean m_ignoreArm = false;
+
     private final TalonFXStandardSignalLogger m_log;
 
     private final StatusSignal<Double> m_armSetpoint;
@@ -62,7 +64,7 @@ public class WristSubsystem extends SubsystemBase {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.ClosedLoopGeneral.ContinuousWrap = true;
         config.Feedback.FeedbackRemoteSensorID = Constants.WristConstants.kCANID;
-        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.SyncCANcoder;
         config.Feedback.RotorToSensorRatio = Constants.WristConstants.kRotorToSensor;
         config.Feedback.SensorToMechanismRatio = Constants.WristConstants.kSensorToMechanism;
         config.MotorOutput.Inverted = Constants.WristConstants.kInverted ? InvertedValue.Clockwise_Positive
@@ -84,8 +86,8 @@ public class WristSubsystem extends SubsystemBase {
         m_motor = new TalonFX(Constants.WristConstants.kCANID, "kachow");
         m_motor.getConfigurator().apply(config);
 
-        m_setpoint = () -> 90.0;
-        m_pid = new MotionMagicTorqueCurrentFOC(0.25);
+        m_setpoint = () -> 100.0;
+        m_pid = new MotionMagicTorqueCurrentFOC(100.0 / 360.0);
 
         // m_position = m_encoder.getPosition();
         m_log = new TalonFXStandardSignalLogger(m_motor, "/wrist");
@@ -100,7 +102,11 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
-        m_pid.Position = (m_setpoint.getAsDouble() - m_armAngleSupplier.getAsDouble()) / 360.0;
+        if (m_ignoreArm) {
+            m_pid.Position = m_setpoint.getAsDouble() / 360.0;
+        } else {
+            m_pid.Position = (m_setpoint.getAsDouble() - m_armAngleSupplier.getAsDouble()) / 360.0;
+        }
         // m_pid.FeedForward = Math.cos(Math.toRadians(getWristPosition())) *
         // Calibrations.WristCalibrations.kG;
         m_pid.Slot = m_armAngleSupplier.getAsDouble() > 2.0 ? 1 : 0;
@@ -109,6 +115,7 @@ public class WristSubsystem extends SubsystemBase {
         m_wristGoalLog.append(m_pid.Position);
         m_wristSetpointLog.append(m_armSetpoint.getValueAsDouble());
 
+        SmartDashboard.putBoolean("Using Arm", m_ignoreArm);
         SmartDashboard.putNumber("Wrist Angle", getWristPosition());
         SmartDashboard.putNumber("Wrist Target", m_setpoint.getAsDouble());
         SmartDashboard.putNumber("Arm Angle", m_armAngleSupplier.getAsDouble());
@@ -161,5 +168,9 @@ public class WristSubsystem extends SubsystemBase {
      */
     public double getWristPosition() {
         return getRawWristPosition() + m_armAngleSupplier.getAsDouble();
+    }
+
+    public void setIgnoreArm(boolean ignoreArm) {
+        m_ignoreArm = ignoreArm;
     }
 }

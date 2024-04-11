@@ -23,7 +23,7 @@ public class Retract extends SequentialCommandGroup {
     public Retract(WristSubsystem wrist, ArmSubsystem arm) {
         super(
                 new MoveArmToPosition(() -> 5.0, 6, arm),
-                new MoveWristToPosition(() -> 95.0, 15.0, wrist),
+                new MoveWristToPosition(() -> 100.0, 15.0, wrist),
                 new InstantCommand(() -> {
                     arm.setNeutral();
                     LEDSubsystem.setNeutral();

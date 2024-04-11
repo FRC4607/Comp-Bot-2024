@@ -72,14 +72,14 @@ public class RunIntakeSync extends Command {
     public void execute() {
         double surfaceSpeed = m_power.getAsDouble() * MAX_SURFACE_SPEED;
         m_intake.setIntakeSetpoint(surfaceSpeed);
-        m_kicker.setKickerSetpoint(surfaceSpeed);
+        m_kicker.setKickerSetpointVelocity(surfaceSpeed);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         m_intake.setIntakeSetpoint(0);
-        m_kicker.setKickerSetpoint(0);
+        m_kicker.setKickerSetpointVelocity(0);
     }
 
     // Returns true when the command should end.

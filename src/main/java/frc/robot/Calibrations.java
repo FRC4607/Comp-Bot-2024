@@ -124,7 +124,7 @@ public final class Calibrations {
         /**
          * The kP constant of the wrist motor. In units of Amps/rotation.
          */
-        public static final double kP = 1200.0;
+        public static final double kP = 1400.0;
         /**
          * The kI constant of the wrist motor. In units of Amps/rotation^2.
          */
@@ -134,7 +134,7 @@ public final class Calibrations {
          */
         public static final double kD = 50.0;
         /** The absolute encoder offset of the wrist in rotations. */
-        public static final double kEncoderOffset = -0.822521484375;
+        public static final double kEncoderOffset = -0.820302734375; // zero angle tool off of arm, place on wrist, and hit button in tuner while holding at zero degrees 
         /** The kS constant of the wrist in Amps. */
         public static final double kS = 0.0;
         /** The maximum velocity motion magic should use in rps. */
@@ -160,7 +160,7 @@ public final class Calibrations {
         /** The maximum acceleration the arm should achieve in rot/sec^2. */
         public static final double kMaxAccelerationMotionMagic = 0.75;
         /** The offset of the absolute encoder on the arm in rotations. */
-        public static final double kEncoderOffset = -0.5111762152;
+        public static final double kEncoderOffset = -0.5025; // target arm pos of 0.966796875 at rest
         /**
          * The maximum amount of current the controller should be allowed to output in
          * either direction in Amps.
@@ -189,12 +189,22 @@ public final class Calibrations {
     /** Calibrations for the kicker. */
     public static final class KickerCalibrations {
         /** The proportional constant for roller feedback in Amps/rps. */
-        public static final double kP = 10;
+        public static final double kP_vel = 10;
         /** The derivative constant for roller feedback in Amps/rps^2. */
-        public static final double kD = 0;
+        public static final double kD_vel = 0;
         /** The roller static feedforward constant in Amps. */
-        public static final double kS = 23.5;
+        public static final double kS_vel = 23.5;
         /** The roller velocity feedforward constant in Amps/(rotation per second) */
-        public static final double kV = 0.1;
+        public static final double kV_vel = 0.1;
+        /** The proportional constant for roller feedback in Amps/rps. */
+        public static final double kP_pos = 400;
+        /** The derivative constant for roller feedback in Amps/rps^2. */
+        public static final double kD_pos = 20;
+        /** The roller static feedforward constant in Amps. */
+        public static final double kS_pos = 23.5;
+        /** The roller velocity feedforward constant in Amps/(rotation per second) */
+        public static final double kV_pos = 0.1;
+        public static final double kMotionMagicMaxAcceleration = 400;
+        public static final double kMotionMagicMaxVelocity = 70;
     }
 }

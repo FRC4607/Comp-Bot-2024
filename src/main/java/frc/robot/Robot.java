@@ -58,13 +58,13 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
-        for (int i = 0; i < m_currents.length; i++) {
-            m_currents[i] = m_pd.getCurrent(i);
-        }
-        m_currentsLog.append(m_currents);
-        m_energyLog.append(m_pd.getTotalEnergy());
-        m_voltageLog.append(m_pd.getVoltage());
-        m_tempLog.append(m_pd.getTemperature());
+        // for (int i = 0; i < m_currents.length; i++) {
+        //     m_currents[i] = m_pd.getCurrent(i);
+        // }
+        // m_currentsLog.append(m_currents);
+        // m_energyLog.append(m_pd.getTotalEnergy());
+        // m_voltageLog.append(m_pd.getVoltage());
+        // m_tempLog.append(m_pd.getTemperature());
         // Refresh every signal before running loop
         BaseStatusSignal.refreshAll(m_signalsToRefreshCaniv);
         CommandScheduler.getInstance().run();

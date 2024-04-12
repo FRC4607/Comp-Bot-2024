@@ -92,7 +92,7 @@ public class ShooterSubsystem extends SubsystemBase {
             m_outer.setControl(m_req.withVelocity(m_speedSupplier.getAsDouble() / 60.0));
         }
         m_inner.setControl(m_follow);
-        SmartDashboard.putNumber("Target Shooter RPM", m_speedSupplier.getAsDouble());
+        //SmartDashboard.putNumber("Target Shooter RPM", m_speedSupplier.getAsDouble());
     }
 
     /**

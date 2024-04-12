@@ -113,7 +113,8 @@ public class RobotContainer {
         joystick.y().onTrue(new InstantCommand(drivetrain::seedFieldRelative, drivetrain));
         joystick.x().onTrue(new InstantCommand(LEDSubsystem::setIntake).andThen(new RunIntakeSync(() -> {
             return 1;
-        }, m_intake, m_kicker, m_leds).andThen(new InstantCommand(LEDSubsystem::setNeutral).andThen(new CenterNote(m_kicker, m_intake)))).withTimeout(4));
+        }, m_intake, m_kicker, m_leds).andThen(new InstantCommand(LEDSubsystem::setNeutral)
+                .andThen(new CenterNote(m_kicker, m_intake)))).withTimeout(4));
         joystick.povLeft().onTrue(new ParallelCommandGroup(new MoveArmToPosition(() -> 90.0, 7.5, m_arm),
                 new MoveWristToPosition(() -> 40.0, 7.5, m_wrist),
                 new InstantCommand(LEDSubsystem::setAmp)));
@@ -135,7 +136,8 @@ public class RobotContainer {
                             : SmartDashboard.getNumber("Wrist Angle Setter", 0.0);
                 }, 10, m_wrist, true),
                 new SetShooterSpeed(() -> {
-                    return SmartDashboard.getNumber("Shooter RPM", 0.0) == 0.0 ? drivetrain.getShotInfo().getSpeed()
+                    return SmartDashboard.getNumber("Shooter RPM", 0.0) == 0.0
+                            ? drivetrain.getShotInfo().getSpeed()
                             : SmartDashboard.getNumber("Shooter RPM", 0.0);
                 }, 120, m_shooter),
                 drivetrain.applyRequest(() -> {
@@ -210,7 +212,23 @@ public class RobotContainer {
         joystick.leftBumper().whileTrue(new SourcePass(m_arm, m_wrist, m_shooter))
                 .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0)
                         .andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter)));
-        joystick.rightBumper().whileTrue(new SourcePassOver(m_arm, m_wrist, m_shooter))
+        joystick.rightBumper().whileTrue(new ParallelCommandGroup(new SourcePassOver(m_arm, m_wrist, m_shooter),
+                drivetrain.applyRequest(() -> autoPoint
+                        .withTargetDirection(
+                                (IsRed.isRed() ? Constants.DrivetrainConstants.kRedAllianceAmpCornerPosition
+                                        : Constants.DrivetrainConstants.kBlueAllianceAmpCornerPosition)
+                                        .minus(drivetrain.getState().Pose.getTranslation()).getAngle()
+                                        .plus(HALF_ROTATION)
+                                        .minus(drivetrain
+                                                .getSwerveOffset())
+                                        .plus(Rotation2d.fromDegrees(
+                                                SmartDashboard.getNumber(
+                                                        "Robot Heading Offset",
+                                                        0.0))))
+                        .withCenterOfRotation(drivetrain.getRotationPoint())
+                        .withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
+                        .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)
+                        .withRotationalDeadband(0.15 * MaxAngularRate * 0.25))))
                 .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0)
                         .andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter)));
 
@@ -252,7 +270,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("Wrist Angle Setter", 0.0);
         SmartDashboard.putNumber("SOM", Calibrations.DrivetrainCalibrations.kShootOnMoveConstant);
         SmartDashboard.putNumber("SOM Bump", 0.0);
-        SmartDashboard.putNumber("Robot Heading Offset", -0.5);
+        SmartDashboard.putNumber("Robot Heading Offset", -8.0);
         SmartDashboard.putData("Run Wheel Radius Test", new WheelRadiusCharacterization(drivetrain));
 
         // SmartDashboard.putData("Turn QF",

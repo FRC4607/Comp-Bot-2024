@@ -83,7 +83,7 @@ public final class Calibrations {
          * A constant that is used during the shoot on the move calculations. Converts
          * between meters/rpm and seconds
          */
-        public static final double kShootOnMoveConstant = 325;
+        public static final double kShootOnMoveConstant = 375;
 
         /**
          * The P value of the PID controller that PathPlanner uses to correct for

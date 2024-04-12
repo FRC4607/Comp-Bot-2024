@@ -98,7 +98,7 @@ public class KickerSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Target Kicker RPM", (m_velocity.Velocity / (Math.PI * Constants.KickerConstants.kKickerDiameter)) * 60);
+        //SmartDashboard.putNumber("Target Kicker RPM", (m_velocity.Velocity / (Math.PI * Constants.KickerConstants.kKickerDiameter)) * 60);
         m_log.log();
     }
 

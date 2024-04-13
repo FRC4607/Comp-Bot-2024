@@ -47,13 +47,13 @@ public final class Calibrations {
                                                                             // max motor speed of 91 rps.
 
         /** The CANcoder offset of the front left module. */
-        public static final double kFrontLeftEncoderOffset = -0.186767578125;
+        public static final double kFrontLeftEncoderOffset = -0.18359375;
         /** The CANcoder offset of the front right module. */
         public static final double kFrontRightEncoderOffset = -0.08984375;
         /** The CANcoder offset of the back left module. */
-        public static final double kBackLeftEncoderOffset = -0.353271484375;
+        public static final double kBackLeftEncoderOffset = -0.355712890625;
         /** The CANcoder offset of the back right module. */
-        public static final double kBackRightEncoderOffset = -0.875732421875;
+        public static final double kBackRightEncoderOffset = -0.254638671875;
 
         // These are only used for simulation
         /** The simulated inertia of the steer motor of a swerve module(?). */

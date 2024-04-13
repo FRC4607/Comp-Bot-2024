@@ -10,7 +10,7 @@ public class SourcePassOver extends ParallelCommandGroup {
     public SourcePassOver(ArmSubsystem arm, WristSubsystem wrist, ShooterSubsystem shoot) {
         super(
                 new MoveArmToPosition(() -> 0, 2, arm),
-                new MoveWristToPosition(() -> 140, 2, wrist),
+                new MoveWristToPosition(() -> 135, 2, wrist),
                 new SetShooterSpeed(() -> 3200.0, 120, shoot),
                 new RunCommand(() -> {
                 }));

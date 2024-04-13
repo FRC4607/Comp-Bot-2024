@@ -35,10 +35,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableEvent.Kind;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StructArrayLogEntry;
 import edu.wpi.first.util.datalog.StructLogEntry;
@@ -89,16 +92,35 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private final TalonFXStandardSignalLogger[] m_logs = new TalonFXStandardSignalLogger[8];
 
     private final int m_kickerSubscriber;
-    private final StructLogEntry<Pose2d> m_kickerLog = StructLogEntry.create(DataLogManager.getLog(), "kickerll",
+    private final StructLogEntry<Pose2d> m_kickerLog = StructLogEntry.create(DataLogManager.getLog(), "kickerll/mt1",
             Pose2d.struct);
     private final int m_flywheelSubscriber;
     private final StructLogEntry<Pose2d> m_flywheelLog = StructLogEntry.create(DataLogManager.getLog(),
-            "flywheelll",
+            "flywheelll/mt1",
             Pose2d.struct);
     private final int m_frontSubscriber;
     private final StructLogEntry<Pose2d> m_frontLog = StructLogEntry.create(DataLogManager.getLog(),
-            "frontll",
+            "frontll/mt1",
             Pose2d.struct);
+
+    private final int m_kickerSubscriberMT2;
+    private final StructLogEntry<Pose2d> m_kickerLogMT2 = StructLogEntry.create(DataLogManager.getLog(), "kickerll/mt2",
+            Pose2d.struct);
+    private final int m_flywheelSubscriberMT2;
+    private final StructLogEntry<Pose2d> m_flywheelLogMT2 = StructLogEntry.create(DataLogManager.getLog(),
+            "flywheelll/mt2",
+            Pose2d.struct);
+    private final int m_frontSubscriberMT2;
+    private final StructLogEntry<Pose2d> m_frontLogMT2 = StructLogEntry.create(DataLogManager.getLog(),
+            "frontll/mt2",
+            Pose2d.struct);
+
+    private final DoubleArrayPublisher m_kickerPusher = NetworkTableInstance.getDefault().getTable("limelight-kick")
+            .getDoubleArrayTopic("robot_orientation_set").publish(PubSubOption.periodic(0.020));
+    private final DoubleArrayPublisher m_fwPusher = NetworkTableInstance.getDefault().getTable("limelight-fw")
+            .getDoubleArrayTopic("robot_orientation_set").publish(PubSubOption.periodic(0.020));
+    private final DoubleArrayPublisher m_frontPusher = NetworkTableInstance.getDefault().getTable("limelight-front")
+            .getDoubleArrayTopic("robot_orientation_set").publish(PubSubOption.periodic(0.020));
 
     private ShotInfoWithDirection m_shotInfo;
     private final InterpolatingTreeMapShooter m_map = InterpolatingTreeMapShooter.getShotMap();
@@ -209,6 +231,38 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     this.handleLLUpdate(pose, result[9], result[7], result[6]);
                     m_frontLog.append(pose);
                 });
+
+        m_kickerSubscriberMT2 = NetworkTableInstance.getDefault().getTable("limelight-kick").addListener(
+                "botpose_orb_wpiblue",
+                EnumSet.of(Kind.kValueRemote),
+                (NetworkTable table, String topic, NetworkTableEvent event) -> {
+                    double[] result = event.valueData.value.getDoubleArray();
+                    Pose2d pose = new Pose2d(result[0], result[1],
+                            Rotation2d.fromDegrees(result[5]));
+                    this.handleLLUpdateMT2(pose, result[9], result[7], result[6]);
+                    m_kickerLogMT2.append(pose);
+                });
+        m_flywheelSubscriberMT2 = NetworkTableInstance.getDefault().getTable("limelight-fw").addListener(
+                "botpose_orb_wpiblue",
+                EnumSet.of(Kind.kValueRemote),
+                (NetworkTable table, String topic, NetworkTableEvent event) -> {
+                    double[] result = event.valueData.value.getDoubleArray();
+                    Pose2d pose = new Pose2d(result[0], result[1],
+                            Rotation2d.fromDegrees(result[5]));
+                    this.handleLLUpdateMT2(pose, result[9], result[7], result[6]);
+                    m_flywheelLogMT2.append(pose);
+                });
+        m_frontSubscriberMT2 = NetworkTableInstance.getDefault().getTable("limelight-front").addListener(
+                "botpose_orb_wpiblue",
+                EnumSet.of(Kind.kValueRemote),
+                (NetworkTable table, String topic, NetworkTableEvent event) -> {
+                    double[] result = event.valueData.value.getDoubleArray();
+                    Pose2d pose = new Pose2d(result[0], result[1],
+                            Rotation2d.fromDegrees(result[5]));
+                    this.handleLLUpdateMT2(pose, result[9], result[7], result[6]);
+                    m_frontLogMT2.append(pose);
+                });
+
         m_armAngle = armAngle;
         m_wristAngle = wristAngle;
     }
@@ -216,50 +270,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private CommandSwerveDrivetrain(DoubleSupplier armAngle, DoubleSupplier wristAngle,
             SwerveDrivetrainConstants driveTrainConstants,
             SwerveModuleConstants... modules) {
-        super(driveTrainConstants, modules);
-        if (Utils.isSimulation()) {
-            startSimThread();
-        }
-        this.registerTelemetry(this::telemetry);
-        for (int i = 0; i < 4; i++) {
-            m_logs[i * 2] = new TalonFXStandardSignalLogger(this.Modules[i].getSteerMotor(),
-                    PREFIXES[i * 2], true);
-            m_logs[i * 2 + 1] = new TalonFXStandardSignalLogger(this.Modules[i].getDriveMotor(),
-                    PREFIXES[i * 2 + 1],
-                    true);
-        }
-        m_kickerSubscriber = NetworkTableInstance.getDefault().getTable("limelight-kick").addListener(
-                "botpose_wpiblue",
-                EnumSet.of(Kind.kValueRemote),
-                (NetworkTable table, String topic, NetworkTableEvent event) -> {
-                    double[] result = event.valueData.value.getDoubleArray();
-                    Pose2d pose = new Pose2d(result[0], result[1],
-                            Rotation2d.fromDegrees(result[5]));
-                    this.handleLLUpdate(pose, result[9], result[7], result[6]);
-                    m_kickerLog.append(pose);
-                });
-        m_flywheelSubscriber = NetworkTableInstance.getDefault().getTable("limelight-fw").addListener(
-                "botpose_wpiblue",
-                EnumSet.of(Kind.kValueRemote),
-                (NetworkTable table, String topic, NetworkTableEvent event) -> {
-                    double[] result = event.valueData.value.getDoubleArray();
-                    Pose2d pose = new Pose2d(result[0], result[1],
-                            Rotation2d.fromDegrees(result[5]));
-                    this.handleLLUpdate(pose, result[9], result[7], result[6]);
-                    m_flywheelLog.append(pose);
-                });
-        m_frontSubscriber = NetworkTableInstance.getDefault().getTable("limelight-front").addListener(
-                "botpose_wpiblue",
-                EnumSet.of(Kind.kValueRemote),
-                (NetworkTable table, String topic, NetworkTableEvent event) -> {
-                    double[] result = event.valueData.value.getDoubleArray();
-                    Pose2d pose = new Pose2d(result[0], result[1],
-                            Rotation2d.fromDegrees(result[5]));
-                    this.handleLLUpdate(pose, result[9], result[7], result[6]);
-                    m_frontLog.append(pose);
-                });
-        m_armAngle = armAngle;
-        m_wristAngle = wristAngle;
+        this(armAngle, wristAngle, driveTrainConstants, 250, modules);
     }
 
     /**
@@ -331,6 +342,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      *              object given by the odometry thread.
      */
     private void telemetry(SwerveDriveState state) {
+        double data[] = new double[] { state.Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0 };
+        m_kickerPusher.set(data);
+        m_fwPusher.set(data);
+        m_frontPusher.set(data);
         m_logFailDAQ.append(state.FailedDaqs);
         m_logCurrentState.append(state.ModuleStates);
         m_logTargetState.append(state.ModuleTargets);
@@ -341,19 +356,26 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     private void handleLLUpdate(Pose2d pose, double distance, double tags, double latency) {
         // Make sure we are using good data.
-        Pose2d rel = pose.relativeTo(this.m_cachedState.Pose);
         if (tags > 0 && (DriverStation.isDisabled()
-                || ((tags > 1 || distance < 5) && (rel.getTranslation().getNorm() < 1 || (tags > 1 && distance < 3))
-                        && Math.abs(rel.getRotation().getDegrees()) < 5))) {
-            // First, we compute estimated standard deviations for the X and Y measurements.
-            // The approach is borrowed from 6328, see here for more info:
-            // https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2023-build-thread/420691/292.
-            double stdDevXY = (0.7 + 0.05 * Math.pow(distance, 2)) / Math.pow(tags, 2);
-            double stdDevTheta = DriverStation.isDisabled() || tags > 1 ? Math.PI * 2 : 999999999;
+                || (tags > 1 && distance < 3))) {
             // Add the vision measurement. The standard deviation for the rotation is very
             // high as general advice is to not trust it.
             this.addVisionMeasurement(pose, Timer.getFPGATimestamp() - (latency / 1000.0),
-                    VecBuilder.fill(stdDevXY, stdDevXY, stdDevTheta));
+                    VecBuilder.fill(999999999, 999999999, Math.PI * 2));
+        }
+    }
+
+    private void handleLLUpdateMT2(Pose2d pose, double distance, double tags, double latency) {
+        // Make sure we are using good data.
+        if (tags > 0 && !DriverStation.isDisabled()) {
+            // First, we compute estimated standard deviations for the X and Y measurements.
+            // The approach is borrowed from 6328, see here for more info:
+            // https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2023-build-thread/420691/292.
+            double stdDevXY = (0.7 + 0.07 * Math.pow(distance, 2)) / Math.pow(tags, 2);
+            // Add the vision measurement. The standard deviation for the rotation is very
+            // high as general advice is to not trust it.
+            this.addVisionMeasurement(pose, Timer.getFPGATimestamp() - (latency / 1000.0),
+                    VecBuilder.fill(stdDevXY, stdDevXY, 999999999));
         }
     }
 

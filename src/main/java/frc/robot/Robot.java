@@ -25,13 +25,6 @@ public class Robot extends TimedRobot {
 
     private RobotContainer m_robotContainer;
 
-    private double[] m_currents = {};
-    private PowerDistribution m_pd;
-    private DoubleArrayLogEntry m_currentsLog = new DoubleArrayLogEntry(DataLogManager.getLog(), "/pdh/currents");
-    private DoubleLogEntry m_energyLog = new DoubleLogEntry(DataLogManager.getLog(), "/pdh/energy");
-    private DoubleLogEntry m_voltageLog = new DoubleLogEntry(DataLogManager.getLog(), "/pdh/voltage");
-    private DoubleLogEntry m_tempLog = new DoubleLogEntry(DataLogManager.getLog(), "/pdh/temp");
-
     /**
      * Adds signals to be refreshed before every loop. The signals provided should
      * be on the CANivore's CAN bus.
@@ -48,12 +41,10 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         // SignalLogger.setPath("/media/sda1/");
+        m_robotContainer = new RobotContainer();
         RobotController.setBrownoutVoltage(6.3);
         SignalLogger.start();
-        m_pd = new PowerDistribution();
-        m_pd.resetTotalEnergy();
-        m_currents = new double[m_pd.getNumChannels()];
-        m_robotContainer = new RobotContainer();
+        DataLogManager.start("", "", 0.2);
     }
 
     @Override

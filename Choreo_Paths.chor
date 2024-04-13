@@ -72687,6 +72687,15 @@
                     "translationConstrained": true,
                     "headingConstrained": true,
                     "controlIntervalCount": 40
+                },
+                {
+                    "x": 4.77562952041626,
+                    "y": 6.082154273986816,
+                    "heading": 0,
+                    "isInitialGuess": false,
+                    "translationConstrained": true,
+                    "headingConstrained": true,
+                    "controlIntervalCount": 40
                 }
             ],
             "trajectory": [
@@ -74008,7 +74017,7 @@
                                 {
                                     "type": "named",
                                     "data": {
-                                        "name": "SetShooterSpeed 1000"
+                                        "name": "SetShooterSpeed 1500"
                                     }
                                 },
                                 {
@@ -74060,7 +74069,7 @@
                     }
                 }
             ],
-            "isTrajectoryStale": false
+            "isTrajectoryStale": true
         }
     },
     "splitTrajectoriesAtStopPoints": true,

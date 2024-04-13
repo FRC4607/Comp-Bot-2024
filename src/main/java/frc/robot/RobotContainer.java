@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.CenterNote;
@@ -113,8 +114,7 @@ public class RobotContainer {
         joystick.y().onTrue(new InstantCommand(drivetrain::seedFieldRelative, drivetrain));
         joystick.x().onTrue(new InstantCommand(LEDSubsystem::setIntake).andThen(new RunIntakeSync(() -> {
             return 1;
-        }, m_intake, m_kicker, m_leds).andThen(new InstantCommand(LEDSubsystem::setNeutral)
-                .andThen(new CenterNote(m_kicker, m_intake)))).withTimeout(4));
+        }, m_intake, m_kicker, m_leds).andThen(new InstantCommand(LEDSubsystem::setNeutral))).withTimeout(4));
         joystick.povLeft().onTrue(new ParallelCommandGroup(new MoveArmToPosition(() -> 90.0, 7.5, m_arm),
                 new MoveWristToPosition(() -> 40.0, 7.5, m_wrist),
                 new InstantCommand(LEDSubsystem::setAmp)));
@@ -127,6 +127,7 @@ public class RobotContainer {
                 new InstantCommand(LEDSubsystem::setAmp)));
 
         joystick.povDown().onTrue(new ParallelCommandGroup(
+                new InstantCommand( LEDSubsystem::setShootReady),
                 new MoveArmToPosition(() -> 0.0, 7.5, m_arm).andThen(new InstantCommand(() -> {
                     m_arm.setNeutral();
                 }, m_arm)),
@@ -172,6 +173,7 @@ public class RobotContainer {
                 })))
                 .onFalse(new ParallelDeadlineGroup(
                         new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0),
+                        new InstantCommand( LEDSubsystem::setNeutral),
                         drivetrain.applyRequest(() -> autoPoint
                                 .withTargetDirection(
                                         drivetrain.getShotInfo().getRobot()
@@ -233,6 +235,7 @@ public class RobotContainer {
                         .andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter)));
 
         operatorJoystick.povDown().onTrue(new Climb(0, m_climber));
+        operatorJoystick.povRight().onTrue(new Climb(38.25, m_climber));
         operatorJoystick.povUp().onTrue(new Climb(85, m_climber));
         operatorJoystick.povLeft().onTrue(new SourcePickup(m_arm, m_wrist));
         operatorJoystick.a().onTrue(new SetShooterSpeed(() -> -3000, 120, m_shooter))
@@ -270,7 +273,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("Wrist Angle Setter", 0.0);
         SmartDashboard.putNumber("SOM", Calibrations.DrivetrainCalibrations.kShootOnMoveConstant);
         SmartDashboard.putNumber("SOM Bump", 0.0);
-        SmartDashboard.putNumber("Robot Heading Offset", -8.0);
+        SmartDashboard.putNumber("Robot Heading Offset", -4.0);
         SmartDashboard.putData("Run Wheel Radius Test", new WheelRadiusCharacterization(drivetrain));
 
         // SmartDashboard.putData("Turn QF",
@@ -304,7 +307,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("SetShooterSpeed 4000", new SetShooterSpeed(() -> 4000, 60, m_shooter));
         NamedCommands.registerCommand("SetShooterSpeed SW Center",
                 new SetShooterSpeed(() -> 2600, 60, m_shooter));
-        NamedCommands.registerCommand("SetShooterSpeed 1000", new SetShooterSpeed(() -> 1000, 120, m_shooter));
+        NamedCommands.registerCommand("SetShooterSpeed 1500", new SetShooterSpeed(() -> 1500, 120, m_shooter));
         NamedCommands.registerCommand("SetShooterSpeed 0", new SetShooterSpeed(() -> 0, 120, m_shooter));
         NamedCommands.registerCommand("SetArmPosition 36", new MoveArmToPosition(() -> 36, 3, m_arm));
         NamedCommands.registerCommand("SetWristPosition 45",

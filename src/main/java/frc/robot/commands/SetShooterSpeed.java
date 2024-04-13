@@ -7,6 +7,7 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 /**
@@ -34,6 +35,13 @@ public class SetShooterSpeed extends Command {
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(m_subsystem);
     }
+
+    @Override
+    public void initialize() {
+        
+    }
+
+    
 
     // Called when the command is initially scheduled.
     @Override

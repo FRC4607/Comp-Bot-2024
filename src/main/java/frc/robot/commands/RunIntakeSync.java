@@ -18,12 +18,12 @@ public class RunIntakeSync extends Command {
     private final IntakeSubsystem m_intake;
     private final KickerSubsystem m_kicker;
     private final DoubleSupplier m_power;
-    private boolean m_hadNote;
-    private int i;
 
     private static final double MAX_SURFACE_SPEED = 3000.0;
 
     private final boolean m_ignoreBeam;
+
+    private boolean m_finished;
 
     /**
      * Creates a new RunIntakeSync.
@@ -64,15 +64,25 @@ public class RunIntakeSync extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_hadNote = false;
+        m_finished = false;
+        m_intake.runOnBroken(() -> {
+            System.out.println("broken callback");
+            m_intake.runOnRestore(() -> {
+                System.out.println("unbroken callback");
+                m_finished = true;
+                end(false);
+            });
+        });
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double surfaceSpeed = m_power.getAsDouble() * MAX_SURFACE_SPEED;
-        m_intake.setIntakeSetpoint(surfaceSpeed);
-        m_kicker.setKickerSetpointVelocity(surfaceSpeed);
+        if (!m_finished) {
+            double surfaceSpeed = m_power.getAsDouble() * MAX_SURFACE_SPEED;
+            m_intake.setIntakeSetpoint(surfaceSpeed);
+            m_kicker.setKickerSetpointVelocity(surfaceSpeed);
+        }
     }
 
     // Called once the command ends or is interrupted.
@@ -85,24 +95,6 @@ public class RunIntakeSync extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (m_ignoreBeam) {
-            return true;
-        } else {
-            // If we have a note, reset the counter.
-            if (m_intake.hasNote()) {
-                m_hadNote = true;
-                i = 0;
-            } else if (m_hadNote) {
-                // Wait 1 cycles before exiting for debouncing and delay.
-                if (!m_intake.hasNote()) {
-                    i++;
-                }
-
-                if (i >= 1) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        return m_finished || m_ignoreBeam;
     }
 }

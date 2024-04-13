@@ -11,6 +11,8 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,6 +36,14 @@ public class IntakeSubsystem extends SubsystemBase {
     private final DigitalInput m_input;
 
     private double m_intakePowerCoefficient;
+
+    // DANGER ZONE: these variables are used in a separate thread
+    private Runnable m_onBeamBrokenCallback;
+    private Runnable m_onBeamRestoredCallback;
+
+    private final Debouncer m_debounce = new Debouncer(Calibrations.IntakeCalibrations.kBeamBreakDebounce, DebounceType.kBoth);
+    private boolean m_oldState;
+    // end
 
     /** Creates a new IntakeSubsystem. */
     public IntakeSubsystem() {
@@ -71,6 +81,8 @@ public class IntakeSubsystem extends SubsystemBase {
         m_input = new DigitalInput(9);
 
         m_intakePowerCoefficient = 1.0;
+
+        m_oldState = m_input.get();
     }
 
     /**
@@ -133,7 +145,31 @@ public class IntakeSubsystem extends SubsystemBase {
     // return m_agitatorEncoder.getVelocity();
     // }
 
-    public void periodic() {
-        SmartDashboard.putBoolean("Beam Break", m_input.get());
+    public void runOnBroken(Runnable callback) {
+        m_onBeamBrokenCallback = callback;
+    }
+
+    public void runOnRestore (Runnable callback) {
+        m_onBeamRestoredCallback = callback;
+    }
+
+    // DANGER: called from separate thread
+    public void pollBeamBreak() {
+        boolean state = m_debounce.calculate(m_input.get());
+        if (state != m_oldState) {
+            SmartDashboard.putBoolean("Beam Break", state);
+            m_oldState = state;
+        }
+        if (m_input.get()) {
+            if (m_onBeamRestoredCallback != null) {
+                m_onBeamRestoredCallback.run();
+                m_onBeamRestoredCallback = null;
+            }
+        } else {
+            if (m_onBeamBrokenCallback != null) {
+                m_onBeamBrokenCallback.run();
+                m_onBeamBrokenCallback = null;
+            }
+        }
     }
 }

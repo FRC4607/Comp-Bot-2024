@@ -184,6 +184,7 @@ public final class Calibrations {
         public static final double kRollerD = 0;
         /** The maximum current the roller motor should output, in Amps. */
         public static final int kRollerMaxCurrent = 800;
+        public static final double kBeamBreakDebounce = 0.004;
     }
 
     /** Calibrations for the kicker. */

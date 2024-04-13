@@ -8,12 +8,15 @@ import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -24,6 +27,8 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
+
+    private Notifier m_beamLoop;
 
     /**
      * Adds signals to be refreshed before every loop. The signals provided should
@@ -42,21 +47,29 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // SignalLogger.setPath("/media/sda1/");
         m_robotContainer = new RobotContainer();
+        m_beamLoop = new Notifier(m_robotContainer::pollBeamBreak);
+        m_beamLoop.startPeriodic(0.002);
         RobotController.setBrownoutVoltage(6.3);
         SignalLogger.start();
-        DataLogManager.start("", "", 0.2);
     }
 
     @Override
     public void robotPeriodic() {
         // for (int i = 0; i < m_currents.length; i++) {
-        //     m_currents[i] = m_pd.getCurrent(i);
+        // m_currents[i] = m_pd.getCurrent(i);
         // }
         // m_currentsLog.append(m_currents);
         // m_energyLog.append(m_pd.getTotalEnergy());
         // m_voltageLog.append(m_pd.getVoltage());
         // m_tempLog.append(m_pd.getTemperature());
         // Refresh every signal before running loop
+        if (!(Math.abs(m_robotContainer.m_headingOffset.getDegrees() - SmartDashboard.getNumber(
+                "Robot Heading Offset",
+                0.0)) < 0.05)) {
+            m_robotContainer.m_headingOffset = Rotation2d.fromDegrees(SmartDashboard.getNumber(
+                    "Robot Heading Offset",
+                    0.0));
+        }
         BaseStatusSignal.refreshAll(m_signalsToRefreshCaniv);
         CommandScheduler.getInstance().run();
     }
@@ -68,12 +81,16 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
-        if (Math.abs(m_robotContainer.getArmPosition()) > 5){
-            LEDSubsystem.setError();
-        }else{
+        double wristPos = m_robotContainer.getWristPosition();
+        double armPos = m_robotContainer.getArmPosition();
+        if (m_robotContainer.get_PositionLock(armPos, 0, 5) && // Arm on Hardstop
+                (m_robotContainer.get_PositionLock(wristPos, 90, 5) || // Wrist at Start up Position
+                        m_robotContainer.get_PositionLock(wristPos, 167, 1.5))) { // Wrist On Gear
             LEDSubsystem.setDisabled();
+        } else {
+            LEDSubsystem.setError();
         }
-        
+
     }
 
     @Override

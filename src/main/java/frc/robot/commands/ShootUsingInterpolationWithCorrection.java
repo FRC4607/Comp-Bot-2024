@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Calibrations;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -57,8 +59,7 @@ public class ShootUsingInterpolationWithCorrection extends SequentialCommandGrou
                                                 .plus(HALF_ROTATION)
                                                 .minus(drive
                                                         .getSwerveOffset())
-                                                .plus(Rotation2d.fromDegrees(
-                                                        SmartDashboard.getNumber("Robot Heading Offset", 0.0))))
+                                                .plus(RobotContainer.m_headingOffset))
                                 .withCenterOfRotation(drive.getRotationPoint())
                                 .withVelocityX(0)
                                 .withVelocityY(0)

@@ -14,6 +14,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -84,6 +86,12 @@ public class RobotContainer {
     private final ClimberSubsystem m_climber = new ClimberSubsystem();
     private final SendableChooser<Command> m_autoChooser;
 
+    public static Rotation2d m_headingOffset = new Rotation2d();
+
+    // DANGER: used in separate thread
+    private final BooleanLogEntry m_noteLoopClockLog = new BooleanLogEntry(DataLogManager.getLog(), "noteLoopClock");
+    private boolean m_noteLoopClock = false;
+
     private void configureBindings() {
         m_kicker.setDefaultCommand(new RunIntakeSync(() -> {
             return joystick.getRightTriggerAxis() - joystick.getLeftTriggerAxis();
@@ -127,7 +135,7 @@ public class RobotContainer {
                 new InstantCommand(LEDSubsystem::setAmp)));
 
         joystick.povDown().onTrue(new ParallelCommandGroup(
-                new InstantCommand( LEDSubsystem::setShootReady),
+                new InstantCommand(LEDSubsystem::setShootReady),
                 new MoveArmToPosition(() -> 0.0, 7.5, m_arm).andThen(new InstantCommand(() -> {
                     m_arm.setNeutral();
                 }, m_arm)),
@@ -160,10 +168,7 @@ public class RobotContainer {
                                                 .plus(HALF_ROTATION)
                                                 .minus(drivetrain
                                                         .getSwerveOffset())
-                                                .plus(Rotation2d.fromDegrees(
-                                                        SmartDashboard.getNumber(
-                                                                "Robot Heading Offset",
-                                                                0.0))))
+                                                .plus(m_headingOffset))
                                 .withCenterOfRotation(drivetrain.getRotationPoint())
                                 .withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
                                 .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)
@@ -173,17 +178,14 @@ public class RobotContainer {
                 })))
                 .onFalse(new ParallelDeadlineGroup(
                         new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0),
-                        new InstantCommand( LEDSubsystem::setNeutral),
+                        new InstantCommand(LEDSubsystem::setNeutral),
                         drivetrain.applyRequest(() -> autoPoint
                                 .withTargetDirection(
                                         drivetrain.getShotInfo().getRobot()
                                                 .plus(HALF_ROTATION)
                                                 .minus(drivetrain
                                                         .getSwerveOffset())
-                                                .plus(Rotation2d.fromDegrees(
-                                                        SmartDashboard.getNumber(
-                                                                "Robot Heading Offset",
-                                                                0.0))))
+                                                .plus(m_headingOffset))
                                 .withCenterOfRotation(drivetrain.getRotationPoint())
                                 .withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
                                 .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)
@@ -223,10 +225,7 @@ public class RobotContainer {
                                         .plus(HALF_ROTATION)
                                         .minus(drivetrain
                                                 .getSwerveOffset())
-                                        .plus(Rotation2d.fromDegrees(
-                                                SmartDashboard.getNumber(
-                                                        "Robot Heading Offset",
-                                                        0.0))))
+                                        .plus(m_headingOffset))
                         .withCenterOfRotation(drivetrain.getRotationPoint())
                         .withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)
@@ -359,7 +358,36 @@ public class RobotContainer {
         return m_wrist.getWristPosition();
     }
 
+   /*  public boolean getWristInWindow(double target){
+        double currentPos = Math.abs(getWristPosition());
+        if(currentPos > )
+    } */
+
     public double getArmPosition() {
         return m_arm.armPosition();
+    }
+
+    public void pollBeamBreak() {
+        m_noteLoopClockLog.append(m_noteLoopClock);
+        m_noteLoopClock = !m_noteLoopClock;
+        if (m_intake != null) {
+            m_intake.pollBeamBreak();
+        }
+    }
+
+    /**
+     * returns if the current position is with in the tollerence window
+     * @param current
+     * @param setpoint
+     * @param tollerence
+     * @return
+     */
+    public boolean get_PositionLock(double current, double setpoint, double tollerence){
+        double error = current - setpoint;
+        if(Math.abs(error)<=tollerence){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

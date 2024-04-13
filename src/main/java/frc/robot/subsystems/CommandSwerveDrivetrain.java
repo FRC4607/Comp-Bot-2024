@@ -29,11 +29,13 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoubleArrayTopic;
@@ -184,6 +186,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     }
                 }
             }, null, this, "swerve-drive"));
+
+    private double[] m_llArray = new double[] {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    private static final Vector<N3> MT1_STDDEV = VecBuilder.fill(999999999, 999999999, Math.PI * 2);
 
     private CommandSwerveDrivetrain(DoubleSupplier armAngle, DoubleSupplier wristAngle,
             SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency,
@@ -342,10 +347,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
      *              object given by the odometry thread.
      */
     private void telemetry(SwerveDriveState state) {
-        double data[] = new double[] { state.Pose.getRotation().getDegrees(), 0, 0, 0, 0, 0 };
-        m_kickerPusher.set(data);
-        m_fwPusher.set(data);
-        m_frontPusher.set(data);
+        m_llArray[0] = state.Pose.getRotation().getDegrees();
+        m_kickerPusher.set(m_llArray);
+        m_fwPusher.set(m_llArray);
+        m_frontPusher.set(m_llArray);
         m_logFailDAQ.append(state.FailedDaqs);
         m_logCurrentState.append(state.ModuleStates);
         m_logTargetState.append(state.ModuleTargets);
@@ -360,8 +365,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 || (tags > 1 && distance < 3))) {
             // Add the vision measurement. The standard deviation for the rotation is very
             // high as general advice is to not trust it.
-            this.addVisionMeasurement(pose, Timer.getFPGATimestamp() - (latency / 1000.0),
-                    VecBuilder.fill(999999999, 999999999, Math.PI * 2));
+            this.addVisionMeasurement(pose, Timer.getFPGATimestamp() - (latency / 1000.0), MT1_STDDEV);
         }
     }
 
@@ -402,6 +406,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         for (TalonFXStandardSignalLogger log : m_logs) {
             log.log();
         }
+
+        // Set up stack varables to avoid potential GC issues
+        double x = 0.0;
+        double y = 0.0;
+        double t = 0.0;
 
         // Parts of this shoot on the move code be plundered from 7028
         // https://github.com/STMARobotics/frc-7028-2024/blob/d9b8a288764409806fc8b7e71752e7c628bdd833/src/main/java/frc/robot/commands/ScoreSpeakerTeleopCommand.java

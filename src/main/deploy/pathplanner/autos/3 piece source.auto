@@ -2,17 +2,17 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.4157967865467071,
-      "y": 2.043256998062134
+      "x": 1.4599748849868774,
+      "y": 1.5698846340179444
     },
-    "rotation": 6.688452482818806e-20
+    "rotation": -90.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -39,11 +39,11 @@
         {
           "type": "named",
           "data": {
-            "name": "Smart Shoot"
+            "name": "Smart Shoot With Turning"
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -53,16 +53,60 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "Retract"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Retract"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RunIntake 1"
+                      }
+                    },
+                    {
+                      "type": "parallel",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Prepare Smart Shot"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Prepare Smart Shot Wrist"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
                 }
               }
             ]
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
+          "data": {
+            "name": "Smart Shoot With Turning"
+          }
+        },
+        {
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -72,65 +116,47 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "Prepare Smart Shot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Prepare Smart Shot Wrist"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Smart Shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "3 piece source.4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Retract"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "3 piece source.5"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Prepare Smart Shot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Prepare Smart Shot Wrist"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Retract"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.75
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "RunIntake 1"
+                      }
+                    },
+                    {
+                      "type": "parallel",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Prepare Smart Shot"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Prepare Smart Shot Wrist"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -139,13 +165,19 @@
         {
           "type": "named",
           "data": {
-            "name": "Smart Shoot"
+            "name": "Smart Shoot With Turning"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "SetShooterSpeed 0"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract"
           }
         }
       ]

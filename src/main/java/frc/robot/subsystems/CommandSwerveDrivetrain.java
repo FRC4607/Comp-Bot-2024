@@ -427,7 +427,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 : Constants.DrivetrainConstants.kBlueAllianceSpeakerPosition;
         double dist1 = speakerPos.getDistance(compensatedRobotPose.getTranslation());
         SmartDashboard.putNumber("Robot Distance", dist1);
-        ShotInfo step1 = m_map.get(Math.min(5.94, Math.max(1.369, dist1)));
+        ShotInfo step1 = m_map.get(Math.min(5.94, Math.max(1.372, dist1)));
         ChassisSpeeds fr = ChassisSpeeds.fromRobotRelativeSpeeds(this.m_cachedState.speeds,
                 compensatedRobotPose.getRotation());
 
@@ -442,7 +442,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         Translation2d offsetSpeaker = speakerPos.minus(movementOffset);
         double dist2 = offsetSpeaker.getDistance(compensatedRobotPose.getTranslation());
         ShotInfo step2 = m_map
-                .get(Math.min(5.94, Math.max(1.369, offsetSpeaker.getDistance(compensatedRobotPose.getTranslation()))));
+                .get(Math.min(5.94, Math.max(1.372, offsetSpeaker.getDistance(compensatedRobotPose.getTranslation()))));
 
         // Find third position, hopefully reduicing error
         scoreTime = SmartDashboard.getNumber("SOM", Calibrations.DrivetrainCalibrations.kShootOnMoveConstant)
@@ -454,7 +454,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 fr.vyMetersPerSecond * scoreTime);
         offsetSpeaker = speakerPos.minus(movementOffset);
         ShotInfoWithDirection temp = m_map
-                .get(Math.min(5.94, Math.max(1.369, offsetSpeaker.getDistance(compensatedRobotPose.getTranslation()))))
+                .get(Math.min(5.94, Math.max(1.372, offsetSpeaker.getDistance(compensatedRobotPose.getTranslation()))))
                 .withDirection(
                         offsetSpeaker.minus(compensatedRobotPose.getTranslation()).getAngle());
         m_shotInfo = new ShotInfoWithDirection(temp.getSpeed(),

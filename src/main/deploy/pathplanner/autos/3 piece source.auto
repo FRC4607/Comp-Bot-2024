@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4599748849868774,
-      "y": 1.5698846340179444
+      "x": 1.377410507202161,
+      "y": 2.4272971153259277
     },
-    "rotation": -90.0
+    "rotation": 7.425646776092742e-21
   },
   "command": {
     "type": "sequential",
@@ -106,7 +106,7 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
@@ -138,46 +138,21 @@
                       }
                     },
                     {
-                      "type": "parallel",
+                      "type": "named",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Prepare Smart Shot"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "Prepare Smart Shot Wrist"
-                            }
-                          }
-                        ]
+                        "name": "Retract"
                       }
                     }
                   ]
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SetShooterSpeed 0"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Smart Shoot With Turning"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SetShooterSpeed 0"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Retract"
           }
         }
       ]

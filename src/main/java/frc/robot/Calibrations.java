@@ -89,13 +89,13 @@ public final class Calibrations {
          * The P value of the PID controller that PathPlanner uses to correct for
          * translation error.
          */
-        public static final double kPPathPlannerTranslation = 20.0;
+        public static final double kPPathPlannerTranslation = 10.0;
 
         /**
          * The P value of the PID controller that PathPlanner uses to correct for
          * heading error.
          */
-        public static final double kPPathPlannerRotation = 20.0;
+        public static final double kPPathPlannerRotation = 10.0;
     }
 
     /**

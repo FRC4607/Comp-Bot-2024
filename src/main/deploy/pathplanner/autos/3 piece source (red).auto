@@ -5,7 +5,7 @@
       "x": 1.377410507202161,
       "y": 2.4272971153259277
     },
-    "rotation": 7.425646776092742e-21
+    "rotation": 1.452203132248093e-20
   },
   "command": {
     "type": "sequential",
@@ -106,7 +106,7 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -128,7 +128,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.75
+                        "waitTime": 1
                       }
                     },
                     {
@@ -138,12 +138,44 @@
                       }
                     },
                     {
-                      "type": "named",
+                      "type": "parallel",
                       "data": {
-                        "name": "Retract"
+                        "commands": [
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Prepare Smart Shot"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "Prepare Smart Shot Wrist"
+                            }
+                          }
+                        ]
                       }
                     }
                   ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Smart Shoot With Turning"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract"
                 }
               },
               {

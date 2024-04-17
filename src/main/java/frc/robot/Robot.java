@@ -70,6 +70,13 @@ public class Robot extends TimedRobot {
                     "Robot Heading Offset",
                     0.0));
         }
+        if (!(Math.abs(m_robotContainer.autoPoint.HeadingController.getP() - SmartDashboard.getNumber(
+                "Teleop P Gain",
+                0.0)) < 0.05)) {
+            m_robotContainer.autoPoint.HeadingController.setP(SmartDashboard.getNumber(
+                "Teleop P Gain",
+                0.0));
+        }
         BaseStatusSignal.refreshAll(m_signalsToRefreshCaniv);
         CommandScheduler.getInstance().run();
     }

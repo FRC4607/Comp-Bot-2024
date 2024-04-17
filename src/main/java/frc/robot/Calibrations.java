@@ -65,7 +65,7 @@ public final class Calibrations {
          * The P value of the PID controler used to control the robot's heading when
          * tracking the speaker.
          */
-        public static final double kHeadingPIDP = 16.0;
+        public static final double kHeadingPIDP = 8.0;
 
         /**
          * The I value of the PID controler used to control the robot's heading when

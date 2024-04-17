@@ -70,7 +70,7 @@ public class ShootUsingInterpolationWithCorrection extends ParallelDeadlineGroup
                         .withDeadband(0.1 * MaxSpeed * 0.25)
                         .withRotationalDeadband(0.15 * MaxAngularRate * 0.25)));
         autoPoint.HeadingController.setPID(
-                10.0,
+                Calibrations.DrivetrainCalibrations.kHeadingPIDP,
                 Calibrations.DrivetrainCalibrations.kHeadingPIDI,
                 Calibrations.DrivetrainCalibrations.kHeadingPIDD);
         autoPoint.HeadingController.enableContinuousInput(-Math.PI, Math.PI);

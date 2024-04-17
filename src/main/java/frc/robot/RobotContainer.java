@@ -67,7 +67,12 @@ public class RobotContainer {
             .withSteerRequestType(SteerRequestType.MotionMagic)
             .withDeadband(0.1 * MaxSpeed)
             .withRotationalDeadband(0.1 * MaxAngularRate);
-    private final SwerveRequest.FieldCentricFacingAngle autoPoint = new SwerveRequest.FieldCentricFacingAngle()
+    public final SwerveRequest.FieldCentricFacingAngle autoPoint = new SwerveRequest.FieldCentricFacingAngle()
+            .withDriveRequestType(DriveRequestType.Velocity)
+            .withSteerRequestType(SteerRequestType.MotionMagic)
+            .withDeadband(0.1 * MaxSpeed)
+            .withRotationalDeadband(0.1 * MaxAngularRate);
+    public final SwerveRequest.FieldCentricFacingAngle autoPoint_pass = new SwerveRequest.FieldCentricFacingAngle()
             .withDriveRequestType(DriveRequestType.Velocity)
             .withSteerRequestType(SteerRequestType.MotionMagic)
             .withDeadband(0.1 * MaxSpeed)
@@ -217,7 +222,7 @@ public class RobotContainer {
                 .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0)
                         .andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter)));
         joystick.rightBumper().whileTrue(new ParallelCommandGroup(new SourcePassOver(m_arm, m_wrist, m_shooter),
-                drivetrain.applyRequest(() -> autoPoint
+                drivetrain.applyRequest(() -> autoPoint_pass
                         .withTargetDirection(
                                 (IsRed.isRed() ? Constants.DrivetrainConstants.kRedAllianceAmpCornerPosition
                                         : Constants.DrivetrainConstants.kBlueAllianceAmpCornerPosition)
@@ -274,6 +279,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("SOM Bump", 0.0);
         SmartDashboard.putNumber("Robot Heading Offset", -4.0);
         SmartDashboard.putData("Run Wheel Radius Test", new WheelRadiusCharacterization(drivetrain));
+        SmartDashboard.putNumber("Teleop P Gain", Calibrations.DrivetrainCalibrations.kHeadingPIDP);
 
         // SmartDashboard.putData("Turn QF",
         // drivetrain.getTurnQuasistaic(Direction.kForward));
@@ -299,6 +305,12 @@ public class RobotContainer {
                 Calibrations.DrivetrainCalibrations.kHeadingPIDD);
         autoPoint.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
         autoPoint.ForwardReference = ForwardReference.RedAlliance;
+        autoPoint_pass.HeadingController.setPID(
+                16.0,
+                Calibrations.DrivetrainCalibrations.kHeadingPIDI,
+                Calibrations.DrivetrainCalibrations.kHeadingPIDD);
+        autoPoint_pass.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
+        autoPoint_pass.ForwardReference = ForwardReference.RedAlliance;
         configureBindings();
         // Register all of the commands for autos, then set up auto builder and the auto
         // chooser.

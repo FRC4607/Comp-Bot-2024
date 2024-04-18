@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -140,7 +141,7 @@ public class RobotContainer {
                 new InstantCommand(LEDSubsystem::setAmp)));
 
         joystick.povDown().onTrue(new ParallelCommandGroup(
-                new InstantCommand(LEDSubsystem::setShootReady),
+                new InstantCommand(LEDSubsystem::setShootNotReady),
                 new MoveArmToPosition(() -> 0.0, 7.5, m_arm).andThen(new InstantCommand(() -> {
                     m_arm.setNeutral();
                 }, m_arm)),
@@ -153,7 +154,10 @@ public class RobotContainer {
                     return SmartDashboard.getNumber("Shooter RPM", 0.0) == 0.0
                             ? drivetrain.getShotInfo().getSpeed()
                             : SmartDashboard.getNumber("Shooter RPM", 0.0);
-                }, 120, m_shooter),
+                }, 120, m_shooter).andThen(new ParallelCommandGroup(new InstantCommand(LEDSubsystem::setShootReady),
+                        new InstantCommand(() -> {
+                            joystick.getHID().setRumble(RumbleType.kBothRumble, 1.0);
+                        }))),
                 drivetrain.applyRequest(() -> {
                     if (Math.abs(joystick.getRightX()) > 0.1) {
                         return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
@@ -184,6 +188,7 @@ public class RobotContainer {
                 .onFalse(new ParallelDeadlineGroup(
                         new RunKickerWheel(3000.0, m_kicker).withTimeout(1.0),
                         new InstantCommand(LEDSubsystem::setNeutral),
+                        new InstantCommand(() -> joystick.getHID().setRumble(RumbleType.kBothRumble, 0.0)),
                         drivetrain.applyRequest(() -> autoPoint
                                 .withTargetDirection(
                                         drivetrain.getShotInfo().getRobot()
@@ -370,10 +375,12 @@ public class RobotContainer {
         return m_wrist.getWristPosition();
     }
 
-   /*  public boolean getWristInWindow(double target){
-        double currentPos = Math.abs(getWristPosition());
-        if(currentPos > )
-    } */
+    /*
+     * public boolean getWristInWindow(double target){
+     * double currentPos = Math.abs(getWristPosition());
+     * if(currentPos > )
+     * }
+     */
 
     public double getArmPosition() {
         return m_arm.armPosition();
@@ -389,16 +396,17 @@ public class RobotContainer {
 
     /**
      * returns if the current position is with in the tollerence window
+     * 
      * @param current
      * @param setpoint
      * @param tollerence
      * @return
      */
-    public boolean get_PositionLock(double current, double setpoint, double tollerence){
+    public boolean get_PositionLock(double current, double setpoint, double tollerence) {
         double error = current - setpoint;
-        if(Math.abs(error)<=tollerence){
+        if (Math.abs(error) <= tollerence) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }

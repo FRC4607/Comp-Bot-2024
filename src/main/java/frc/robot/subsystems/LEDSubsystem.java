@@ -54,20 +54,15 @@ public class LEDSubsystem extends SubsystemBase {
     private final SingleFadeAnimation m_blueDisabled = new SingleFadeAnimation(0, 0, 255, 0, 0.3,
             Constants.LEDConstants.kRGBCount);
 
-    private final SingleFadeAnimation m_redshootReady = new SingleFadeAnimation(0, 255, 0, 0, 0.3,
-            Constants.LEDConstants.kRGBCount);
-    private final SingleFadeAnimation m_blueshootReady = new SingleFadeAnimation(0, 0, 255, 0, 0.3,
-            Constants.LEDConstants.kRGBCount);
-
     private final LarsonAnimation m_intake = new LarsonAnimation(165, 255, 0, 0, 0.25, Constants.LEDConstants.kRGBCount,
             LarsonAnimation.BounceMode.Back, 3);
 
     private final StrobeAnimation m_error = new StrobeAnimation(0, 255, 0, 0, 0.5,
             Constants.LEDConstants.kRGBCount);
 
-    private final TwinkleOffAnimation m_shootNotReady = new TwinkleOffAnimation(0, 255, 0, 0, 1,
+    private final TwinkleOffAnimation m_shootNotReady = new TwinkleOffAnimation(0, 255, 255, 0, 0.5,
             Constants.LEDConstants.kRGBCount, TwinkleOffAnimation.TwinkleOffPercent.Percent64);
-    private final StrobeAnimation m_shootReady = new StrobeAnimation(255, 0, 0, 0, 0.5, Constants.LEDConstants.kRGBCount);
+    private final StrobeAnimation m_shotReady = new StrobeAnimation(255, 0, 0, 0, 0.5, Constants.LEDConstants.kRGBCount);
 
     public LEDSubsystem() {
         CANdleConfiguration config = new CANdleConfiguration();
@@ -121,13 +116,7 @@ public class LEDSubsystem extends SubsystemBase {
                     m_candle.animate(m_shootNotReady);
                     break;
                 case SHOOT_READY:
-                    if (m_alliance == Alliance.Blue) {
-                        m_candle.animate(m_blueshootReady);
-                        //m_candle.animate(m_shootReady);
-                    } else if (m_alliance == Alliance.Red) {
-                        m_candle.animate(m_redshootReady);
-                        //m_candle.animate(m_shootReady);
-                    }
+                    m_candle.animate(m_shotReady);
                     break;
                 case AMP:
                     m_candle.animate(null);

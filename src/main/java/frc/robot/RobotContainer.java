@@ -282,7 +282,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("Wrist Angle Setter", 0.0);
         SmartDashboard.putNumber("SOM", Calibrations.DrivetrainCalibrations.kShootOnMoveConstant);
         SmartDashboard.putNumber("SOM Bump", 0.0);
-        SmartDashboard.putNumber("Robot Heading Offset", -4.0);
+        SmartDashboard.putNumber("Robot Heading Offset", -3.5);
         SmartDashboard.putData("Run Wheel Radius Test", new WheelRadiusCharacterization(drivetrain));
         SmartDashboard.putNumber("Teleop P Gain", Calibrations.DrivetrainCalibrations.kHeadingPIDP);
 

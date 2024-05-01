@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -50,12 +51,12 @@ public class ShootUsingInterpolationWithCorrection extends ParallelDeadlineGroup
                                 new WaitUntilCommand(() -> m_debounce.calculate(autoPoint.HeadingController.atSetpoint()))),
                         new ParallelCommandGroup(
                                 new MoveWristToPosition(() -> {
-                                    return drive.getShotInfo().getWrist();
+                                    return drive.getShotInfo().getWrist() + 1.25;
                                 }, 1.0, wrist),
                                 new SetShooterSpeed(() -> {
                                     return drive.getShotInfo().getSpeed();
                                 }, 60, flywheel)))
-                        .withTimeout(2.0),
+                        .withTimeout(1.0),
                         new RunKickerWheel(3000.0, kicker).withTimeout(0.5)),
                 drive.applyRequest(() -> autoPoint
                         .withTargetDirection(

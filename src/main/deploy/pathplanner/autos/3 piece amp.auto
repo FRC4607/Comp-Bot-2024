@@ -5,7 +5,7 @@
       "x": 1.357842230796814,
       "y": 7.338429927825928
     },
-    "rotation": 1.6013149143461233e-19
+    "rotation": -1.067127703097082e-26
   },
   "command": {
     "type": "sequential",
@@ -182,6 +182,12 @@
                 "type": "named",
                 "data": {
                   "name": "SetShooterSpeed 0"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "3 piece amp.4"
                 }
               }
             ]

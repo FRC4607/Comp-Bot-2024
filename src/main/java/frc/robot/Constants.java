@@ -148,6 +148,16 @@ public final class Constants {
          * Uses a blue alliance origin.
          */
         public static final Translation2d kRedAllianceAmpCornerPosition = new Translation2d(15.33, 5.95);
+        /**
+         * The pose of the blue alliance speaker to target, projected onto the floor.
+         * Uses a blue alliance origin.
+         */
+        public static final Translation2d kBlueAllianceAmpCornerPositionGround = new Translation2d(0, 7);
+        /**
+         * The pose of the red alliance speaker to target, projected onto the floor.
+         * Uses a blue alliance origin.
+         */
+        public static final Translation2d kRedAllianceAmpCornerPositionGround = new Translation2d(15.57, 7);
     }
 
     /** Constants for the shooter. */

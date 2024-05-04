@@ -36,7 +36,7 @@ public final class Calibrations {
         public static final double kSlipCurrentA = 77.1875;
 
         /** The effective radius of the wheel attached to each swerve module. */
-        public static final double kWheelRadiusInches = 1.9341865897899555; // 4/19/24
+        public static final double kWheelRadiusInches = 1.9344482829993357; // 4/19/24
 
         /**
          * The speed the robot would attain in meters per second if each of its drive

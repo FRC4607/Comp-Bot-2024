@@ -223,7 +223,7 @@ public class RobotContainer {
                 .onFalse(new ParallelCommandGroup(
                         new SetShooterSpeed(() -> 0.0, 120, m_shooter),
                         new Retract(m_wrist, m_arm)));
-        joystick.leftBumper().whileTrue(new ParallelCommandGroup(new SourcePass(m_arm, m_wrist, m_shooter), new InstantCommand(LEDSubsystem::setShootReady),
+        joystick.leftBumper().whileTrue(new ParallelCommandGroup(new SourcePass(m_arm, m_wrist, m_shooter), new InstantCommand(LEDSubsystem::setShootNotReady),
                 drivetrain.applyRequest(() -> autoPoint_pass
                         .withTargetDirection(
                                 (IsRed.isRed() ? Constants.DrivetrainConstants.kRedAllianceAmpCornerPositionGround

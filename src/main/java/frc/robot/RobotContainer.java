@@ -223,7 +223,7 @@ public class RobotContainer {
                 .onFalse(new ParallelCommandGroup(
                         new SetShooterSpeed(() -> 0.0, 120, m_shooter),
                         new Retract(m_wrist, m_arm)));
-        joystick.leftBumper().whileTrue(new ParallelCommandGroup(new SourcePass(m_arm, m_wrist, m_shooter),
+        joystick.leftBumper().whileTrue(new ParallelCommandGroup(new SourcePass(m_arm, m_wrist, m_shooter), new InstantCommand(LEDSubsystem::setShootReady),
                 drivetrain.applyRequest(() -> autoPoint_pass
                         .withTargetDirection(
                                 (IsRed.isRed() ? Constants.DrivetrainConstants.kRedAllianceAmpCornerPositionGround
@@ -236,9 +236,9 @@ public class RobotContainer {
                         .withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)
                         .withRotationalDeadband(0.15 * MaxAngularRate * 0.25))))
-                .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5)
-                        .andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter), new Retract(m_wrist, m_arm)));
-        joystick.rightBumper().whileTrue(new ParallelCommandGroup(new SourcePassOver(m_arm, m_wrist, m_shooter),
+                .onFalse(new ParallelCommandGroup(new InstantCommand(LEDSubsystem::setNeutral), new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5)
+                        .andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter), new Retract(m_wrist, m_arm))));
+        joystick.rightBumper().whileTrue(new ParallelCommandGroup(new InstantCommand(LEDSubsystem::setShootNotReady), new SourcePassOver(m_arm, m_wrist, m_shooter),
                 drivetrain.applyRequest(() -> autoPoint_pass
                         .withTargetDirection(
                                 (IsRed.isRed() ? Constants.DrivetrainConstants.kRedAllianceAmpCornerPosition
@@ -252,9 +252,8 @@ public class RobotContainer {
                         .withVelocityX(-joystick.getLeftY() * MaxSpeed * 0.25)
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed * 0.25)
                         .withRotationalDeadband(0.15 * MaxAngularRate * 0.25))))
-                .onFalse(new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5)
-                        .andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter), new Retract(m_wrist, m_arm)));
-
+                .onFalse(new ParallelCommandGroup(new InstantCommand(LEDSubsystem::setNeutral), new RunKickerWheel(3000.0, m_kicker).withTimeout(0.5)
+                        .andThen(new SetShooterSpeed(() -> 0.0, 10000, m_shooter), new Retract(m_wrist, m_arm))));
         operatorJoystick.povDown().onTrue(new Climb(0, m_climber));
         operatorJoystick.povRight().onTrue(new Climb(38.25, m_climber));
         operatorJoystick.povUp().onTrue(new Climb(85, m_climber));

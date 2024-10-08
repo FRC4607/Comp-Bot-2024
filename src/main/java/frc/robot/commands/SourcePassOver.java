@@ -1,8 +1,10 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 
@@ -11,7 +13,7 @@ public class SourcePassOver extends ParallelCommandGroup {
         super(
                 new MoveArmToPosition(() -> 0, 2, arm),
                 new MoveWristToPosition(() -> 134, 2, wrist),
-                new SetShooterSpeed(() -> 3200.0 * 0.90, 120, shoot),
+                new SetShooterSpeed(() -> 3200.0 * 0.90, 120, shoot).andThen(new InstantCommand(LEDSubsystem::setShootReady)),
                 new RunCommand(() -> {
                 }));
     }

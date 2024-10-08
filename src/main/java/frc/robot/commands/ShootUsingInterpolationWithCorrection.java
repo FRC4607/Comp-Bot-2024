@@ -51,7 +51,7 @@ public class ShootUsingInterpolationWithCorrection extends ParallelDeadlineGroup
                                 new WaitUntilCommand(() -> m_debounce.calculate(autoPoint.HeadingController.atSetpoint()))),
                         new ParallelCommandGroup(
                                 new MoveWristToPosition(() -> {
-                                    return drive.getShotInfo().getWrist() + 1.25;
+                                    return drive.getShotInfo().getWrist() + 0.25;
                                 }, 1.0, wrist),
                                 new SetShooterSpeed(() -> {
                                     return drive.getShotInfo().getSpeed();
